@@ -214,6 +214,9 @@ p{margin:0}
 .area li.feito .st{background:var(--ok);color:#06140d}
 .area li.andamento .st{background:var(--placa);color:var(--placa-escuro)}
 .area .prova{display:block;font-size:12.5px;color:var(--tinta-2);margin-top:3px}
+.area .pag{font-size:11.5px;color:var(--apagado);white-space:nowrap}
+.area li.geral .st{background:transparent;border:1px dashed var(--linha);color:var(--apagado)}
+.area li.geral{color:var(--tinta-2)}
 .area .prova a{color:var(--placa)}
 .vereadores{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--linha);border-radius:8px;overflow:hidden}
 .ver{background:var(--asfalto-2);padding:9px 10px;min-width:0}
@@ -503,7 +506,8 @@ input[type=text]{width:100%;background:var(--placa-escuro);border:1px solid var(
         <div class="resumo-promessas" id="resumoPromessas"></div>
         <div id="promessas"></div>
         <p class="aviso">Tem registro oficial de algum item? A prefeitura, os vereadores ou qualquer morador podem mandar pra quem cuida do mapa, e a gente atualiza.</p>
-        <p class="miudo">"Sem informação" não quer dizer que não foi feito: quer dizer que ainda não achamos registro oficial. O plano não fala de ruas, asfalto nem iluminação. Fonte: <a href="https://divulgacandcontas.tse.jus.br/divulga/#/candidato/SUDESTE/SP/2045202024/250002148744/2024/69779" target="_blank" rel="noopener">plano de governo no TSE</a> e notícias do site da prefeitura. Pesquisado em 30/10/2026.</p>
+        <p class="miudo">"Sem informação" não quer dizer que não foi feito: quer dizer que ainda não achamos registro oficial. Os textos acima resumem cada item do plano, com a página onde ele está. O plano não tem item sobre asfalto ou iluminação das ruas da cidade; ele fala de manutenção das estradas, na parte de agricultura.</p>
+        <p class="miudo">Fonte: "Plano de Governo Municipal 2025/2028", 7 páginas, registrado no TSE (abra a <a href="https://divulgacandcontas.tse.jus.br/divulga/#/candidato/SUDESTE/SP/2045202024/250002148744/2024/69779" target="_blank" rel="noopener">página da candidatura</a> e toque em "Proposta de governo"). Provas: notícias do site da prefeitura. Conferido em 30/10/2026.</p>
         <h3>Cada problema tem um dono</h3>
         <div class="quem" id="quemResolve"></div>
         <h3>Onde reclamar oficialmente</h3>
@@ -1263,68 +1267,112 @@ const app = document.getElementById('app'), alca = document.getElementById('alca
 document.querySelector('.menu-itens').addEventListener('click', e => { const b=e.target.closest('[data-aba]'); if (b) irAba(b.dataset.aba); });
 alca.addEventListener('click', () => { const ab = app.classList.toggle('expandido'); alca.setAttribute('aria-expanded', ab); alca.textContent = ab ? 'Ver mapa' : 'Puxar lista'; setTimeout(() => map.invalidateSize(), 300); });
 
-/* ---------- Promessas do plano de governo (TSE 2024), com o que as fontes oficiais mostram ---------- */
+/* ---------- Plano de governo (TSE 2024), conferido com o PDF original, item por item ----------
+   Cada item: [texto, página, situação, prova, link]. Situação: 'feito', 'andamento', '' (sem registro
+   encontrado) ou 'geral' (diretriz sem meta que dê pra conferir). */
 const NOTICIA = id => 'https://www.rinopolis.sp.gov.br/?pag=T1RVPU9EZz1PV0k9T1RrPU9UUT1OMlE9T0dNPU9XST1PR1U9T0dNPU9HWT1PV009T1dZPQ==&id='+id;
 const PROMESSAS = [
   ['Saúde', [
-    ['Mais autonomia aos chefes das ESF e menos burocracia para liberar exames'],
-    ['Manter e melhorar o transporte de pacientes e a casa de apoio em Jaú'],
-    ['Centro com vários profissionais para crianças com transtorno do neurodesenvolvimento e apoio às mães'],
-    ['Parceria com neuropediatria para retornos no prazo'],
-    ['Estudar uma casa de apoio em Marília para pacientes do HC'],
-    ['Organizar a hidroterapia e incluir pacientes autistas'],
-    ['Agilizar a entrega de remédios nas ESF e no Centro de Saúde'],
-    ['Grupos de apoio para esclerose múltipla, fibromialgia e famílias com Alzheimer'],
-    ['Ações contra o abandono de animais: castração, adoção e conscientização','andamento','Mutirão com 157 castrações (out/2025)',NOTICIA(181)],
-    ['Melhorar o atendimento em casa (curativos, home care)']
+    ['Mais clareza sobre saúde preventiva, todos os dias', 2, 'geral'],
+    ['Melhorar a triagem, o acolhimento e a humanização na saúde', 2, 'geral'],
+    ['Agilidade com ética e capacitação contínua dos servidores da saúde', 2, 'geral'],
+    ['Autonomia ao líder de cada unidade de saúde da família e menos burocracia para liberar exames', 2],
+    ['Continuar e melhorar o transporte de pacientes até Jaú; manter e melhorar a casa de apoio em Jaú', 2],
+    ['Atenção especial aos pacientes da hemodiálise', 2, 'geral'],
+    ['Atenção especial às gestantes e acompanhamento das gestações de risco', 2, 'geral'],
+    ['Centro com equipe multidisciplinar para crianças com transtorno do neurodesenvolvimento e grupo de apoio às mães e famílias atípicas', 2],
+    ['Parceria com neuropediatria para retornos em tempo hábil', 2],
+    ['Estudar a viabilidade de uma casa de apoio em Marília para pacientes do HC', '2 e 3'],
+    ['Organizar a hidroterapia e incluir pacientes autistas', 3],
+    ['Agilizar a entrega de remédios nas ESF do Jd. São Mateus e do Jd. São Paulo e no Centro de Saúde', 3],
+    ['Grupo de apoio para mulheres com esclerose múltipla ou fibromialgia e famílias com parentes com Alzheimer', 3],
+    ['Abandono de animais: abrigo, castração, campanhas de adoção e conscientização, com os grupos de protetores', 3, 'andamento', 'Mutirão com 157 castrações, feito pela prefeitura com emenda impositiva de vereadores (out/2025)', NOTICIA(181)],
+    ['Gerir com eficiência os recursos do SUS', 3, 'geral'],
+    ['Melhorar a comunicação com o Hospital São Paulo', 3, 'geral'],
+    ['Cobrar o Estado e a União para agilizar procedimentos de média e alta complexidade', 3, 'geral'],
+    ['Melhorar o atendimento em casa (home care, curativos) de quem não consegue ir até a unidade', 3]
   ]],
-  ['Educação e segurança', [
-    ['Cursos profissionalizantes com o Estado e empresas'],
-    ['Educador físico, fisioterapeuta e terapeuta ocupacional nas escolas'],
-    ['Preencher todas as vagas da Atividade Delegada'],
-    ['Câmeras do programa Detecta nas entradas e no centro']
+  ['Educação', [
+    ['Parcerias com o Estado e a iniciativa privada para cursos profissionalizantes', 3],
+    ['Projetos de coordenação motora e autonomia com educador físico, fisioterapeuta e terapeuta ocupacional, apoiando a educação infantil e o ensino fundamental', 3],
+    ['Capacitação de acordo com as necessidades das empresas locais', 3, 'geral'],
+    ['Comunicação entre os gestores de Educação, Saúde, Assistência Social e Segurança', 4, 'geral']
+  ]],
+  ['Segurança', [
+    ['Valorizar a Atividade Delegada e preencher todas as vagas disponíveis', 4],
+    ['Convênios com o governo do Estado para novos projetos de segurança', 4, 'geral'],
+    ['Projeto Detecta, com o Estado: câmeras nas vias de acesso e no centro', 4],
+    ['Reuniões com a Secretaria de Segurança do Estado para aumentar o número de policiais', 4, 'geral']
   ]],
   ['Emprego', [
-    ['Isenção de imposto para empresa que der o 1º emprego ao jovem'],
-    ['Comprar da agricultura familiar para a merenda'],
-    ['Contratar MEIs para serviços da prefeitura'],
-    ['Campanhas para comprar no comércio local'],
-    ['Criar a feira de produtos e serviços de Rinópolis','feito','1ª EXAAER realizada (out/2025)',NOTICIA(177)]
+    ['Projeto "Empresa Cidadã Rinopolense": isenção fiscal para empresas que derem o primeiro emprego ao jovem, com cursos da prefeitura', 4],
+    ['Apresentar Rinópolis para atrair outros ramos de atividade', 4, 'geral'],
+    ['Incentivar os empreendedores locais e os pequenos negócios', 4, 'geral'],
+    ['Comprar da agricultura familiar para a merenda escolar e para o PAA', 4],
+    ['Estimular a contratação de microempreendedores individuais (MEI) pela prefeitura', 4],
+    ['Campanhas de valorização das compras no comércio local', 4],
+    ['Combinar o calendário de festas com os comerciantes', 5, 'geral'],
+    ['Criar a EXAER, exposição dos produtos e serviços feitos em Rinópolis', 5, 'feito', '1ª EXAAER realizada (out/2025)', NOTICIA(177)]
   ]],
-  ['Moradia e esporte', [
-    ['Comprar terrenos para casas populares','andamento','Escritura de terreno para moradias populares assinada (jul/2025); a fonte não cita a CDHU',NOTICIA(162)],
-    ['Incentivar o vôlei adaptado','andamento','Turma aberta para 45 anos ou mais (fev/2026)',NOTICIA(194)],
-    ['Realizar e apoiar Jogos Regionais e Estaduais'],
-    ['Apoiar os Jogos Regionais do Idoso (JORI)'],
-    ['Mais torneios no recinto poliesportivo'],
-    ['Reativar a área externa do Rinópolis Tênis Clube'],
-    ['Reformar as praças esportivas dos bairros e do centro']
+  ['Moradia', [
+    ['Comprar terrenos para convênios de construção da casa própria (CDHU)', 5, 'andamento', 'A prefeitura comprou, com recursos próprios, um terreno para moradias populares (jul/2025). A notícia não cita a CDHU', NOTICIA(162)],
+    ['Estudo social das famílias que realmente precisam', 5, 'geral']
   ]],
-  ['Cultura e agricultura', [
-    ['Criar o Plano Municipal de Cultura'],
-    ['Calendário anual de eventos culturais'],
-    ['Eventos culturais todo mês em espaços públicos'],
-    ['Projetos de iniciação musical','andamento','Audição do Polo Guri e apresentação do Espaço Amigo (dez/2025)',NOTICIA(187)],
-    ['Incentivar feiras de artesanato'],
-    ['Manter as estradas rurais com parcerias','andamento','Melhorias na estrada RNP 020 com apoio do Estado (abr/2025)',NOTICIA(148)],
-    ['Programa de viveiros'],
-    ['Criar a lei do Serviço de Inspeção Municipal'],
-    ['Comprar equipamentos rurais com verba federal'],
-    ['Capacitar a mulher e o jovem do campo']
+  ['Esporte', [
+    ['Continuar os projetos que estão dando certo', 5, 'geral'],
+    ['Melhorar e incentivar o vôlei adaptado', 5, 'andamento', 'Convite para a turma de vôlei adaptado, 45 anos ou mais (fev/2026)', NOTICIA(194)],
+    ['Realizar e apoiar Jogos Regionais e Estaduais', 5],
+    ['Apoiar os Jogos Regionais do Idoso (JORI)', 5],
+    ['Ampliar as modalidades esportivas', 5, 'geral'],
+    ['Mais torneios no recinto poliesportivo, com parcerias', 5],
+    ['Incentivar o ciclismo', 5, 'geral'],
+    ['Reativar a área externa do Rinópolis Tênis Clube com projetos para todas as idades', 5],
+    ['Reformar e manter as praças esportivas dos bairros e do centro', 6]
+  ]],
+  ['Cultura', [
+    ['Criar o Plano Municipal de Cultura', 6],
+    ['Incentivar a música e o teatro', 6, 'geral'],
+    ['Calendário anual de eventos culturais', 6],
+    ['Eventos culturais todo mês em espaços públicos', 6],
+    ['Desenvolver ou fortalecer projetos de iniciação musical', 6, 'andamento', 'Polo Guri e Projeto Espaço Amigo fizeram apresentações de música em 2025. Não dá pra saber se foram ampliados', NOTICIA(187)],
+    ['Cumprir as leis de fomento à cultura local', 6, 'geral'],
+    ['Incentivar feiras de produtos artesanais', 6]
+  ]],
+  ['Agricultura', [
+    ['Manutenção das estradas, com programas do governo e usinas', 6, 'andamento', 'Melhorias na estrada RNP 020, com apoio do governo do Estado (abr/2025)', NOTICIA(148)],
+    ['Suporte técnico ao agricultor, do plantio à colheita', 6, 'geral'],
+    ['Participar dos programas de incentivo à agricultura', 6, 'geral'],
+    ['Programa de viveiros', 6],
+    ['Ênfase na agricultura e na pecuária', 6, 'geral'],
+    ['Criar a lei do Serviço de Inspeção Municipal', 6],
+    ['Comprar equipamentos rurais com verba federal', 6],
+    ['Parcerias com cooperativas', 6, 'geral'],
+    ['Capacitar a mulher e o jovem do campo pela agricultura familiar', 7]
+  ]],
+  ['Meio ambiente e serviço público', [
+    ['Preservar as nascentes, córregos e rios', 7, 'geral'],
+    ['Arborização urbana', 7, 'geral'],
+    ['Conscientização sobre reciclagem', 7, 'geral'],
+    ['Mais comunicação e transparência entre os setores da prefeitura', 7, 'geral'],
+    ['Valorizar e capacitar o servidor municipal', 7, 'geral']
   ]]
 ];
 (function(){
-  const ROT = {feito:'Feito', andamento:'Em andamento', '':'Sem informação'};
+  const ROT = {feito:'Feito', andamento:'Em andamento', geral:'Diretriz geral', '':'Sem informação'};
   const todas = PROMESSAS.flatMap(([,l]) => l);
-  const conta = k => todas.filter(p => (p[1]||'')===k).length;
+  const conta = k => todas.filter(p => (p[2]||'')===k).length;
   document.getElementById('resumoPromessas').innerHTML =
     '<div class="rp feito"><b>'+conta('feito')+'</b><span>'+(conta('feito')===1?'feita':'feitas')+'</span></div>'+
     '<div class="rp andamento"><b>'+conta('andamento')+'</b><span>em andamento</span></div>'+
-    '<div class="rp neutro"><b>'+conta('')+'</b><span>ainda sem registro encontrado</span></div>';
-  document.getElementById('promessas').innerHTML = PROMESSAS.map(([area,l]) =>
-    '<details class="area"><summary>'+area+' <span class="miudo">'+l.length+' promessas · '+l.filter(p=>p[1]).length+' com sinal de andamento</span></summary><ul>'+
-    l.map(([txt,st,prova,url]) => '<li class="'+(st||'sem')+'"><span class="st">'+ROT[st||'']+'</span><span>'+txt+(prova ? '<span class="prova">'+prova+' · <a href="'+url+'" target="_blank" rel="noopener">fonte</a></span>' : '')+'</span></li>').join('')+
-    '</ul></details>').join('');
+    '<div class="rp neutro"><b>'+conta('')+'</b><span>ainda sem registro encontrado</span></div>'+
+    '<p class="miudo" style="grid-column:1/-1">Contando só as '+(todas.length-conta('geral'))+' promessas concretas. O plano tem mais '+conta('geral')+' diretrizes gerais, sem meta que dê pra conferir; elas também aparecem abaixo.</p>';
+  document.getElementById('promessas').innerHTML = PROMESSAS.map(([area,l]) => {
+    const concretas = l.filter(p => p[2]!=='geral');
+    return '<details class="area"><summary>'+area+' <span class="miudo">'+concretas.length+' promessas · '+(l.length-concretas.length)+' diretrizes</span></summary><ul>'+
+      l.map(([txt,pag,st,prova,url]) => '<li class="'+(st||'sem')+'"><span class="st">'+ROT[st||'']+'</span><span>'+txt+' <span class="pag">pág. '+pag+'</span>'+
+        (prova ? '<span class="prova">'+prova+' · <a href="'+url+'" target="_blank" rel="noopener">fonte</a></span>' : '')+'</span></li>').join('')+
+      '</ul></details>';
+  }).join('');
 })();
 
 /* ---------- Quem decide ---------- */
