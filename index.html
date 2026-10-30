@@ -62,7 +62,8 @@ body{display:flex;flex-direction:column}
 .app.pagina .palco{display:none}
 .app.pagina .painel{border-left:0;background:var(--asfalto)}
 .app.pagina .alca{display:none!important}
-.app.pagina .conteudo{width:100%;max-width:880px;margin:0 auto;padding-block:28px 48px}
+/* a rolagem ocupa a largura toda (barra no canto da janela); o texto fica numa coluna centralizada */
+.app.pagina .conteudo{width:100%;padding-block:28px 48px;padding-left:max(20px,env(safe-area-inset-left,0px),calc((100% - 880px) / 2));padding-right:max(20px,env(safe-area-inset-right,0px),calc((100% - 880px) / 2))}
 .app.pagina h2{font-size:34px}
 .palco{position:relative;min-width:0;min-height:0}
 #mapa{position:absolute;inset:0;background:var(--asfalto)}
