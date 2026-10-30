@@ -416,6 +416,54 @@ input[type=text]{width:100%;background:var(--placa-escuro);border:1px solid var(
   .boas-num span{font-size:13px}
   .num.quente b{font-size:30px}
 }
+/* ===== celular: mapa em tela cheia, topo numa linha só, lista como gaveta ===== */
+@media (max-width:820px){
+  .app{display:block;position:relative;transition:none}
+  .palco{position:absolute;inset:0}
+  .leaflet-control-zoom{display:none}
+  /* topo compacto: logo, dois números e a lupa */
+  .faixa{flex-wrap:nowrap;gap:6px;top:8px;left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px))}
+  .faixa .marca{flex:none;padding:4px;gap:0}
+  .faixa .marca span{display:none}
+  .faixa .marca .logo{width:34px;height:34px}
+  .placar{flex:1 1 auto;min-width:0}
+  .num{padding:4px 9px;flex:1 1 0}
+  .num.extra{display:none}
+  .num b,.num.quente b{font-size:22px}
+  .num span{font-size:10px;white-space:normal;line-height:1.15}
+  .busca{flex:0 0 44px;order:0;height:auto;padding:0;justify-content:center;align-self:stretch}
+  .busca input{width:0;padding:0}
+  .busca:focus-within{position:absolute;inset:0 0 auto 0;height:46px;z-index:2;padding:0 12px;justify-content:flex-start}
+  .busca:focus-within input{width:100%;padding:10px 0}
+  /* gaveta da lista */
+  .painel{position:absolute;left:0;right:0;bottom:0;height:82%;z-index:560;border-top:1px solid var(--linha);border-left:0;border-radius:16px 16px 0 0;box-shadow:0 -12px 34px rgba(0,0,0,.55);transform:translateY(calc(100% - 58px));transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+  .app.expandido .painel{transform:none}
+  .alca{position:relative;display:flex!important;flex:none;align-items:center;gap:10px;height:58px;width:100%;padding:0 18px;background:none;border:0;color:var(--tinta);font-weight:700;font-size:15px;text-align:left}
+  .alca::before{display:none}
+  .alca i{position:absolute;left:50%;top:7px;width:40px;height:4px;margin-left:-20px;border-radius:2px;background:var(--linha)}
+  .alca span{flex:1}
+  .alca b{color:var(--placa);font-size:13px}
+  .app:not(.expandido) .conteudo{visibility:hidden}
+  .marcar{bottom:calc(58px + 16px)}
+  .mira{bottom:calc(58px + 14px)}
+  .pergunta-card{bottom:calc(58px + 74px)}
+  /* as outras abas continuam como página inteira */
+  .app.pagina .painel{position:absolute;inset:0;height:auto;transform:none;border-radius:0;box-shadow:none;border-top:0}
+  .app.pagina .conteudo{visibility:visible}
+  /* primeira tela ocupando o celular todo, sem rolagem */
+  .boas{padding:0;place-items:stretch}
+  .boas-card{max-width:none;height:100%;border-radius:0;border:0;border-top:6px solid var(--placa);justify-content:center;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));gap:16px}
+  .boas-card h2{font-size:34px}
+  .boas-num{padding:10px 14px}
+  .boas-num b{font-size:60px}
+  .passos{gap:8px}
+  .passos li{grid-template-columns:30px minmax(0,1fr)}
+  .passos li::before{width:28px;height:28px;font-size:15px}
+  .passos li .leve{display:none}
+  .boas-card .acoes{flex-direction:column;align-items:stretch;gap:10px;margin-top:4px}
+  .boas-card .acoes .btn{width:100%;font-size:18px;padding:15px}
+  .boas-card > .link{align-self:center;text-align:center}
+}
 </style>
 
 <div class="boas" id="boas" hidden>
@@ -496,7 +544,7 @@ input[type=text]{width:100%;background:var(--placa-escuro);border:1px solid var(
   </section>
 
   <aside class="painel">
-    <button class="alca" id="alca" type="button" aria-expanded="false">Puxar lista</button>
+    <button class="alca" id="alca" type="button" aria-expanded="false" aria-controls="conteudo">Ver a lista de problemas</button>
     <div class="conteudo" id="conteudo">
       <section id="aba-problemas">
         <div class="aviso" id="aviso" hidden></div>
@@ -735,7 +783,7 @@ const pts = f => { const r=[]; for(let i=0;i<f.length;i+=2) r.push(ll(f[i],f[i+1
 const KX = 111320*Math.cos(M.lat0*Math.PI/180), KY = 110574;
 const LIMITE = [[-21.80,-50.80],[-21.66,-50.64]];
 
-const map = L.map('mapa',{zoomControl:false,preferCanvas:true,minZoom:13,maxZoom:19,maxBounds:LIMITE,attributionControl:true}).setView([-21.7275,-50.7235],16);
+const map = L.map('mapa',{zoomControl:false,preferCanvas:true,minZoom:13,maxZoom:19,maxBounds:LIMITE,attributionControl:true}).setView([-21.7275,-50.7235], innerWidth<820 ? 15 : 16);
 map.attributionControl.setPrefix(false).addAttribution('© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>');
 L.control.zoom({position:'bottomright'}).addTo(map);
 const tela = L.canvas({padding:.5,tolerance:7});
@@ -1047,6 +1095,8 @@ function render(){
   const vis = base.filter(r => grupo(r)===filtro).sort((a,b) => { const x=sit.get(a.id), y=sit.get(b.id); return (y.ve*4+y.dias) - (x.ve*4+x.dias); });
   document.getElementById('tituloLista').textContent = reais.length ? 'Esperando conserto agora' : 'Assim vai ficar o mapa';
   document.getElementById('nVitoria').textContent = n.feitos.length;
+  resumoGaveta = reais.length ? (n.abertos.length===1 ? '1 problema esperando conserto' : n.abertos.length+' problemas esperando conserto') : 'Ver a lista (3 exemplos)';
+  if (!app.classList.contains('expandido')) gaveta(false);
   document.getElementById('boasNum').hidden = !n.dias;
   document.getElementById('boasDias').textContent = n.dias.toLocaleString('pt-BR');
   if (!fundoVitrine.hidden) desenharVitrine();
@@ -1074,6 +1124,7 @@ document.getElementById('filtro').addEventListener('click', e => { const b=e.tar
 document.getElementById('lista').addEventListener('click', e => {
   const b = e.target.closest('[data-id]'); if (!b) return;
   const r = todos().mostrados.find(x => x.id===b.dataset.id); if (!r) return;
+  if (innerWidth < 820) gaveta(false);
   map.flyTo([r.lat,r.lon], Math.max(map.getZoom(),17), {duration:.6});
   abrir(r.id);
 });
@@ -1303,13 +1354,29 @@ function irAba(n){
   /* o mapa fica com a lista ao lado; as outras partes abrem como página inteira */
   const eraPagina = app.classList.contains('pagina');
   app.classList.toggle('pagina', n!=='problemas');
+  if (n!=='problemas' && app.classList.contains('expandido')) gaveta(false);
   if (eraPagina && n==='problemas') setTimeout(() => map.invalidateSize(), 50);
   document.getElementById('conteudo').scrollTop = 0;
   if (n==='painel') carregarPainel();
 }
 const app = document.getElementById('app'), alca = document.getElementById('alca');
 document.querySelector('.menu-itens').addEventListener('click', e => { const b=e.target.closest('[data-aba]'); if (b) irAba(b.dataset.aba); });
-alca.addEventListener('click', () => { const ab = app.classList.toggle('expandido'); alca.setAttribute('aria-expanded', ab); alca.textContent = ab ? 'Ver mapa' : 'Puxar lista'; setTimeout(() => map.invalidateSize(), 300); });
+/* no celular a lista é uma gaveta: toque ou arraste a faixa pra subir e descer */
+let resumoGaveta = 'Ver a lista de problemas';
+function gaveta(abrir){
+  app.classList.toggle('expandido', abrir);
+  alca.setAttribute('aria-expanded', abrir);
+  alca.innerHTML = '<i aria-hidden="true"></i><span>'+(abrir ? 'Voltar pro mapa' : resumoGaveta)+'</span><b aria-hidden="true">'+(abrir ? '▼' : '▲')+'</b>';
+}
+alca.addEventListener('click', () => gaveta(!app.classList.contains('expandido')));
+let toqueY = null;
+alca.addEventListener('touchstart', e => { toqueY = e.touches[0].clientY; }, {passive:true});
+alca.addEventListener('touchend', e => {
+  if (toqueY===null) return;
+  const dy = e.changedTouches[0].clientY - toqueY; toqueY = null;
+  if (Math.abs(dy) > 30) { e.preventDefault(); gaveta(dy < 0); }
+});
+gaveta(false);
 
 /* ---------- Plano de governo (TSE 2024), conferido com o PDF original, item por item ----------
    Cada item: [texto, página, situação, prova, link]. Situação: 'feito', 'andamento', '' (sem registro
