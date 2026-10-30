@@ -150,6 +150,19 @@ p{margin:0}
 .miudo{font-size:12.5px;color:var(--apagado)}
 .miudo a{color:var(--tinta-2)}
 .aviso{background:var(--asfalto-3);border-left:4px solid var(--placa);padding:10px 12px;border-radius:0 6px 6px 0;font-size:14px}
+/* rodapé: sem partido */
+.rodape{margin-top:28px;border-top:1px solid var(--linha);padding-top:18px;display:flex;flex-direction:column;gap:10px}
+.rodape-selo{display:flex;align-items:center;gap:10px}
+.rodape-selo .logo{width:36px;height:36px}
+.rodape-selo b{display:block;font-family:var(--f-placa);font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.02em}
+.rodape-selo small{display:block;font-size:12.5px;color:var(--tinta-2)}
+.rodape p{font-size:13.5px;color:var(--tinta-2);margin:0}
+.app.pagina .rodape{margin-top:40px}
+/* a cidade em números */
+.numeros{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.numeros div{background:var(--asfalto-3);border-radius:8px;padding:10px 12px;min-width:0}
+.numeros b{display:block;font-family:var(--f-placa);font-weight:800;font-size:26px;line-height:1.05;overflow-wrap:anywhere}
+.numeros span{font-size:12px;color:var(--tinta-2)}
 .campea{background:var(--placa-escuro);border:1px solid var(--linha);border-radius:8px;padding:12px 14px;display:flex;gap:12px;align-items:center}
 .campea .medalha{font-family:var(--f-placa);font-weight:800;font-size:34px;color:var(--alerta);line-height:1;font-variant-numeric:tabular-nums}
 .campea b{display:block;font-size:16px}
@@ -459,6 +472,7 @@ input[type=text]{width:100%;background:var(--placa-escuro);border:1px solid var(
         <div class="num quente"><b id="nDias">0</b><span>dias de espera, somados</span></div>
         <div class="num"><b id="nAbertos">0</b><span>problemas abertos</span></div>
         <div class="num verde extra"><b id="nFeitos">0</b><span>já consertados</span></div>
+        <div class="num extra"><b id="nMedia">–</b><span>dias, em média, até consertar</span></div>
       </div>
       <label class="busca" for="busca">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
@@ -491,7 +505,8 @@ input[type=text]{width:100%;background:var(--placa-escuro);border:1px solid var(
         <button class="vitoria" type="button" id="btnVitrine"><b id="nVitoria">0</b><span><strong>Já consertamos</strong><small>Veja o antes e depois de cada conserto</small></span></button>
         <div class="filtro" id="filtro"></div>
         <div id="lista"></div>
-        <p class="miudo">Mapa das ruas: © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>. Ninguém precisa dizer o nome pra marcar. <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button></p>
+        <h3>A cidade em números</h3>
+        <div class="numeros" id="numerosCidade"></div>
       </section>
 
       <section id="aba-quem" hidden>
@@ -505,6 +520,11 @@ input[type=text]{width:100%;background:var(--placa-escuro);border:1px solid var(
         <p class="leve">O plano que a chapa eleita registrou no TSE em 2024, item por item, com o que já tem registro oficial de andamento. Sem opinião: só o que está escrito e o que as fontes mostram.</p>
         <div class="resumo-promessas" id="resumoPromessas"></div>
         <div id="promessas"></div>
+        <div class="bloco">
+          <b>Quer a resposta oficial, item por item?</b>
+          <p class="leve">Pela Lei de Acesso à Informação, a prefeitura é obrigada a responder em até 20 dias, prorrogáveis por mais 10. O pedido abaixo pergunta a situação de cada uma das promessas concretas, com o documento que comprove.</p>
+          <div class="acoes"><button class="btn" type="button" id="btnPedidoPlano">Copiar pedido pro e-SIC</button><a class="btn cinza" href="https://www.rinopolis.sp.gov.br/esic/" target="_blank" rel="noopener">Abrir o e-SIC</a></div>
+        </div>
         <p class="aviso">Tem registro oficial de algum item? A prefeitura, os vereadores ou qualquer morador podem mandar pra quem cuida do mapa, e a gente atualiza.</p>
         <p class="miudo">"Sem informação" não quer dizer que não foi feito: quer dizer que ainda não achamos registro oficial. Os textos acima resumem cada item do plano, com a página onde ele está. O plano não tem item sobre asfalto ou iluminação das ruas da cidade; ele fala de manutenção das estradas, na parte de agricultura.</p>
         <p class="miudo">Fonte: "Plano de Governo Municipal 2025/2028", 7 páginas, registrado no TSE (abra a <a href="https://divulgacandcontas.tse.jus.br/divulga/#/candidato/SUDESTE/SP/2045202024/250002148744/2024/69779" target="_blank" rel="noopener">página da candidatura</a> e toque em "Proposta de governo"). Provas: notícias do site da prefeitura. Conferido em 30/10/2026.</p>
@@ -578,6 +598,12 @@ input[type=text]{width:100%;background:var(--placa-escuro);border:1px solid var(
         <h3>Sem notícia há mais de 90 dias</h3>
         <div id="semNoticia"></div>
       </section>
+
+      <footer class="rodape">
+        <div class="rodape-selo"><svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><use href="#logo"/></svg><span><b>Sem partido. Sem patrão.</b><small>Projeto independente de moradores</small></span></div>
+        <p>O Rinópolis de Olho não tem ligação com a prefeitura, a Câmara, partidos ou candidatos, e não apoia nem ataca ninguém. Mostramos o que os moradores marcam e o que as fontes oficiais dizem, com o link de cada uma.</p>
+        <p class="miudo">Achou um erro? Fale com quem cuida do mapa que a gente corrige. · Ruas © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button></p>
+      </footer>
     </div>
   </aside>
 </div>
@@ -977,6 +1003,24 @@ function render(){
   contar(document.getElementById('nAbertos'), n.abertos.length);
   contar(document.getElementById('nDias'), n.dias);
   contar(document.getElementById('nFeitos'), n.feitos.length);
+  /* tempo médio de conserto e outros números da cidade (só marcações reais) */
+  const comData = n.feitos.filter(r => r.resolvido);
+  const media = comData.length ? Math.round(comData.reduce((t,r) => t+(r.resolvido-r.criado), 0)/comData.length/DIA) : null;
+  document.getElementById('nMedia').textContent = media===null ? '–' : media;
+  const total = n.reais.length, porTipo = {};
+  n.reais.forEach(r => porTipo[r.tipo] = (porTipo[r.tipo]||0)+1);
+  const topTipo = Object.entries(porTipo).sort((a,b) => b[1]-a[1])[0];
+  const maisAntigo = n.abertos.reduce((m,r) => Math.max(m, n.sit.get(r.id).dias), 0);
+  const confirmacoes = n.reais.reduce((t,r) => t + n.sit.get(r.id).ve - 1, 0);
+  document.getElementById('numerosCidade').innerHTML = !total
+    ? '<p class="vazio" style="grid-column:1/-1">Os números aparecem quando os moradores começarem a marcar.</p>'
+    : [[media===null ? 'nenhum ainda' : mediaTxt(media), 'tempo médio até o conserto'+(comData.length ? ' ('+comData.length+(comData.length===1?' conserto)':' consertos)') : '')],
+       [Math.round(n.feitos.length/total*100)+'%', n.feitos.length+' de '+total+' problemas já consertados'],
+       [n.abertos.length ? diasTxt(maisAntigo) : 'nenhum', 'o problema aberto mais antigo'],
+       [topTipo ? TIPOS[topTipo[0]].nome : '–', 'o problema mais marcado'+(topTipo ? ' ('+topTipo[1]+')' : '')],
+       [confirmacoes, 'vezes que um vizinho confirmou um problema'],
+       [n.sem.length, 'placas sem notícia há mais de 90 dias']
+      ].map(([v,t]) => '<div><b>'+v+'</b><span>'+t+'</span></div>').join('');
   if (reais.length) animou = true;
 
   camada.clearLayers();
@@ -1373,6 +1417,13 @@ const PROMESSAS = [
         (prova ? '<span class="prova">'+prova+' · <a href="'+url+'" target="_blank" rel="noopener">fonte</a></span>' : '')+'</span></li>').join('')+
       '</ul></details>';
   }).join('');
+  /* pedido pela Lei de Acesso com as promessas concretas, na ordem do plano */
+  const concretas = PROMESSAS.flatMap(([area,l]) => l.filter(p => p[2]!=='geral').map(p => [area].concat(p)));
+  const pedido = 'Pedido de informação (Lei 12.527/2011, Lei de Acesso à Informação)\n\n'+
+    'Solicito informar, para cada item abaixo do "Plano de Governo Municipal 2025/2028" registrado no TSE pela chapa eleita, se foi realizado, está em andamento ou ainda não foi iniciado, indicando o documento que comprove (lei, contrato, convênio, nota de empenho ou publicação oficial):\n\n'+
+    concretas.map(([area,txt,pag],i) => (i+1)+'. '+area+': '+txt+' (pág. '+pag+')').join('\n')+
+    '\n\nPeço resposta em formato digital.';
+  document.getElementById('btnPedidoPlano').addEventListener('click', () => copiar(pedido, 'Pedido copiado. Cole no e-SIC.'));
 })();
 
 /* ---------- Quem decide ---------- */
