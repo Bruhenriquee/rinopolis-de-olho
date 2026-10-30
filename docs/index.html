@@ -1,0 +1,1606 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Rinópolis de Olho</title>
+<meta name="description" content="O mapa dos moradores de Rinópolis-SP: marque buracos, luz apagada, lixo e esgoto, e acompanhe os dias até o conserto.">
+<meta property="og:title" content="Rinópolis de Olho">
+<meta property="og:description" content="O mapa dos moradores de Rinópolis-SP: marque buracos, luz apagada, lixo e esgoto, e acompanhe os dias até o conserto.">
+<meta property="og:type" content="website">
+<meta name="theme-color" content="#1b1d20">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect x='8.5' y='8.5' width='31' height='31' rx='4' transform='rotate(45 24 24)' fill='%23f6c21a'/%3E%3Cpath d='M13.5 24c3-4.6 6.5-6.9 10.5-6.9s7.5 2.3 10.5 6.9c-3 4.6-6.5 6.9-10.5 6.9s-7.5-2.3-10.5-6.9z' fill='%23ece9df' stroke='%2317150e' stroke-width='2.2'/%3E%3Ccircle cx='24' cy='24' r='4.4' fill='%2317150e'/%3E%3C/svg%3E">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700;800&display=swap">
+<style>
+/* Layout: o mapa é o asfalto da cidade e ocupa a tela; os problemas são placas de advertência amarelas;
+   respostas oficiais usam o azul das placas de serviço; o painel ao lado é o balcão onde se cobra.
+   Visual único (escuro) de propósito. */
+:root{
+  --asfalto:#1b1d20;
+  --asfalto-2:#24272b;
+  --asfalto-3:#2e3237;
+  --linha:#3c4148;
+  --tinta:#ece9df;
+  --tinta-2:#b9b6ab;
+  --apagado:#8f949b;
+  --placa:#f6c21a;
+  --placa-escuro:#17150e;
+  --alerta:#ef5a3c;
+  --ok:#43b27e;
+  --oficial:#4a8fe0;
+  --cinza-placa:#6f747b;
+  --rua-forte:#d9d4c3;
+  --rua:#7d8188;
+  --rua-fraca:#565a61;
+  --verde:#24352c;
+  --quadra:#202326;
+  --f-placa:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-texto:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color-scheme:dark;
+}
+/* Leaflet 1.9.4 (BSD-2) */
+.leaflet-image-layer,.leaflet-layer,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-pane,.leaflet-pane>canvas,.leaflet-pane>svg,.leaflet-tile,.leaflet-tile-container,.leaflet-zoom-box{position:absolute;left:0;top:0}.leaflet-container{overflow:hidden}.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-user-drag:none}.leaflet-tile::selection{background:0 0}.leaflet-safari .leaflet-tile{image-rendering:-webkit-optimize-contrast}.leaflet-safari .leaflet-tile-container{width:1600px;height:1600px;-webkit-transform-origin:0 0}.leaflet-marker-icon,.leaflet-marker-shadow{display:block}.leaflet-container .leaflet-overlay-pane svg{max-width:none!important;max-height:none!important}.leaflet-container .leaflet-marker-pane img,.leaflet-container .leaflet-shadow-pane img,.leaflet-container .leaflet-tile,.leaflet-container .leaflet-tile-pane img,.leaflet-container img.leaflet-image-layer{max-width:none!important;max-height:none!important;width:auto;padding:0}.leaflet-container img.leaflet-tile{mix-blend-mode:plus-lighter}.leaflet-container.leaflet-touch-zoom{-ms-touch-action:pan-x pan-y;touch-action:pan-x pan-y}.leaflet-container.leaflet-touch-drag{-ms-touch-action:pinch-zoom;touch-action:none;touch-action:pinch-zoom}.leaflet-container.leaflet-touch-drag.leaflet-touch-zoom{-ms-touch-action:none;touch-action:none}.leaflet-container{-webkit-tap-highlight-color:transparent}.leaflet-container a{-webkit-tap-highlight-color:rgba(51,181,229,.4)}.leaflet-tile{filter:inherit;visibility:hidden}.leaflet-tile-loaded{visibility:inherit}.leaflet-zoom-box{width:0;height:0;-moz-box-sizing:border-box;box-sizing:border-box;z-index:800}.leaflet-overlay-pane svg{-moz-user-select:none}.leaflet-pane{z-index:400}.leaflet-tile-pane{z-index:200}.leaflet-overlay-pane{z-index:400}.leaflet-shadow-pane{z-index:500}.leaflet-marker-pane{z-index:600}.leaflet-tooltip-pane{z-index:650}.leaflet-popup-pane{z-index:700}.leaflet-map-pane canvas{z-index:100}.leaflet-map-pane svg{z-index:200}.leaflet-vml-shape{width:1px;height:1px}.lvml{behavior:url(#default#VML);display:inline-block;position:absolute}.leaflet-control{position:relative;z-index:800;pointer-events:visiblePainted;pointer-events:auto}.leaflet-bottom,.leaflet-top{position:absolute;z-index:1000;pointer-events:none}.leaflet-top{top:0}.leaflet-right{right:0}.leaflet-bottom{bottom:0}.leaflet-left{left:0}.leaflet-control{float:left;clear:both}.leaflet-right .leaflet-control{float:right}.leaflet-top .leaflet-control{margin-top:10px}.leaflet-bottom .leaflet-control{margin-bottom:10px}.leaflet-left .leaflet-control{margin-left:10px}.leaflet-right .leaflet-control{margin-right:10px}.leaflet-fade-anim .leaflet-popup{opacity:0;-webkit-transition:opacity .2s linear;-moz-transition:opacity .2s linear;transition:opacity .2s linear}.leaflet-fade-anim .leaflet-map-pane .leaflet-popup{opacity:1}.leaflet-zoom-animated{-webkit-transform-origin:0 0;-ms-transform-origin:0 0;transform-origin:0 0}svg.leaflet-zoom-animated{will-change:transform}.leaflet-zoom-anim .leaflet-zoom-animated{-webkit-transition:-webkit-transform .25s cubic-bezier(0,0,.25,1);-moz-transition:-moz-transform .25s cubic-bezier(0,0,.25,1);transition:transform .25s cubic-bezier(0,0,.25,1)}.leaflet-pan-anim .leaflet-tile,.leaflet-zoom-anim .leaflet-tile{-webkit-transition:none;-moz-transition:none;transition:none}.leaflet-zoom-anim .leaflet-zoom-hide{visibility:hidden}.leaflet-interactive{cursor:pointer}.leaflet-grab{cursor:-webkit-grab;cursor:-moz-grab;cursor:grab}.leaflet-crosshair,.leaflet-crosshair .leaflet-interactive{cursor:crosshair}.leaflet-control,.leaflet-popup-pane{cursor:auto}.leaflet-dragging .leaflet-grab,.leaflet-dragging .leaflet-grab .leaflet-interactive,.leaflet-dragging .leaflet-marker-draggable{cursor:move;cursor:-webkit-grabbing;cursor:-moz-grabbing;cursor:grabbing}.leaflet-image-layer,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-pane>svg path,.leaflet-tile-container{pointer-events:none}.leaflet-image-layer.leaflet-interactive,.leaflet-marker-icon.leaflet-interactive,.leaflet-pane>svg path.leaflet-interactive,svg.leaflet-image-layer.leaflet-interactive path{pointer-events:visiblePainted;pointer-events:auto}.leaflet-container{background:#ddd;outline-offset:1px}.leaflet-container a{color:#0078a8}.leaflet-zoom-box{border:2px dotted #38f;background:rgba(255,255,255,.5)}.leaflet-container{font-family:"Helvetica Neue",Arial,Helvetica,sans-serif;font-size:12px;font-size:.75rem;line-height:1.5}.leaflet-bar{box-shadow:0 1px 5px rgba(0,0,0,.65);border-radius:4px}.leaflet-bar a{background-color:#fff;border-bottom:1px solid #ccc;width:26px;height:26px;line-height:26px;display:block;text-align:center;text-decoration:none;color:#000}.leaflet-bar a,.leaflet-control-layers-toggle{background-position:50% 50%;background-repeat:no-repeat;display:block}.leaflet-bar a:focus,.leaflet-bar a:hover{background-color:#f4f4f4}.leaflet-bar a:first-child{border-top-left-radius:4px;border-top-right-radius:4px}.leaflet-bar a:last-child{border-bottom-left-radius:4px;border-bottom-right-radius:4px;border-bottom:none}.leaflet-bar a.leaflet-disabled{cursor:default;background-color:#f4f4f4;color:#bbb}.leaflet-touch .leaflet-bar a{width:30px;height:30px;line-height:30px}.leaflet-touch .leaflet-bar a:first-child{border-top-left-radius:2px;border-top-right-radius:2px}.leaflet-touch .leaflet-bar a:last-child{border-bottom-left-radius:2px;border-bottom-right-radius:2px}.leaflet-control-zoom-in,.leaflet-control-zoom-out{font:bold 18px 'Lucida Console',Monaco,monospace;text-indent:1px}.leaflet-touch .leaflet-control-zoom-in,.leaflet-touch .leaflet-control-zoom-out{font-size:22px}.leaflet-control-layers{box-shadow:0 1px 5px rgba(0,0,0,.4);background:#fff;border-radius:5px}.leaflet-control-layers-toggle{background-image:url(images/layers.png);width:36px;height:36px}.leaflet-retina .leaflet-control-layers-toggle{background-image:url(images/layers-2x.png);background-size:26px 26px}.leaflet-touch .leaflet-control-layers-toggle{width:44px;height:44px}.leaflet-control-layers .leaflet-control-layers-list,.leaflet-control-layers-expanded .leaflet-control-layers-toggle{display:none}.leaflet-control-layers-expanded .leaflet-control-layers-list{display:block;position:relative}.leaflet-control-layers-expanded{padding:6px 10px 6px 6px;color:#333;background:#fff}.leaflet-control-layers-scrollbar{overflow-y:scroll;overflow-x:hidden;padding-right:5px}.leaflet-control-layers-selector{margin-top:2px;position:relative;top:1px}.leaflet-control-layers label{display:block;font-size:13px;font-size:1.08333em}.leaflet-control-layers-separator{height:0;border-top:1px solid #ddd;margin:5px -10px 5px -6px}.leaflet-default-icon-path{background-image:url(images/marker-icon.png)}.leaflet-container .leaflet-control-attribution{background:#fff;background:rgba(255,255,255,.8);margin:0}.leaflet-control-attribution,.leaflet-control-scale-line{padding:0 5px;color:#333;line-height:1.4}.leaflet-control-attribution a{text-decoration:none}.leaflet-control-attribution a:focus,.leaflet-control-attribution a:hover{text-decoration:underline}.leaflet-attribution-flag{display:inline!important;vertical-align:baseline!important;width:1em;height:.6669em}.leaflet-left .leaflet-control-scale{margin-left:5px}.leaflet-bottom .leaflet-control-scale{margin-bottom:5px}.leaflet-control-scale-line{border:2px solid #777;border-top:none;line-height:1.1;padding:2px 5px 1px;white-space:nowrap;-moz-box-sizing:border-box;box-sizing:border-box;background:rgba(255,255,255,.8);text-shadow:1px 1px #fff}.leaflet-control-scale-line:not(:first-child){border-top:2px solid #777;border-bottom:none;margin-top:-2px}.leaflet-control-scale-line:not(:first-child):not(:last-child){border-bottom:2px solid #777}.leaflet-touch .leaflet-bar,.leaflet-touch .leaflet-control-attribution,.leaflet-touch .leaflet-control-layers{box-shadow:none}.leaflet-touch .leaflet-bar,.leaflet-touch .leaflet-control-layers{border:2px solid rgba(0,0,0,.2);background-clip:padding-box}.leaflet-popup{position:absolute;text-align:center;margin-bottom:20px}.leaflet-popup-content-wrapper{padding:1px;text-align:left;border-radius:12px}.leaflet-popup-content{margin:13px 24px 13px 20px;line-height:1.3;font-size:13px;font-size:1.08333em;min-height:1px}.leaflet-popup-content p{margin:17px 0;margin:1.3em 0}.leaflet-popup-tip-container{width:40px;height:20px;position:absolute;left:50%;margin-top:-1px;margin-left:-20px;overflow:hidden;pointer-events:none}.leaflet-popup-tip{width:17px;height:17px;padding:1px;margin:-10px auto 0;pointer-events:auto;-webkit-transform:rotate(45deg);-moz-transform:rotate(45deg);-ms-transform:rotate(45deg);transform:rotate(45deg)}.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#fff;color:#333;box-shadow:0 3px 14px rgba(0,0,0,.4)}.leaflet-container a.leaflet-popup-close-button{position:absolute;top:0;right:0;border:none;text-align:center;width:24px;height:24px;font:16px/24px Tahoma,Verdana,sans-serif;color:#757575;text-decoration:none;background:0 0}.leaflet-container a.leaflet-popup-close-button:focus,.leaflet-container a.leaflet-popup-close-button:hover{color:#585858}.leaflet-popup-scrolled{overflow:auto}.leaflet-oldie .leaflet-popup-content-wrapper{-ms-zoom:1}.leaflet-oldie .leaflet-popup-tip{width:24px;margin:0 auto}.leaflet-oldie .leaflet-control-layers,.leaflet-oldie .leaflet-control-zoom,.leaflet-oldie .leaflet-popup-content-wrapper,.leaflet-oldie .leaflet-popup-tip{border:1px solid #999}.leaflet-div-icon{background:#fff;border:1px solid #666}.leaflet-tooltip{position:absolute;padding:6px;background-color:#fff;border:1px solid #fff;border-radius:3px;color:#222;white-space:nowrap;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;pointer-events:none;box-shadow:0 1px 3px rgba(0,0,0,.4)}.leaflet-tooltip.leaflet-interactive{cursor:pointer;pointer-events:auto}.leaflet-tooltip-bottom:before,.leaflet-tooltip-left:before,.leaflet-tooltip-right:before,.leaflet-tooltip-top:before{position:absolute;pointer-events:none;border:6px solid transparent;background:0 0;content:""}.leaflet-tooltip-bottom{margin-top:6px}.leaflet-tooltip-top{margin-top:-6px}.leaflet-tooltip-bottom:before,.leaflet-tooltip-top:before{left:50%;margin-left:-6px}.leaflet-tooltip-top:before{bottom:0;margin-bottom:-12px;border-top-color:#fff}.leaflet-tooltip-bottom:before{top:0;margin-top:-12px;margin-left:-6px;border-bottom-color:#fff}.leaflet-tooltip-left{margin-left:-6px}.leaflet-tooltip-right{margin-left:6px}.leaflet-tooltip-left:before,.leaflet-tooltip-right:before{top:50%;margin-top:-6px}.leaflet-tooltip-left:before{right:0;margin-right:-12px;border-left-color:#fff}.leaflet-tooltip-right:before{left:0;margin-left:-12px;border-right-color:#fff}@media print{.leaflet-control{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+[hidden]{display:none!important}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{background:var(--asfalto);color:var(--tinta);font-family:var(--f-texto);font-size:15px;line-height:1.45;overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--placa);outline-offset:2px}
+body{display:flex;flex-direction:column}
+.app{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) 420px}
+/* menu principal: barra no topo (computador) e embaixo (celular) */
+.menu{flex:none;display:flex;align-items:stretch;gap:18px;background:var(--asfalto-2);border-bottom:1px solid var(--linha);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));z-index:600}
+/* logo: placa de advertência com um olho + nome */
+.menu-marca,.marca{display:flex;align-items:center;gap:10px;font-family:var(--f-placa);line-height:.88}
+.menu-marca{padding-block:8px;padding-right:10px;border-right:1px solid var(--linha)}
+.logo{width:42px;height:42px;flex:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.45))}
+.menu-marca span,.marca span{display:flex;flex-direction:column}
+.menu-marca small,.marca small{font-weight:700;font-size:11px;letter-spacing:.24em;color:var(--placa)}
+.menu-marca strong,.marca strong{font-weight:800;font-size:26px;letter-spacing:.02em;color:var(--tinta)}
+.menu-itens{display:flex;gap:4px;align-items:stretch}
+.menu-itens button{display:flex;align-items:center;gap:8px;background:none;border:0;border-bottom:3px solid transparent;padding:0 14px;font-family:var(--f-placa);font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.04em;color:var(--tinta-2);position:relative}
+.menu-itens button svg{width:22px;height:22px}
+.menu-itens button:hover{color:var(--tinta)}
+.menu-itens button[aria-current="page"]{color:var(--placa);border-bottom-color:var(--placa)}
+.menu .bolinha{position:absolute;top:8px;right:2px;min-width:10px;height:10px;border-radius:5px;background:var(--alerta)}
+.faixa .marca{display:none}
+/* páginas: tudo menos o mapa abre em tela cheia, com texto centralizado */
+.app.pagina{grid-template-columns:minmax(0,1fr)}
+.app.pagina .palco{display:none}
+.app.pagina .painel{border-left:0;background:var(--asfalto)}
+.app.pagina .alca{display:none!important}
+.app.pagina .conteudo{width:100%;max-width:880px;margin:0 auto;padding-block:28px 48px}
+.app.pagina h2{font-size:34px}
+.palco{position:relative;min-width:0;min-height:0}
+#mapa{position:absolute;inset:0;background:var(--asfalto)}
+.leaflet-container{background:var(--asfalto);font-family:var(--f-texto)}
+.leaflet-control-attribution{background:rgba(27,29,32,.85)!important;color:var(--apagado)!important;font-size:11px}
+.leaflet-control-attribution a{color:var(--tinta-2)!important}
+/* grão de asfalto e vinheta por cima das ruas, por baixo das placas */
+.grao{position:absolute;inset:0;z-index:450;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 45%,transparent 55%,rgba(10,11,12,.55) 100%),
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .07 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+/* faixa do topo */
+.faixa{position:absolute;z-index:500;top:12px;left:max(12px,env(safe-area-inset-left,0px));right:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:stretch;pointer-events:none}
+.faixa>*{pointer-events:auto}
+.marca{background:rgba(36,39,43,.95);border:1px solid var(--linha);padding:5px 12px 5px 6px;border-radius:4px;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.placar{display:flex;gap:1px;background:var(--linha);border-radius:4px;overflow:hidden;box-shadow:0 6px 18px rgba(0,0,0,.45)}
+.num{background:rgba(36,39,43,.95);padding:7px 14px;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.num b{font-family:var(--f-placa);font-weight:800;font-size:28px;line-height:1;font-variant-numeric:tabular-nums}
+.num span{font-size:12px;color:var(--tinta-2);white-space:nowrap}
+.num.quente b{color:var(--alerta)}
+.num.verde b{color:var(--ok)}
+.busca{display:flex;align-items:center;gap:8px;background:rgba(36,39,43,.95);border:1px solid var(--linha);border-radius:4px;padding:0 10px;box-shadow:0 6px 18px rgba(0,0,0,.45);min-width:0;flex:0 1 250px}
+.busca svg{width:18px;height:18px;color:var(--apagado);flex:none}
+.busca input{background:transparent;border:0;color:var(--tinta);font:15px var(--f-texto);padding:10px 0;width:100%;min-width:0}
+.busca input:focus{outline:none}
+.busca:focus-within{border-color:var(--placa)}
+
+.marcar{position:absolute;z-index:500;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom,0px));background:var(--placa);color:var(--placa-escuro);border:0;border-radius:999px;padding:14px 26px 14px 20px;font-family:var(--f-placa);font-weight:800;font-size:22px;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;display:flex;align-items:center;gap:10px;box-shadow:0 10px 26px rgba(0,0,0,.55),0 0 0 4px rgba(246,194,26,.25)}
+.marcar svg{width:26px;height:26px}
+.marcar:hover{filter:brightness(1.06)}
+.marcar[disabled]{opacity:.5;cursor:not-allowed}
+.mira{position:absolute;z-index:600;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom,0px));background:var(--placa-escuro);border:2px solid var(--placa);color:var(--tinta);border-radius:12px;padding:10px 12px 10px 16px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px 12px;align-items:center;box-shadow:0 10px 26px rgba(0,0,0,.55);width:max-content;max-width:calc(100% - 32px)}
+.mira b{font-family:var(--f-placa);font-size:19px;text-transform:uppercase;letter-spacing:.02em}
+.mira .btn{padding:8px 14px}
+.btn-leve{background:transparent;border:1px solid var(--linha);border-radius:8px;padding:6px 12px;color:var(--tinta-2)}
+.btn-leve:hover{border-color:var(--tinta-2);color:var(--tinta)}
+.palco.marcando #mapa{cursor:crosshair}
+.toast{position:absolute;z-index:700;left:50%;transform:translateX(-50%);top:110px;background:var(--tinta);color:var(--placa-escuro);padding:8px 14px;border-radius:6px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,.4);max-width:calc(100% - 32px);text-align:center}
+.legenda{position:absolute;z-index:500;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(26px + env(safe-area-inset-bottom,0px));background:rgba(27,29,32,.92);border:1px solid var(--linha);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--tinta-2)}
+.legenda div{display:flex;align-items:center;gap:8px}
+.legenda i{width:12px;height:12px;transform:rotate(45deg);border-radius:2px;background:var(--placa);flex:none}
+.legenda i.v{background:var(--alerta)}
+.legenda i.k{background:var(--ok)}
+.legenda i.c{background:var(--cinza-placa)}
+
+/* pergunta para quem marcou */
+.pergunta-card{position:absolute;z-index:620;right:12px;bottom:calc(22px + env(safe-area-inset-bottom,0px));width:330px;max-width:calc(100% - 24px);background:var(--asfalto-2);border:1px solid var(--linha);border-left:5px solid var(--placa);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 14px 34px rgba(0,0,0,.55)}
+.pergunta-card b{font-family:var(--f-placa);font-size:20px;text-transform:uppercase;line-height:1.05}
+
+/* placas no mapa */
+.pino-wrap{background:none;border:0}
+.pino{position:relative;width:100%;height:100%;display:grid;place-items:center}
+.pino::before{content:"";position:absolute;inset:15%;background:var(--placa);border-radius:3px;transform:rotate(45deg);outline:2px solid var(--placa-escuro);outline-offset:-5px;box-shadow:0 4px 10px rgba(0,0,0,.55)}
+.pino svg{position:relative;width:46%;height:46%;color:var(--placa-escuro)}
+.pino .dias{position:absolute;top:96%;left:50%;transform:translateX(-50%);background:var(--placa-escuro);color:var(--placa);font-family:var(--f-placa);font-weight:700;font-size:13px;line-height:1;padding:3px 5px;border-radius:3px;white-space:nowrap}
+.pino.velho::after{content:"";position:absolute;inset:6%;border:3px solid var(--alerta);border-radius:4px;transform:rotate(45deg);animation:pulso 1.8s ease-out infinite}
+.pino.velho .dias{color:var(--alerta)}
+.pino.feito::before{background:var(--ok);opacity:.9}
+.pino.feito .dias{color:var(--ok)}
+.pino.sem::before{background:var(--cinza-placa)}
+.pino.sem .dias{color:var(--tinta-2)}
+.pino.oficial .dias{color:var(--oficial)}
+.pino.exemplo::before{background:transparent;outline:2px dashed var(--placa);outline-offset:-4px;box-shadow:none}
+.pino.exemplo svg{color:var(--placa)}
+@keyframes pulso{0%{opacity:.9;transform:rotate(45deg) scale(.9)}100%{opacity:0;transform:rotate(45deg) scale(1.35)}}
+@media (prefers-reduced-motion:reduce){.pino.velho::after{animation:none;opacity:.8}}
+.rotulo,.poi{background:none;border:0}
+.rotulo span{position:absolute;left:0;top:0;transform-origin:0 0;white-space:nowrap;font-family:var(--f-placa);font-weight:600;font-size:13px;letter-spacing:.04em;color:var(--tinta-2);text-shadow:0 0 3px var(--asfalto),0 0 3px var(--asfalto),0 0 6px var(--asfalto);pointer-events:none}
+.poi span{position:absolute;left:0;top:0;transform:translate(-50%,-50%);white-space:nowrap;font-size:11px;font-weight:700;color:var(--apagado);text-transform:uppercase;letter-spacing:.08em;pointer-events:none;text-shadow:0 0 4px var(--asfalto)}
+
+/* painel */
+.painel{background:var(--asfalto-2);border-left:1px solid var(--linha);display:flex;flex-direction:column;min-height:0;min-width:0}
+.alca{display:none}
+.abas{display:flex;border-bottom:1px solid var(--linha);padding-right:max(0px,env(safe-area-inset-right,0px))}
+.abas button{flex:1 1 auto;white-space:nowrap;background:none;border:0;border-bottom:3px solid transparent;padding:14px 4px 11px;font-family:var(--f-placa);font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.04em;color:var(--apagado);position:relative}
+.abas button[aria-selected="true"]{color:var(--placa);border-bottom-color:var(--placa)}
+.abas .bolinha{position:absolute;top:8px;margin-left:3px;min-width:18px;height:18px;border-radius:9px;background:var(--alerta);color:#fff;font-family:var(--f-texto);font-size:11px;line-height:18px;padding:0 5px}
+.conteudo{overflow-y:auto;flex:1;min-height:0;padding-block:18px 28px;padding-left:20px;padding-right:max(20px,env(safe-area-inset-right,0px))}
+.conteudo section{display:flex;flex-direction:column;gap:14px}
+h2{font-family:var(--f-placa);font-weight:800;font-size:26px;line-height:1.05;text-transform:uppercase;letter-spacing:.01em;margin:0;text-wrap:balance}
+h3{font-family:var(--f-placa);font-weight:700;font-size:15px;text-transform:uppercase;letter-spacing:.1em;color:var(--apagado);margin:10px 0 0}
+p{margin:0}
+.leve{color:var(--tinta-2)}
+.miudo{font-size:12.5px;color:var(--apagado)}
+.miudo a{color:var(--tinta-2)}
+.aviso{background:var(--asfalto-3);border-left:4px solid var(--placa);padding:10px 12px;border-radius:0 6px 6px 0;font-size:14px}
+.campea{background:var(--placa-escuro);border:1px solid var(--linha);border-radius:8px;padding:12px 14px;display:flex;gap:12px;align-items:center}
+.campea .medalha{font-family:var(--f-placa);font-weight:800;font-size:34px;color:var(--alerta);line-height:1;font-variant-numeric:tabular-nums}
+.campea b{display:block;font-size:16px}
+.filtro{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:var(--asfalto-3);border:1px solid var(--linha);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--tinta-2)}
+.chip[aria-pressed="true"]{background:var(--tinta);color:var(--placa-escuro);border-color:var(--tinta);font-weight:700}
+.lista{display:flex;flex-direction:column;gap:1px;background:var(--linha);border-radius:8px;overflow:hidden}
+.item{display:grid;grid-template-columns:38px minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--asfalto-2);border:0;text-align:left;padding:11px 12px;width:100%}
+.item:hover{background:var(--asfalto-3)}
+.item .pino{width:38px;height:38px}
+.item .pino .dias{display:none}
+.item b{display:block;font-size:15px}
+.item .onde{display:block;font-size:13px;color:var(--tinta-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .quanto{text-align:right;font-family:var(--f-placa);font-weight:700;font-size:20px;line-height:1;font-variant-numeric:tabular-nums}
+.item .quanto small{display:block;font-family:var(--f-texto);font-weight:400;font-size:11px;color:var(--apagado)}
+.item.velho .quanto{color:var(--alerta)}
+.item.feito .quanto{color:var(--ok)}
+.item.sem .quanto{color:var(--apagado)}
+/* lista do lado: um cartão por problema, com a cor da situação e os dias em destaque */
+.filtro{background:var(--asfalto-3);border:1px solid var(--linha);border-radius:999px;padding:3px;gap:2px;flex-wrap:nowrap}
+.filtro .chip{flex:1;border:0;background:transparent;padding:7px 10px;font-size:13px;font-weight:600}
+.filtro .chip[aria-pressed="true"]{background:var(--placa);color:var(--placa-escuro)}
+.lista{gap:8px;background:none;border-radius:0;overflow:visible}
+.item{grid-template-columns:44px minmax(0,1fr) 62px;gap:12px;padding:12px 12px 12px 10px;background:var(--asfalto-3);border:1px solid var(--linha);border-left:4px solid var(--placa);border-radius:8px}
+.item:hover{background:#353a40;border-color:var(--tinta-2);border-left-color:inherit}
+.item.velho{border-left-color:var(--alerta)}
+.item.feito{border-left-color:var(--ok)}
+.item.sem{border-left-color:var(--cinza-placa)}
+.item.ex{border-left-style:dashed}
+.item .pino{width:44px;height:44px}
+.item .info{display:flex;flex-direction:column;gap:2px;min-width:0}
+.item .info b{font-size:16px}
+.item .gente{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--apagado);margin-top:2px}
+.item .gente .selo{font-size:10px;padding:2px 6px}
+.item .quanto{display:flex;flex-direction:column;align-items:center;justify-content:center;border-left:1px solid var(--linha);padding-left:10px;text-align:center}
+.item .quanto b{font-family:var(--f-placa);font-weight:800;font-size:30px;line-height:1;color:var(--placa)}
+.item .quanto small{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--apagado)}
+.item.velho .quanto b{color:var(--alerta)}
+.item.feito .quanto b{color:var(--ok);font-size:22px}
+.item.sem .quanto b{color:var(--apagado)}
+.vazio{border:1px dashed var(--linha);border-radius:8px;padding:16px;text-align:center;color:var(--tinta-2)}
+
+/* quem decide */
+.chefe{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.cartao{background:var(--asfalto-3);border-radius:8px;padding:12px 14px;min-width:0}
+.cartao .cargo{font-size:11.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--placa);font-weight:700}
+.cartao .nome{font-family:var(--f-placa);font-weight:700;font-size:21px;line-height:1.05;margin-top:3px}
+.cartao .det{font-size:12.5px;color:var(--tinta-2);margin-top:4px}
+.resumo-promessas{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.rp{background:var(--asfalto-3);border-radius:8px;padding:10px 12px;border-top:4px solid var(--cinza-placa)}
+.rp b{display:block;font-family:var(--f-placa);font-weight:800;font-size:32px;line-height:1}
+.rp span{font-size:12px;color:var(--tinta-2)}
+.rp.neutro b{font-size:22px;color:var(--tinta-2);padding-top:6px}
+.rp.feito{border-top-color:var(--ok)}.rp.feito b{color:var(--ok)}
+.rp.andamento{border-top-color:var(--placa)}.rp.andamento b{color:var(--placa)}
+.area{background:var(--asfalto-3);border-radius:8px;padding:10px 12px;margin-bottom:8px}
+.area summary{cursor:pointer;font-weight:700;font-size:15px}
+.area summary .miudo{font-weight:400;margin-left:6px}
+.area ul{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.area li{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;font-size:14px;align-items:start}
+.area .st{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;border-radius:4px;padding:3px 6px;text-align:center;background:var(--asfalto-2);color:var(--apagado)}
+.area li.feito .st{background:var(--ok);color:#06140d}
+.area li.andamento .st{background:var(--placa);color:var(--placa-escuro)}
+.area .prova{display:block;font-size:12.5px;color:var(--tinta-2);margin-top:3px}
+.area .prova a{color:var(--placa)}
+.vereadores{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--linha);border-radius:8px;overflow:hidden}
+.ver{background:var(--asfalto-2);padding:9px 10px;min-width:0}
+.ver b{display:block;font-family:var(--f-placa);font-weight:700;font-size:18px;line-height:1.05}
+.ver span{display:block;font-size:11.5px;color:var(--tinta-2)}
+.ver .tag{color:var(--placa);font-weight:700}
+.grana-lista{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.grana{background:var(--asfalto-3);border-radius:8px;padding:12px;display:flex;flex-direction:column;gap:5px;min-width:0}
+.grana.largo{grid-column:1/-1}
+.grana .valor{font-family:var(--f-placa);font-weight:800;font-size:28px;line-height:1;color:var(--placa);font-variant-numeric:tabular-nums}
+.grana .titulo{font-weight:700;font-size:14px;line-height:1.25}
+.grana .txt{font-size:13px;color:var(--tinta-2)}
+.grana .pergunta{font-size:13px;border-top:1px solid var(--linha);padding-top:7px;margin-top:auto}
+.grana .pergunta b{color:var(--placa)}
+.grana a.fonte{font-size:12px;color:var(--apagado)}
+.contatos{display:flex;flex-direction:column;gap:8px}
+.contato{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;background:var(--asfalto-3);border-radius:8px;padding:10px 12px}
+.contato b{display:block}
+.contato .valor{font-size:14px;color:var(--tinta-2);user-select:all;overflow-wrap:anywhere}
+.quem{display:flex;flex-direction:column;gap:8px}
+.quem div{display:grid;grid-template-columns:28px minmax(0,1fr);gap:10px;align-items:start;font-size:14px}
+.quem svg{width:24px;height:24px;color:var(--placa)}
+
+/* contas */
+.contador{background:var(--placa-escuro);border:1px solid var(--linha);border-top:5px solid var(--placa);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:6px}
+.contador .eti{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--placa)}
+.contador b{font-family:var(--f-placa);font-weight:800;font-size:44px;line-height:1;font-variant-numeric:tabular-nums;color:var(--tinta);overflow-wrap:anywhere}
+.barras{display:flex;flex-direction:column;gap:12px}
+.barra{display:flex;flex-direction:column;gap:5px;border-radius:6px;padding:4px 6px;margin:-4px -6px;outline-offset:2px}
+.barra:hover,.barra:focus-visible{background:var(--asfalto-3)}
+.barra-topo{display:flex;justify-content:space-between;gap:10px;font-size:14px}
+.barra-topo b{font-variant-numeric:tabular-nums;white-space:nowrap}
+.trilho{height:12px;display:flex}
+.trilho i{display:block;height:100%;min-width:3px;background:var(--rua);border-radius:0 4px 4px 0}
+.barra.destaque .trilho i{background:var(--placa)}
+.barra.destaque .barra-topo span{color:var(--placa);font-weight:700}
+.barra .det{font-size:12px;color:var(--apagado)}
+.dica{position:fixed;z-index:1200;pointer-events:none;background:var(--tinta);color:var(--placa-escuro);font-size:13px;font-weight:700;padding:6px 9px;border-radius:6px;max-width:260px;box-shadow:0 6px 16px rgba(0,0,0,.45)}
+.links{display:flex;flex-direction:column;gap:8px}
+details{background:var(--asfalto-3);border-radius:8px;padding:10px 12px}
+summary{cursor:pointer;font-weight:700;font-size:14px}
+details ul{margin:10px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px;font-size:14px;color:var(--tinta-2)}
+
+/* cobrar */
+textarea{width:100%;min-height:240px;resize:vertical;background:var(--placa-escuro);color:var(--tinta);border:1px solid var(--linha);border-radius:8px;padding:12px;font:14px/1.5 var(--f-texto)}
+.acoes{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{background:var(--placa);color:var(--placa-escuro);border:0;border-radius:8px;padding:11px 16px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none}
+.btn.zap{background:var(--ok);color:#06140d}
+.btn.cinza{background:var(--asfalto-3);color:var(--tinta);border:1px solid var(--linha)}
+.btn.azul{background:var(--oficial);color:#06101d}
+.btn.perigo{background:transparent;border:1px solid var(--alerta);color:var(--alerta)}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.boletim-img{width:100%;border-radius:10px;border:1px solid var(--linha)}
+.bloco{background:var(--asfalto-3);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px}
+
+/* painel de quem cuida */
+.cartas{display:flex;flex-direction:column;gap:12px}
+.carta{background:var(--asfalto-3);border-radius:10px;overflow:hidden}
+.carta img{display:block;width:100%;max-height:300px;object-fit:cover}
+.carta .corpo{padding:12px;display:flex;flex-direction:column;gap:10px}
+.resumo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.resumo div{background:var(--asfalto-3);border-radius:8px;padding:10px 12px}
+.resumo b{display:block;font-family:var(--f-placa);font-weight:800;font-size:30px;line-height:1}
+.resumo span{font-size:12.5px;color:var(--tinta-2)}
+
+/* janelas */
+.fundo{position:fixed;inset:0;z-index:1000;background:rgba(10,11,12,.62);display:grid;place-items:center;padding:16px}
+.folha{background:var(--asfalto-2);border:1px solid var(--linha);border-radius:14px;width:100%;max-width:480px;max-height:calc(100% - 8px);overflow-y:auto;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.folha>.dentro{padding:18px 20px 20px;display:flex;flex-direction:column;gap:14px}
+.folha-topo{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:16px 20px;background:var(--placa);color:var(--placa-escuro)}
+.folha-topo.feito{background:var(--ok)}
+.folha-topo.sem{background:var(--cinza-placa)}
+.folha-topo.velho{background:var(--alerta)}
+.folha-topo .icone{width:46px;height:46px;display:grid;place-items:center;border:2.5px solid var(--placa-escuro);border-radius:4px;transform:rotate(45deg)}
+.folha-topo .icone svg{width:26px;height:26px;transform:rotate(-45deg)}
+.folha-topo h2{font-size:28px}
+.folha-topo .onde{font-size:13.5px;font-weight:700;opacity:.85}
+.folha-topo .btn-leve{border-color:rgba(23,21,14,.4);color:var(--placa-escuro)}
+.folha header{display:flex;justify-content:space-between;align-items:start;gap:10px}
+.folha .onde{font-size:14px;color:var(--tinta-2)}
+.folha-topo .onde{color:inherit}
+.tipos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.tipo{background:var(--asfalto-3);border:2px solid transparent;border-radius:10px;padding:12px 6px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;font-weight:700;font-size:13.5px;text-align:center}
+.tipo svg{width:30px;height:30px;color:var(--placa)}
+.tipo[aria-pressed="true"]{border-color:var(--placa);background:var(--placa-escuro)}
+label{font-weight:700;font-size:14px;display:block;margin-bottom:6px}
+input[type=text]{width:100%;background:var(--placa-escuro);border:1px solid var(--linha);border-radius:8px;padding:11px 12px;color:var(--tinta);font:15px var(--f-texto)}
+.foto-campo{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+.foto-campo input{max-width:100%}
+.foto-campo img{width:72px;height:72px;object-fit:cover;border-radius:8px}
+.fotos{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.fotos figure{margin:0;position:relative}
+.fotos img{display:block;width:100%;height:210px;object-fit:cover;border-radius:10px}
+.fotos figcaption{position:absolute;left:8px;top:8px;background:var(--placa-escuro);color:var(--tinta);font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:3px 7px;border-radius:4px}
+.fotos figure.depois figcaption{background:var(--ok);color:#06140d}
+.selo{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:4px 8px;border-radius:4px;background:var(--placa);color:var(--placa-escuro)}
+.selo.exemplo{background:transparent;border:1px dashed var(--placa);color:var(--placa)}
+.selo.oficial{background:var(--oficial);color:#06101d}
+.resposta{border:1px solid var(--oficial);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+.resposta b{color:var(--oficial)}
+.medidor{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.medidor div{background:var(--asfalto-3);border-radius:8px;padding:10px 12px}
+.medidor b{font-family:var(--f-placa);font-weight:800;font-size:30px;line-height:1;display:block;font-variant-numeric:tabular-nums}
+.medidor span{font-size:12.5px;color:var(--tinta-2)}
+.opcoes{display:flex;gap:8px;flex-wrap:wrap}
+.consente{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;align-items:start;font-size:13.5px;font-weight:400;color:var(--tinta-2);margin:0}
+.consente input{width:20px;height:20px;margin:1px 0 0;accent-color:var(--placa)}
+.link{background:none;border:0;padding:0;color:var(--placa);text-decoration:underline;text-underline-offset:2px;font-size:inherit}
+.priv{display:flex;flex-direction:column;gap:12px;font-size:14.5px}
+.priv b{color:var(--tinta)}
+.priv p{color:var(--tinta-2)}
+
+/* boas-vindas */
+.boas{position:fixed;z-index:900;inset:0;display:grid;place-items:center;padding:16px;background:rgba(14,15,17,.86)}
+.boas-card{background:var(--asfalto-2);border:1px solid var(--linha);border-top:6px solid var(--placa);border-radius:10px;max-width:600px;width:100%;max-height:100%;overflow-y:auto;padding:28px 30px 24px;display:flex;flex-direction:column;gap:18px;box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.boas-card h2{font-size:44px;line-height:.95}
+.boas-card h2 em{font-style:normal;color:var(--placa);display:block;margin-top:6px}
+.boas-eti{font-family:var(--f-placa);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.14em;color:var(--placa)}
+.boas-num{display:flex;align-items:center;gap:16px;border:1px solid var(--linha);border-left:6px solid var(--alerta);border-radius:8px;padding:10px 16px;background:var(--placa-escuro)}
+.boas-num b{font-family:var(--f-placa);font-weight:800;font-size:84px;line-height:.85;color:var(--alerta);font-variant-numeric:tabular-nums}
+.boas-num span{font-size:15px;color:var(--tinta-2);max-width:26ch}
+.btn.grande{font-size:17px;padding:14px 22px}
+.leaflet-top,.leaflet-bottom{z-index:500}
+/* placas mais fortes no mapa */
+.pino::after{content:"";position:absolute;inset:8%;border:2px solid var(--placa);border-radius:4px;transform:rotate(45deg);animation:pulso 2.6s ease-out infinite}
+.pino.feito::after,.pino.sem::after,.pino.exemplo::after{display:none}
+.pino.velho:not(.exemplo)::before{background:var(--alerta)}
+.pino .dias{font-size:15px;padding:3px 6px}
+.num.quente b{font-size:40px}
+.num.quente span{font-weight:700;color:var(--tinta)}
+/* já consertamos */
+.vitoria{display:flex;align-items:center;gap:14px;background:rgba(67,178,126,.08);border:1px solid rgba(67,178,126,.35);border-radius:8px;padding:9px 14px;text-align:left;width:100%}
+.vitoria:hover{border-color:var(--ok)}
+.vitoria b{font-family:var(--f-placa);font-weight:800;font-size:34px;line-height:1;color:var(--ok)}
+.vitoria strong{display:block;font-size:15px}
+.vitoria small{display:block;font-size:12.5px;color:var(--tinta-2)}
+.folha.larga{max-width:760px;padding:20px}
+.vitrine{display:flex;flex-direction:column;gap:16px}
+.conserto{background:var(--asfalto-3);border-radius:10px;overflow:hidden}
+.conserto .fotos{padding:10px 10px 0}
+.conserto .corpo{padding:12px 14px;display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.conserto .corpo b{font-size:16px}
+.conserto .tempo{font-family:var(--f-placa);font-weight:800;font-size:26px;color:var(--ok);white-space:nowrap}
+.passos{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;counter-reset:p}
+.passos li{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;align-items:center;counter-increment:p}
+.passos li::before{content:counter(p);width:34px;height:34px;display:grid;place-items:center;background:var(--placa);color:var(--placa-escuro);font-family:var(--f-placa);font-weight:800;font-size:18px;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+
+@media (max-width:820px){
+  .app{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,58%) minmax(0,42%);transition:grid-template-rows .25s}
+  .app.expandido{grid-template-rows:minmax(0,22%) minmax(0,78%)}
+  .app.pagina{grid-template-rows:minmax(0,1fr)}
+  .menu{order:2;border-bottom:0;border-top:1px solid var(--linha);gap:0;padding-bottom:env(safe-area-inset-bottom,0px)}
+  .menu-marca{display:none}
+  .menu-itens{flex:1;gap:0}
+  .menu-itens button{flex:1;flex-direction:column;justify-content:center;gap:3px;padding:8px 2px 7px;font-size:11.5px;letter-spacing:.02em;border-bottom:0;border-top:3px solid transparent}
+  .menu-itens button[aria-current="page"]{border-top-color:var(--placa)}
+  .menu .bolinha{top:6px;right:calc(50% - 18px)}
+  .faixa .marca{display:flex}
+  .app.pagina h2{font-size:26px}
+  .painel{border-left:0;border-top:1px solid var(--linha)}
+  .alca{display:flex;justify-content:center;align-items:center;gap:8px;background:none;border:0;padding:7px 0 2px;color:var(--apagado);font-size:12px}
+  .alca::before{content:"";width:38px;height:4px;border-radius:2px;background:var(--linha)}
+  .faixa{top:8px;left:max(8px,env(safe-area-inset-left,0px));right:max(8px,env(safe-area-inset-right,0px));gap:6px}
+  .marca{padding:4px 10px 4px 4px;gap:6px}.marca strong{font-size:19px}.marca small{font-size:9px}.marca .logo{width:32px;height:32px}
+  .num{padding:5px 9px}.num b{font-size:21px}.num span{font-size:10.5px}
+  .num.extra{display:none}
+  .busca{flex:1 1 100%;order:3}
+  .legenda{display:none}
+  .marcar{font-size:19px;padding:11px 20px 11px 16px;bottom:14px}
+  .mira{bottom:14px}
+  .pergunta-card{right:8px;left:8px;width:auto;bottom:74px}
+  .abas button{font-size:13.5px;padding:9px 1px 9px;letter-spacing:.02em}
+  .contador b{font-size:36px}
+  .conteudo{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .grana-lista{grid-template-columns:minmax(0,1fr)}
+  .vereadores{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fundo{place-items:end center;padding:0}
+  .folha{border-radius:14px 14px 0 0;max-height:92%}
+  .folha>.dentro{padding-bottom:calc(20px + env(safe-area-inset-bottom,0px))}
+  .toast{top:100px}
+  .boas-card{padding:20px 18px 18px;gap:14px}
+  .boas-card h2{font-size:31px}
+  .boas-num b{font-size:56px}
+  .boas-num span{font-size:13px}
+  .num.quente b{font-size:30px}
+}
+</style>
+
+<div class="boas" id="boas" hidden>
+  <div class="boas-card" role="dialog" aria-modal="true" aria-labelledby="tBoas">
+    <span class="boas-eti">Rinópolis · SP · o mapa dos moradores</span>
+    <div class="boas-num" id="boasNum" hidden><b id="boasDias">0</b><span>dias de espera, somando os problemas que ainda estão abertos na cidade</span></div>
+    <h2 id="tBoas">Buraco, poste apagado, lixo, esgoto. <em>Se ninguém marca, ninguém conserta.</em></h2>
+    <ol class="passos">
+      <li><span><b>Marque o problema</b> <span class="leve">no lugar exato do mapa.</span></span></li>
+      <li><span><b>Os vizinhos confirmam</b> <span class="leve">e a placa cresce.</span></span></li>
+      <li><span><b>A cidade inteira vê</b> <span class="leve">quantos dias está esperando.</span></span></li>
+    </ol>
+    <div class="acoes"><button class="btn grande" type="button" id="btnMarcarJa">Marcar um problema</button><button class="btn cinza grande" type="button" id="btnComecar">Ver o mapa</button></div>
+    <button class="link" type="button" data-privacidade>Seu nome não aparece. Veja como cuidamos dos seus dados</button>
+  </div>
+</div>
+
+<div class="fundo" id="fundoVitrine" hidden>
+  <div class="folha larga" role="dialog" aria-modal="true" aria-labelledby="tVitrine">
+    <header><div><span class="boas-eti">Reclamar funciona</span><h2 id="tVitrine">Já consertamos</h2></div><button class="btn-leve" type="button" data-fecha>Fechar</button></header>
+    <div id="vitrine"></div>
+    <div class="acoes"><a class="btn zap" id="zapVitrine" href="#" target="_blank" rel="noopener">Mandar no WhatsApp</a></div>
+  </div>
+</div>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="logo" viewBox="0 0 48 48">
+    <rect x="8.5" y="8.5" width="31" height="31" rx="4" transform="rotate(45 24 24)" fill="var(--placa)"/>
+    <rect x="11.5" y="11.5" width="25" height="25" rx="2.5" transform="rotate(45 24 24)" fill="none" stroke="var(--placa-escuro)" stroke-width="2"/>
+    <path d="M13.5 24c3-4.6 6.5-6.9 10.5-6.9s7.5 2.3 10.5 6.9c-3 4.6-6.5 6.9-10.5 6.9s-7.5-2.3-10.5-6.9z" fill="var(--tinta)" stroke="var(--placa-escuro)" stroke-width="2.2" stroke-linejoin="round"/>
+    <circle cx="24" cy="24" r="4.4" fill="var(--placa-escuro)"/>
+    <circle cx="25.6" cy="22.5" r="1.3" fill="var(--tinta)"/>
+  </symbol>
+</svg>
+
+<header class="menu" id="menu">
+  <div class="menu-marca"><svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><use href="#logo"/></svg><span><small>RINÓPOLIS</small><strong>DE OLHO</strong></span></div>
+  <nav class="menu-itens" aria-label="Menu principal">
+    <button type="button" data-aba="problemas" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg><span>Mapa</span></button>
+    <button type="button" data-aba="quem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.6"/><path d="M15.5 14.2c3 .3 5.5 2.6 5.5 5.8"/></svg><span>Quem decide</span></button>
+    <button type="button" data-aba="contas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 20V11M11 20V5M17 20v-8M2 20h20"/></svg><span>Contas</span></button>
+    <button type="button" data-aba="cobrar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M3 10v4h3l7 4V6L6 10H3z"/><path d="M16.5 9a4 4 0 0 1 0 6M19.5 6.5a8 8 0 0 1 0 11"/></svg><span>Cobrar</span></button>
+    <button type="button" data-aba="painel" id="abaPainel" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.2-8 9-4.6-.8-8-4.5-8-9V6l8-3z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg><span>Painel</span><i class="bolinha" id="bolinha" hidden></i></button>
+  </nav>
+</header>
+
+<div class="app" id="app">
+  <section class="palco" id="palco">
+    <div id="mapa" role="application" aria-label="Mapa das ruas de Rinópolis"></div>
+    <div class="grao" aria-hidden="true"></div>
+    <header class="faixa">
+      <div class="marca"><svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><use href="#logo"/></svg><span><small>RINÓPOLIS</small><strong>DE OLHO</strong></span></div>
+      <div class="placar" aria-live="polite">
+        <div class="num quente"><b id="nDias">0</b><span>dias de espera, somados</span></div>
+        <div class="num"><b id="nAbertos">0</b><span>problemas abertos</span></div>
+        <div class="num verde extra"><b id="nFeitos">0</b><span>já consertados</span></div>
+      </div>
+      <label class="busca" for="busca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>
+        <input id="busca" type="search" list="listaRuas" placeholder="Procurar rua" autocomplete="off" aria-label="Procurar rua">
+      </label>
+      <datalist id="listaRuas"></datalist>
+    </header>
+    <div class="legenda" aria-hidden="true">
+      <div><i></i>Esperando conserto</div>
+      <div><i class="v"></i>Esquecido há +30 dias</div>
+      <div><i class="k"></i>Consertado</div>
+      <div><i class="c"></i>Sem notícia há 90 dias</div>
+    </div>
+    <button class="marcar" id="btnMarcar" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      Marcar problema
+    </button>
+    <div class="mira" id="mira" hidden><b>Toque no lugar do problema</b><button class="btn" id="btnGps" type="button">Estou aqui</button><button class="btn-leve" id="btnCancelaMira" type="button">Cancelar</button></div>
+    <div class="pergunta-card" id="perguntaCard" hidden></div>
+    <div class="toast" id="toast" hidden></div>
+  </section>
+
+  <aside class="painel">
+    <button class="alca" id="alca" type="button" aria-expanded="false">Puxar lista</button>
+    <div class="conteudo" id="conteudo">
+      <section id="aba-problemas">
+        <div class="aviso" id="aviso" hidden></div>
+        <h2 id="tituloLista">Esperando conserto agora</h2>
+        <div id="campea"></div>
+        <button class="vitoria" type="button" id="btnVitrine"><b id="nVitoria">0</b><span><strong>Já consertamos</strong><small>Veja o antes e depois de cada conserto</small></span></button>
+        <div class="filtro" id="filtro"></div>
+        <div id="lista"></div>
+        <p class="miudo">Mapa das ruas: © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>. Ninguém precisa dizer o nome pra marcar. <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button></p>
+      </section>
+
+      <section id="aba-quem" hidden>
+        <h2>Quem decide</h2>
+        <p class="leve">A prefeita executa: conserta, ilumina, recolhe. Os vereadores fiscalizam e indicam verba. Todos eleitos em 2024, para 2025 a 2028.</p>
+        <div class="chefe" id="chefes"></div>
+        <h3>Os 9 vereadores</h3>
+        <div class="vereadores" id="vereadores"></div>
+        <p class="miudo">Nome usado na urna, partido e votos em 2024. Fonte: <a href="https://resultados.tse.jus.br/oficial/ele2024/619/dados/sp/sp69779-c0013-e000619-u.json" target="_blank" rel="noopener">TSE</a>.</p>
+        <h3>Plano de governo 2025–2028</h3>
+        <p class="leve">O plano que a chapa eleita registrou no TSE em 2024, item por item, com o que já tem registro oficial de andamento. Sem opinião: só o que está escrito e o que as fontes mostram.</p>
+        <div class="resumo-promessas" id="resumoPromessas"></div>
+        <div id="promessas"></div>
+        <p class="aviso">Tem registro oficial de algum item? A prefeitura, os vereadores ou qualquer morador podem mandar pra quem cuida do mapa, e a gente atualiza.</p>
+        <p class="miudo">"Sem informação" não quer dizer que não foi feito: quer dizer que ainda não achamos registro oficial. O plano não fala de ruas, asfalto nem iluminação. Fonte: <a href="https://divulgacandcontas.tse.jus.br/divulga/#/candidato/SUDESTE/SP/2045202024/250002148744/2024/69779" target="_blank" rel="noopener">plano de governo no TSE</a> e notícias do site da prefeitura. Pesquisado em 30/10/2026.</p>
+        <h3>Cada problema tem um dono</h3>
+        <div class="quem" id="quemResolve"></div>
+        <h3>Onde reclamar oficialmente</h3>
+        <div class="contatos" id="contatos"></div>
+      </section>
+
+      <section id="aba-contas" hidden>
+        <h2>As contas da cidade</h2>
+        <div class="contador" aria-live="off">
+          <span class="eti">Arrecadômetro de Rinópolis · 2026</span>
+          <b id="arrecadado">R$ 0</b>
+          <span class="miudo">Estimativa do que a prefeitura já recebeu este ano, no ritmo oficial de janeiro a agosto: R$ 42,7 milhões em 8 meses, cerca de R$ 2 por segundo.</span>
+        </div>
+        <div class="resumo">
+          <div><b>R$ 42,7 mi</b><span>recebidos de janeiro a agosto de 2026</span></div>
+          <div><b>R$ 40,5 mi</b><span>gastos no mesmo período</span></div>
+        </div>
+        <h3>De onde vem o dinheiro</h3>
+        <p class="leve">Em 2025 a prefeitura recebeu R$ 58,4 milhões. De cada R$ 100, R$ 14 vieram dos impostos e taxas dela própria. A maior parte veio do governo federal e do estado, e também sai do bolso de quem mora aqui: do ICMS das compras, do IPVA do carro e do imposto de renda.</p>
+        <div class="barras" id="origem"></div>
+        <details>
+          <summary>Os impostos cobrados aqui, em 2025</summary>
+          <ul id="impostosCidade"></ul>
+        </details>
+        <h3>Pra onde vai</h3>
+        <p class="leve">O que a prefeitura gastou em 2025, por área: R$ 55,1 milhões ao todo.</p>
+        <div class="barras" id="destino"></div>
+        <p class="miudo">"Serviços urbanos" é a área onde costumam entrar limpeza, iluminação e conservação das ruas. Em 2026, só de janeiro a agosto, já foram R$ 6,3 milhões nela.</p>
+        <h3>Verbas e emendas</h3>
+        <div class="grana-lista" id="verbas"></div>
+        <h3>Confira você mesmo</h3>
+        <div class="links" id="linksContas"></div>
+        <p class="miudo">Fonte dos números: relatórios que a própria prefeitura entrega ao Tesouro Nacional (Siconfi): balanço anual de 2025 e relatório do 4º bimestre de 2026. Valores de gasto são despesas liquidadas.</p>
+      </section>
+
+      <section id="aba-cobrar" hidden>
+        <h2>Boletim do mês</h2>
+        <p class="leve">Uma imagem pronta pra mandar nos grupos de WhatsApp, com os números da cidade.</p>
+        <div class="bloco">
+          <img class="boletim-img" id="boletimImg" alt="Imagem do boletim do mês" hidden>
+          <p class="miudo" id="boletimDica" hidden></p>
+          <div class="acoes">
+            <button class="btn" type="button" id="btnBoletim">Gerar imagem</button>
+            <button class="btn cinza" type="button" id="btnSalvarBoletim" hidden>Salvar imagem</button>
+            <button class="btn cinza" type="button" id="btnCopiaBoletim">Copiar texto</button>
+          </div>
+        </div>
+        <h2 style="margin-top:12px">Pedido oficial</h2>
+        <p class="leve">Este texto se monta sozinho com os problemas abertos. Mande pro e-mail da prefeitura, protocole na Câmara ou cole na Ouvidoria.</p>
+        <textarea id="oficio" readonly aria-label="Texto do pedido"></textarea>
+        <div class="acoes">
+          <button class="btn" id="btnCopiaOficio" type="button">Copiar pedido</button>
+          <a class="btn zap" id="zapResumo" href="#" target="_blank" rel="noopener">Mandar resumo no WhatsApp</a>
+        </div>
+        <p class="miudo">Pedir providência ao poder público é direito de todo cidadão (Constituição Federal, art. 5º, XXXIV, "a").</p>
+      </section>
+
+      <section id="aba-painel" hidden>
+        <h2>Painel de quem cuida</h2>
+        <p class="leve">Só você vê esta aba. As placas aparecem na hora; as fotos só depois que você aprova.</p>
+        <div class="resumo">
+          <div><b id="pFotos">0</b><span>fotos esperando você</span></div>
+          <div><b id="pSem">0</b><span>placas sem notícia</span></div>
+        </div>
+        <h3>Fotos para conferir</h3>
+        <p class="miudo">Recuse se tiver rosto de pessoa, placa de carro, ofensa ou propaganda.</p>
+        <div class="cartas" id="pendentes"></div>
+        <h3>Sem notícia há mais de 90 dias</h3>
+        <div id="semNoticia"></div>
+      </section>
+    </div>
+  </aside>
+</div>
+
+<div class="fundo" id="fundoNovo" hidden>
+  <form class="folha" id="formNovo" aria-labelledby="tNovo">
+    <div class="dentro">
+      <header>
+        <div><h2 id="tNovo">Qual é o problema?</h2><div class="onde" id="novoOnde"></div></div>
+        <button class="btn-leve" type="button" data-fecha>Fechar</button>
+      </header>
+      <div class="tipos" id="tiposNovo"></div>
+      <div>
+        <label for="novoTexto">Conte em uma frase (se quiser)</label>
+        <input type="text" id="novoTexto" maxlength="160" placeholder="Ex.: buraco fundo na frente do número 120">
+      </div>
+      <div>
+        <label for="novoFoto">Foto (ajuda muito)</label>
+        <div class="foto-campo">
+          <input type="file" id="novoFoto" accept="image/*" capture="environment">
+          <img id="novoPrevia" alt="Prévia da foto" hidden>
+        </div>
+        <p class="miudo" style="margin-top:6px">A foto aparece depois de conferida. Não fotografe rosto de pessoas nem placa de carro. O site apaga sozinho os dados escondidos da foto, como a localização do celular.</p>
+      </div>
+      <label class="consente" for="novoAceite"><input type="checkbox" id="novoAceite"><span>Entendi que isto fica público no mapa, sem o meu nome. <button class="link" type="button" data-privacidade>Ler a privacidade</button></span></label>
+      <button class="btn" type="submit" id="btnEnviar" disabled>Colocar no mapa</button>
+    </div>
+  </form>
+</div>
+
+<div class="fundo" id="fundoVer" hidden>
+  <div class="folha" id="folhaVer" role="dialog" aria-modal="true"></div>
+</div>
+
+<div class="fundo" id="fundoPriv" hidden>
+  <div class="folha" role="dialog" aria-modal="true" aria-labelledby="tPriv">
+    <div class="dentro">
+      <header><h2 id="tPriv">Privacidade</h2><button class="btn-leve" type="button" data-fecha>Fechar</button></header>
+      <div class="priv">
+        <p><b>O que fica guardado.</b> O tipo do problema, o lugar dele no mapa, a data, e a frase e a foto, se você mandar.</p>
+        <p><b>O que não pedimos.</b> Nome, telefone, e-mail ou CPF. O mapa não mostra quem marcou.</p>
+        <p><b>Sua conta.</b> Pra marcar, você entra pelo link que recebeu, com sua conta. Junto com cada marcação, confirmação e foto fica guardado um código da conta (não o seu nome), pra você acompanhar o que marcou e pra cada pessoa confirmar uma vez só.</p>
+        <p><b>A foto.</b> Antes de enviar, o site diminui a foto e apaga as informações escondidas nela, como a localização do celular e o modelo do aparelho. Ela só aparece pra todos depois de conferida. Foto com rosto ou placa de carro não é publicada.</p>
+        <p><b>Conferência.</b> Quem cuida do mapa confere as marcações e apaga o que tiver dado pessoal, ofensa ou propaganda.</p>
+        <p><b>Seu aparelho.</b> O site lembra o que você marcou pra te perguntar depois se já consertaram. Isso não diz quem você é.</p>
+        <p><b>Pra que serve.</b> Mostrar os problemas da cidade e cobrar quem pode resolver. Você concorda ao marcar a caixinha antes de enviar (LGPD, art. 7º, I).</p>
+        <p><b>Seus direitos.</b> Você pode pedir pra apagar uma marcação sua quando quiser (LGPD, art. 18). Fale com quem cuida do mapa: <b id="privContato"></b></p>
+        <p><b>Prefeita e vereadores.</b> Nomes, partidos e votos são dados públicos do TSE, usados aqui pra acompanhar o trabalho de quem foi eleito (LGPD, art. 7º, §§ 3º e 4º).</p>
+        <p><b>Onde fica.</b> O site e os dados ficam guardados no claude.ai, da empresa Anthropic. As letras (Google Fonts) e o programa do mapa (Cloudflare) recebem o endereço de internet do aparelho, como em qualquer site. Não usamos propaganda nem rastreadores.</p>
+        <p><b>Sem partido.</b> O mapa mostra fatos. Não apoia nem ataca nenhum político.</p>
+        <p class="miudo">Resumo em linguagem simples. Não substitui orientação de advogado.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="config.js"></script>
+<script src="ruas.js"></script>
+<script>
+(function(){
+'use strict';
+
+const CFG = window.CONFIG || {};
+/* link usado no WhatsApp: o endereço do próprio site quando está no GitHub Pages; senão, o do Claude */
+const LINK = CFG.link || (/\.github\.io$/.test(location.hostname) ? location.origin + location.pathname : 'https://claude.ai/artifact/GezTW9SnH42sZmY2vk3kw4');
+const DIA = 864e5;
+const SEM_NOTICIA = 90*DIA, PERGUNTAR = 14*DIA;
+
+const ICONE = {
+  buraco:'<ellipse cx="12" cy="14.5" rx="8.5" ry="4.5"/><path d="M7.5 13.5l2.5 1.6 2-2.2 2.2 2.1 2.3-1.4"/>',
+  luz:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.8 10.6c.6.6.8 1.4.8 2.4h6c0-1 .2-1.8.8-2.4A6 6 0 0 0 12 3z"/><path d="M3 3l18 18"/>',
+  lixo:'<path d="M4 7h16M10 7V4h4v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/>',
+  agua:'<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>',
+  mato:'<path d="M3 20h18M7 20c0-5-2-8-3.5-9.5M12 20V5M17 20c0-5 2-8 3.5-9.5M9.5 20c0-4-.8-6-2.2-7.5M14.5 20c0-4 .8-6 2.2-7.5"/>',
+  outro:'<path d="M12 7v7M12 17.2v.3"/><circle cx="12" cy="12" r="9.5"/>'
+};
+const svg = (k, w) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+(w||2.2)+'" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+ICONE[k]+'</svg>';
+
+const TIPOS = {
+  buraco:{nome:'Buraco', frase:'buraco'},
+  luz:{nome:'Luz apagada', frase:'poste com a luz apagada'},
+  lixo:{nome:'Lixo ou entulho', frase:'lixo ou entulho acumulado'},
+  agua:{nome:'Esgoto ou vazamento', frase:'esgoto ou vazamento de água'},
+  mato:{nome:'Mato alto', frase:'mato alto'},
+  outro:{nome:'Outro', frase:'problema'}
+};
+const RESPOSTAS = {vimos:'Prefeitura viu', agendado:'Conserto agendado', obra:'Em obra'};
+
+/* ---------- Gente e dinheiro (fontes oficiais, pesquisadas em 30/10/2026) ---------- */
+const CHEFES = [
+  {cargo:'Prefeita', nome:'Graziela Tomé', det:'Graziela de Lima Tomé Trevisan · NOVO (eleita em 2024)'},
+  {cargo:'Vice-prefeito', nome:'Tonho Perbeline', det:'Antônio Sérgio Perbeline · Republicanos'}
+];
+const VEREADORES = [
+  ['Patrícia','PODE',405],['Rafael T. Picolo','PSD',397],['Nenê','NOVO',384],
+  ['Magal','REPUBLICANOS',278],['Daniel','UNIÃO',255,'Presidente'],['Evandro Dias','PSD',228],
+  ['Leninha da Saúde','PSD',214],['Fubá','NOVO',212],['Lucas Santiago','UNIÃO',208]
+];
+const QUEM = [
+  ['buraco','<b>Buraco, lixo, entulho:</b> Prefeitura.'],
+  ['luz','<b>Luz apagada:</b> Prefeitura, que recebe a contribuição de iluminação (CIP) pra isso.'],
+  ['mato','<b>Mato alto em terreno:</b> o dono limpa; a Prefeitura fiscaliza.'],
+  ['agua','<b>Esgoto ou vazamento:</b> Prefeitura (Rinópolis não é atendida pela SABESP).']
+];
+const CONTATOS = [
+  {rotulo:'Prefeitura', valor:'(18) 3583-1321 · prefeitura@rinopolis.sp.gov.br', det:'Rua São Luís, 242 · seg a sex, 8h às 16h15'},
+  {rotulo:'Câmara Municipal', valor:'(18) 3583-1196 · camara@camararinopolis.sp.gov.br', det:'Avenida Rinópolis, 403, Centro'},
+  {rotulo:'Ouvidoria da Prefeitura', link:'https://www.rinopolis.sp.gov.br/ouvidoria/', det:'Reclamação oficial, com número de protocolo'},
+  {rotulo:'e-SIC (Lei de Acesso)', link:'https://www.rinopolis.sp.gov.br/esic/', det:'Pergunte onde o dinheiro foi gasto. Resposta em até 20 dias, prorrogáveis por mais 10'}
+];
+const SICONFI25 = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO%20Simplificado&no_anexo=RREO-Anexo%2001&id_ente=3543808';
+const SICONFI26 = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2026&nr_periodo=4&co_tipo_demonstrativo=RREO%20Simplificado&no_anexo=RREO-Anexo%2001&id_ente=3543808';
+const EMENDAS = 'https://api.transferegov.gestao.gov.br/transferenciasespeciais/plano_acao_especial?cnpj_beneficiario_plano_acao=eq.46478053000113';
+const PEDIDO_ESIC = 'Pedido de informação (Lei 12.527/2011, Lei de Acesso à Informação)\n\nSolicito, sobre as emendas impositivas dos vereadores de Rinópolis (art. 309-A da Lei Orgânica):\n1. O valor total das emendas individuais e das emendas de bancada, e o valor por vereador e por bancada, na LOA de 2025 e na LOA de 2026.\n2. A lista de cada emenda: autor, o que vai ser feito, quem recebe, valor e se é da saúde.\n3. Quanto de cada emenda já foi empenhado, liquidado e pago, e se alguma teve impedimento.\n4. O endereço da página de emendas no portal da transparência (Resolução TCE-SP nº 17/2025).\n\nPeço resposta em formato digital.';
+const VERBAS = [
+  {valor:'R$ 61,6 mi', titulo:'Orçamento da prefeitura em 2026', txt:'Começou o ano em R$ 57 milhões e, com os ajustes, chegou a R$ 61,6 milhões até agosto.', pergunta:'Quanto vai pra conserto de rua?', fonte:SICONFI26},
+  {valor:'R$ 808 mil', titulo:'Contribuição de iluminação (CIP), 2025', txt:'Por lei, só pode ir pra iluminação pública e câmeras de segurança das ruas.', pergunta:'Por que esse poste está apagado?', fonte:SICONFI25},
+  {valor:'R$ 500 mil', titulo:'LED nos postes (2024)', txt:'Emenda federal do deputado Marcos Pereira. Consta como concluída.', pergunta:'Quais ruas receberam?', fonte:EMENDAS},
+  {valor:'R$ 495 mil', titulo:'Quadras de padel (2025)', txt:'Emenda federal para o Jardim Boa Vista, prazo até 2028.', pergunta:'A obra começou?', fonte:EMENDAS},
+  {largo:true, valor:'Impositivas', titulo:'A verba que cada vereador indica', txt:'Estão na Lei Orgânica de Rinópolis (art. 309-A): as emendas individuais podem chegar a 2% da receita, com pelo menos metade pra saúde, e há mais 1% dividido entre as bancadas, conforme o tamanho de cada partido. Valores e destinos ainda não estão publicados de forma fácil de achar.', pergunta:'Quanto cada um tem e pra onde mandou?', fonte:'https://www.camararinopolis.sp.gov.br/?pag=T0dRPU9EZz1PR009T1RnPQ==&idtipolei=24&ano=2023', copiar:PEDIDO_ESIC},
+  {largo:true, valor:'Associação', titulo:'Como o bairro pode receber verba', txt:'Pessoa sozinha não recebe. Uma associação de moradores pode receber emenda por termo de fomento (Lei 13.019/2014), se tiver experiência, estrutura e CNPJ de pelo menos 1 ano (emenda de vereador) ou 3 anos (emenda de deputado).', pergunta:'O bairro tem associação?', fonte:'https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l13019.htm'}
+];
+
+/* ---------- Mapa ---------- */
+const M = window.MAPA;
+const ll = (a,b) => [M.lat0 + a/1e5, M.lon0 + b/1e5];
+const pts = f => { const r=[]; for(let i=0;i<f.length;i+=2) r.push(ll(f[i],f[i+1])); return r; };
+const KX = 111320*Math.cos(M.lat0*Math.PI/180), KY = 110574;
+const LIMITE = [[-21.80,-50.80],[-21.66,-50.64]];
+
+const map = L.map('mapa',{zoomControl:false,preferCanvas:true,minZoom:13,maxZoom:19,maxBounds:LIMITE,attributionControl:true}).setView([-21.7275,-50.7235],16);
+map.attributionControl.setPrefix(false).addAttribution('© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>');
+L.control.zoom({position:'bottomright'}).addTo(map);
+const tela = L.canvas({padding:.5,tolerance:7});
+const estilos = getComputedStyle(document.documentElement);
+const cor = n => estilos.getPropertyValue(n).trim();
+
+const AREA = {verde:cor('--verde'), cemiterio:cor('--asfalto-3'), equip:cor('--asfalto-3'), bairro:cor('--quadra')};
+for (const [k,f] of M.areas) L.polygon(pts(f),{renderer:tela,stroke:false,fillColor:AREA[k],fillOpacity:1,interactive:false}).addTo(map);
+const ESTILO = [{c:cor('--rua-forte'),w:5.5},{c:cor('--rua-forte'),w:4.5},{c:cor('--rua'),w:3.2},{c:cor('--rua-fraca'),w:2},{c:cor('--rua-fraca'),w:1.4,d:'4 5'}];
+const linhas = [];
+for (const [ni,k,f] of M.ruas) {
+  const e = ESTILO[k];
+  const l = L.polyline(pts(f),{renderer:tela,color:e.c,weight:e.w,dashArray:e.d,lineCap:'round',lineJoin:'round'});
+  l._k = k; l._nome = M.nomes[ni];
+  l.on('click', ev => { if (!marcando && l._nome) { L.DomEvent.stop(ev); avisar(l._nome); } });
+  l.addTo(map); linhas.push(l);
+}
+/* faixa amarela no meio das avenidas e rodovias, como pintura de rua */
+const faixas = L.layerGroup();
+for (const [ni,k,f] of M.ruas) if (k<=1) L.polyline(pts(f),{renderer:tela,color:cor('--placa'),weight:1.2,opacity:.85,dashArray:'7 9',interactive:false}).addTo(faixas);
+function engrossar(){
+  const z = map.getZoom(), f = Math.max(.45, Math.min(3.2, Math.pow(1.6, z-16)));
+  for (const l of linhas) l.setStyle({weight:ESTILO[l._k].w*f});
+  if (z>=16) { faixas.addTo(map); faixas.eachLayer(l => l.setStyle({weight:Math.max(1,.9*f)})); } else faixas.remove();
+}
+
+/* nome das ruas, deitado ao longo da rua */
+const rotulos = L.layerGroup();
+(function(){
+  const melhor = new Map();
+  for (const [ni,k,f] of M.ruas) {
+    const n = M.nomes[ni]; if (!n || k>2) continue;
+    let comp = 0; for (let i=0;i+3<f.length;i+=2) comp += Math.hypot((f[i+2]-f[i])*KY/1e5,(f[i+3]-f[i+1])*KX/1e5);
+    if (!melhor.has(n) || melhor.get(n).comp < comp) melhor.set(n,{f,comp});
+  }
+  for (const [n,{f,comp}] of melhor) {
+    if (comp < 90) continue;
+    let alvo = comp/2, acc = 0;
+    for (let i=0;i+3<f.length;i+=2) {
+      const dy=(f[i+2]-f[i])*KY/1e5, dx=(f[i+3]-f[i+1])*KX/1e5, s=Math.hypot(dx,dy);
+      if (acc+s >= alvo) {
+        const t=(alvo-acc)/(s||1);
+        let ang = Math.atan2(-dy,dx)*180/Math.PI; if (ang>90) ang-=180; if (ang<-90) ang+=180;
+        const p = ll(f[i]+(f[i+2]-f[i])*t, f[i+1]+(f[i+3]-f[i+1])*t);
+        const curto = n.replace(/^Rua /,'').replace(/^Avenida /,'Av. ');
+        L.marker(p,{interactive:false,keyboard:false,icon:L.divIcon({className:'rotulo',iconSize:[0,0],
+          html:'<span style="transform:rotate('+ang.toFixed(1)+'deg) translate(-50%,-50%)">'+esc(curto)+'</span>'})}).addTo(rotulos);
+        break;
+      }
+      acc += s;
+    }
+  }
+  for (const [tipo,nome,lat,lon] of M.pois)
+    L.marker([lat,lon],{interactive:false,keyboard:false,icon:L.divIcon({className:'poi',iconSize:[0,0],html:'<span>'+esc(nome.replace('Escola Estadual','E. E.'))+'</span>'})}).addTo(rotulos);
+})();
+function verRotulos(){ if (map.getZoom()>=17) rotulos.addTo(map); else rotulos.remove(); }
+map.on('zoomend', () => { engrossar(); verRotulos(); });
+engrossar(); verRotulos();
+
+function ruaPerto(lat,lon){
+  const py=(lat-M.lat0)*KY, px=(lon-M.lon0)*KX;
+  let nome='', d=1e9;
+  for (const [ni,k,f] of M.ruas) {
+    const n = M.nomes[ni]; if (!n) continue;
+    for (let i=0;i+3<f.length;i+=2) {
+      const ay=f[i]*KY/1e5, ax=f[i+1]*KX/1e5, by=f[i+2]*KY/1e5, bx=f[i+3]*KX/1e5;
+      const vx=bx-ax, vy=by-ay, L2=vx*vx+vy*vy||1;
+      const t=Math.max(0,Math.min(1,((px-ax)*vx+(py-ay)*vy)/L2));
+      const dd=Math.hypot(px-(ax+t*vx), py-(ay+t*vy));
+      if (dd<d) { d=dd; nome=n; }
+    }
+  }
+  let perto='', dp=220;
+  for (const [tipo,n,la,lo] of M.pois) { const dd=Math.hypot((la-lat)*KY,(lo-lon)*KX); if (dd<dp) { dp=dd; perto=n; } }
+  return {rua: d<120 ? nome : 'Área rural', perto};
+}
+function meioDaRua(nome){
+  let melhor=null;
+  for (const [ni,k,f] of M.ruas) if (M.nomes[ni]===nome && (!melhor || f.length>melhor.length)) melhor=f;
+  if (!melhor) return null;
+  const i = Math.floor(melhor.length/4)*2;
+  return ll(melhor[i],melhor[i+1]);
+}
+
+/* ---------- Guarda ----------
+   'db': dentro do Claude, para quem foi convidado. 'local': teste, só neste aparelho.
+   Fotos ficam separadas das placas: quem marcou e o dono do mapa veem; o público só depois da aprovação. */
+const Loja = {modo:'local', db:null, uid:null, podeEscrever:true, dono:false, editor:false, carregou:false,
+  recs:new Map(), apoios:new Map(), estado:{fotos:{}}, estadoExiste:false};
+const guardado = (k, padrao) => { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : padrao; } catch(e) { return padrao; } };
+const guardar = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} };
+let fila = Promise.resolve();
+const enfileirar = fn => (fila = fila.then(fn).catch(e => { console.error(e); avisar(e && e.code==='quota_exceeded' ? 'O mapa está cheio. Avise quem cuida dele.' : 'Não deu pra salvar. Tente de novo.'); }));
+
+function lerLocal(){
+  Loja.recs = new Map(guardado('rdo-recs', []).map(x => [x.id,x]));
+  Loja.apoios = new Map([['eu', guardado('rdo-apoios', {r:{}})]]);
+  Loja.estado = guardado('rdo-estado', {fotos:{}});
+  Loja.uid='eu'; Loja.dono=true; Loja.editor=true; Loja.carregou=true;
+}
+function gravarLocal(){
+  guardar('rdo-recs', [...Loja.recs.values()]); guardar('rdo-apoios', Loja.apoios.get('eu')||{r:{}}); guardar('rdo-estado', Loja.estado);
+}
+
+async function conectar(){
+  const cl = window.claude;
+  if (!cl || !cl.use) return;
+  const [db,user] = await Promise.all([cl.use('db'),cl.use('user')]);
+  if (!db) { mostrarAviso('Você está vendo o mapa. Para marcar problemas, entre com sua conta pelo link que te mandaram.'); Loja.podeEscrever=false; render(); return; }
+  Loja.modo='db'; Loja.db=db; Loja.recs=new Map(); Loja.apoios=new Map(); Loja.estado={fotos:{}}; Loja.carregou=false; Fotos.cache.clear();
+  perguntaCard.hidden = true;
+  if (user) {
+    const [id,dono,editor,pode] = await Promise.all([user.id(),user.isOwner(),user.canEdit(),user.can('data.write')]);
+    Loja.uid=id; Loja.dono=dono; Loja.editor=dono||editor; Loja.podeEscrever = pode!==false && !!id;
+  } else { Loja.podeEscrever=false; Loja.dono=false; Loja.editor=false; }
+  esconderAviso();
+  if (!Loja.podeEscrever) mostrarAviso('Você pode ver e copiar tudo. Para marcar problemas, peça acesso de participante a quem te mandou o link.');
+  document.getElementById('abaPainel').hidden = !Loja.dono;
+  db.collection('reclamacoes').limit(1000).onSnapshot(s => {
+    Loja.recs = new Map(s.docs.map(d => [d.id, Object.assign({id:d.id}, d.data())]));
+    const primeira = !Loja.carregou; Loja.carregou = true; render(); if (primeira && !abrirDoLink()) perguntarAutor();
+  }, e => console.error(e));
+  db.collection('apoios').limit(1000).onSnapshot(s => { Loja.apoios = new Map(s.docs.map(d => [d.id, d.data()])); render(); }, e => console.error(e));
+  db.doc('moderacao/estado').onSnapshot(s => { Loja.estadoExiste = s.exists; Loja.estado = Object.assign({fotos:{}}, s.exists ? s.data() : {}); render(); }, e => console.error(e));
+  render();
+}
+
+function criar(r){
+  r.criado = Date.now(); r.autor = Loja.uid;
+  if (Loja.modo==='db') return enfileirar(async () => { const ref = await Loja.db.collection('reclamacoes').add(r); r.id = ref.id; }).then(() => r.id);
+  r.id = 'r'+Date.now().toString(36); Loja.recs.set(r.id,r); gravarLocal(); render(); return Promise.resolve(r.id);
+}
+function atualizar(id, campos){
+  const r = Loja.recs.get(id); if (!r) return Promise.resolve();
+  if (Loja.modo==='db') return enfileirar(() => Loja.db.doc('reclamacoes/'+id).update(campos));
+  Object.assign(r, campos); gravarLocal(); render(); return Promise.resolve();
+}
+function apagar(id){
+  if (Loja.modo==='db') return enfileirar(() => Loja.db.doc('reclamacoes/'+id).delete());
+  Loja.recs.delete(id); gravarLocal(); render(); return Promise.resolve();
+}
+const meuApoio = () => Object.assign({r:{}}, Loja.apoios.get(Loja.uid)||{});
+const meuVoto = id => (meuApoio().r||{})[id] || '';
+function apoiar(id, tipo){
+  const r = Object.assign({}, meuApoio().r);
+  if (r[id]===tipo) delete r[id]; else r[id]=tipo;
+  const novo = {r};
+  Loja.apoios.set(Loja.uid, novo);
+  const rec = Loja.recs.get(id);
+  if (rec && r[id]==='ve') atualizar(id, {visto:Date.now()});
+  if (rec && r[id]==='ok' && !rec.resolvido && situacao(rec).ok>=2) atualizar(id, {resolvido:Date.now()});
+  render();
+  if (Loja.modo==='db') return enfileirar(() => Loja.db.doc('apoios/'+Loja.uid).set(novo));
+  gravarLocal(); return Promise.resolve();
+}
+
+const Fotos = {
+  cache: new Map(),
+  async enviar(chave, reclamacao, tipo, foto){
+    if (Loja.modo==='db') {
+      const uid = Loja.uid;
+      await Loja.db.doc('fotos/'+uid).set({em:Date.now()});
+      await Loja.db.doc('fotos/'+uid+'/itens/'+chave).set({foto, reclamacao, tipo, criado:Date.now()});
+    } else {
+      const f = guardado('rdo-fotos', {}); f[chave] = {foto, reclamacao, tipo, autor:'eu', criado:Date.now()}; guardar('rdo-fotos', f);
+    }
+    this.cache.set(chave, foto);
+  },
+  async ler(chave, autor){
+    if (this.cache.has(chave)) return this.cache.get(chave);
+    let foto = null;
+    try {
+      if (Loja.modo!=='db') { const x = guardado('rdo-fotos', {})[chave]; foto = x ? x.foto : null; }
+      else if (Loja.estado.fotos[chave]==='ok') { const s = await Loja.db.doc('fotosPublicas/'+chave).get(); foto = s.exists ? s.data().foto : null; }
+      else if (autor===Loja.uid || Loja.dono) { const s = await Loja.db.doc('fotos/'+autor+'/itens/'+chave).get(); foto = s.exists ? s.data().foto : null; }
+    } catch(e) { console.error(e); }
+    if (typeof foto!=='string' || !foto.startsWith('data:image/jpeg;base64,')) foto = null;
+    this.cache.set(chave, foto); return foto;
+  },
+  async pendentes(){
+    const out = [];
+    if (Loja.modo!=='db') {
+      for (const [chave,x] of Object.entries(guardado('rdo-fotos', {}))) if (!Loja.estado.fotos[chave]) out.push(Object.assign({chave}, x));
+      return out;
+    }
+    const donos = await Loja.db.collection('fotos').limit(1000).get();
+    for (const d of donos.docs) {
+      const itens = await Loja.db.collection('fotos/'+d.id+'/itens').limit(200).get();
+      for (const i of itens.docs) if (!Loja.estado.fotos[i.id]) out.push(Object.assign({chave:i.id, autor:d.id}, i.data()));
+    }
+    return out;
+  },
+  async decidir(item, aprovar){
+    const valor = aprovar ? 'ok' : 'nao';
+    if (Loja.modo!=='db') {
+      Loja.estado.fotos[item.chave] = valor;
+      if (!aprovar) { const f = guardado('rdo-fotos', {}); delete f[item.chave]; guardar('rdo-fotos', f); }
+      gravarLocal(); this.cache.delete(item.chave); render(); return;
+    }
+    const db = Loja.db;
+    if (aprovar) await db.doc('fotosPublicas/'+item.chave).set({foto:item.foto, reclamacao:item.reclamacao});
+    await db.doc('fotos/'+item.autor+'/itens/'+item.chave).delete();
+    const ref = db.doc('moderacao/estado');
+    if (Loja.estadoExiste) await ref.update({fotos:{[item.chave]:valor}}); else { await ref.set({fotos:Object.assign({}, Loja.estado.fotos, {[item.chave]:valor})}); Loja.estadoExiste = true; }
+    this.cache.delete(item.chave);
+  }
+};
+
+/* ---------- Contas ---------- */
+function situacao(r){
+  let ve=1, ok=0;
+  if (r.exemplo) ve=r.ve;
+  else for (const [uid,a] of Loja.apoios) { if (uid===r.autor) continue; const v=a && a.r && a.r[r.id]; if (v==='ve') ve++; else if (v==='ok') ok++; }
+  const feito = !!r.resolvido || ok>=2;
+  const agora = Date.now();
+  const dias = Math.max(0, Math.floor(((r.resolvido || agora) - r.criado)/DIA));
+  const vida = Math.max(r.criado, r.visto||0, (r.resposta && r.resposta.em)||0);
+  const sem = !feito && !r.exemplo && agora - vida > SEM_NOTICIA;
+  return {ve, ok, feito, dias, sem, velho: !feito && !sem && dias>=30};
+}
+function exemplos(){
+  const base = [['buraco','Avenida Rinópolis',41,6,'Buraco fundo perto da faixa de pedestre','agendado'],['luz','Rua Bahia',12,3,'Dois postes seguidos apagados',''],['lixo','Rua São Paulo',5,2,'Entulho de obra na calçada','']];
+  const out=[];
+  base.forEach(([tipo,rua,dias,ve,texto,resp],i) => { const p=meioDaRua(rua); if (p) out.push({id:'ex'+i,exemplo:true,tipo,rua,perto:'',texto,lat:p[0],lon:p[1],criado:Date.now()-dias*DIA,ve,resposta:resp?{status:resp,texto:'',em:Date.now()-2*DIA}:null}); });
+  return out;
+}
+function todos(){
+  const reais = [...Loja.recs.values()].filter(r => r && TIPOS[r.tipo] && isFinite(r.lat) && isFinite(r.lon) && isFinite(r.criado));
+  return {reais, mostrados: reais.length ? reais : exemplos()};
+}
+
+/* ---------- Desenho ---------- */
+const camada = L.layerGroup().addTo(map);
+let filtro = 'abertos';
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+const diasTxt = d => d===0 ? 'hoje' : d===1 ? '1 dia' : d+' dias';
+const mediaTxt = d => d===0 ? 'menos de 1 dia' : diasTxt(d);
+const estadoClasse = s => s.feito ? 'feito' : s.sem ? 'sem' : s.velho ? 'velho' : '';
+function pinoHtml(r,s,comDias){
+  const rotulo = s.feito ? 'OK' : s.sem ? '?' : s.dias+'d';
+  return '<div class="pino '+estadoClasse(s)+(r.exemplo?' exemplo':'')+(r.resposta&&!s.feito?' oficial':'')+'">'+svg(r.tipo,2.4)+(comDias?'<span class="dias">'+rotulo+'</span>':'')+'</div>';
+}
+let animou = false;
+function contar(el, valor){
+  el.textContent = valor.toLocaleString('pt-BR');
+  if (animou || matchMedia('(prefers-reduced-motion: reduce)').matches || !valor || document.hidden) return;
+  const t0 = performance.now();
+  const passo = t => { const k = Math.min(1,(t-t0)/700), v = Math.round(valor*(1-Math.pow(1-k,3))); el.textContent = v.toLocaleString('pt-BR'); if (k<1) requestAnimationFrame(passo); };
+  requestAnimationFrame(passo);
+}
+function numeros(){
+  const {reais} = todos();
+  const sit = new Map(reais.map(r => [r.id, situacao(r)]));
+  const abertos = reais.filter(r => { const s=sit.get(r.id); return !s.feito && !s.sem; });
+  return {reais, sit, abertos,
+    dias: abertos.reduce((t,r) => t+sit.get(r.id).dias, 0),
+    feitos: reais.filter(r => sit.get(r.id).feito),
+    sem: reais.filter(r => sit.get(r.id).sem)};
+}
+
+function render(){
+  const {reais, mostrados} = todos();
+  const sit = new Map(mostrados.map(r => [r.id, situacao(r)]));
+  const n = numeros();
+  contar(document.getElementById('nAbertos'), n.abertos.length);
+  contar(document.getElementById('nDias'), n.dias);
+  contar(document.getElementById('nFeitos'), n.feitos.length);
+  if (reais.length) animou = true;
+
+  camada.clearLayers();
+  for (const r of mostrados) {
+    const s = sit.get(r.id), tam = Math.round(40 + Math.min(s.ve,12)*2.4);
+    L.marker([r.lat,r.lon],{title:TIPOS[r.tipo].nome+' · '+(r.rua||''),zIndexOffset:(s.feito||s.sem)?-100:s.ve*10,
+      icon:L.divIcon({className:'pino-wrap',iconSize:[tam,tam],iconAnchor:[tam/2,tam/2],html:pinoHtml(r,s,true)})})
+      .on('click', () => abrir(r.id)).addTo(camada);
+  }
+
+  const porRua = new Map();
+  for (const r of n.abertos) porRua.set(r.rua, (porRua.get(r.rua)||0)+1);
+  const top = [...porRua].filter(([nm]) => nm && nm!=='Área rural').sort((a,b) => b[1]-a[1])[0];
+  document.getElementById('campea').innerHTML = top && top[1]>1 ? '<div class="campea"><span class="medalha">'+top[1]+'</span><div><span class="miudo">Rua mais esquecida agora</span><b>'+esc(top[0])+'</b></div></div>' : '';
+
+  const conta = {abertos:0, feitos:0, sem:0};
+  const base = reais.length ? reais : mostrados;
+  const grupo = r => { const s=sit.get(r.id); return s.feito ? 'feitos' : s.sem ? 'sem' : 'abertos'; };
+  base.forEach(r => conta[grupo(r)]++);
+  if (filtro==='sem' && !conta.sem) filtro='abertos';
+  document.getElementById('filtro').innerHTML =
+    [['abertos','Abertos'],['feitos','Consertados'],['sem','Sem notícia']].filter(([k]) => k!=='sem' || conta.sem)
+    .map(([k,t]) => '<button class="chip" type="button" data-filtro="'+k+'" aria-pressed="'+(filtro===k)+'">'+t+' '+conta[k]+'</button>').join('');
+  const vis = base.filter(r => grupo(r)===filtro).sort((a,b) => { const x=sit.get(a.id), y=sit.get(b.id); return (y.ve*4+y.dias) - (x.ve*4+x.dias); });
+  document.getElementById('tituloLista').textContent = reais.length ? 'Esperando conserto agora' : 'Assim vai ficar o mapa';
+  document.getElementById('nVitoria').textContent = n.feitos.length;
+  document.getElementById('boasNum').hidden = !n.dias;
+  document.getElementById('boasDias').textContent = n.dias.toLocaleString('pt-BR');
+  if (!fundoVitrine.hidden) desenharVitrine();
+  const lista = document.getElementById('lista');
+  if (!reais.length && filtro==='abertos') lista.innerHTML = '<p class="vazio" style="margin-bottom:10px">Ninguém marcou nada ainda. As 3 placas tracejadas são <b>exemplos</b>. Toque em <b>Marcar problema</b> e seja o primeiro.</p>' + listaHtml(vis, sit);
+  else if (!vis.length) lista.innerHTML = '<p class="vazio">'+(filtro==='feitos' ? 'Nenhum conserto confirmado ainda.' : 'Nenhum problema aberto. Que bom!')+'</p>';
+  else lista.innerHTML = listaHtml(vis, sit);
+
+  montarOficio(n);
+  document.getElementById('btnMarcar').disabled = !Loja.podeEscrever;
+  if (Loja.dono) atualizarPainelResumo(n);
+  if (abertoId && !consertoAberto && !folhaVer.contains(document.activeElement)) desenharDetalhe(abertoId);
+}
+function listaHtml(v, sit){
+  return '<div class="lista">' + v.map(r => { const s=sit.get(r.id);
+    const selos = (r.exemplo?'<span class="selo exemplo">exemplo</span>':'')+(r.resposta&&!s.feito?'<span class="selo oficial">'+esc(RESPOSTAS[r.resposta.status]||'')+'</span>':'');
+    const numero = s.feito ? '<b>OK</b><small>consertado</small>' : s.sem ? '<b>?</b><small>sem notícia</small>' : '<b>'+s.dias+'</b><small>'+(s.dias===1?'dia':'dias')+'</small>';
+    return '<button class="item '+estadoClasse(s)+(r.exemplo?' ex':'')+'" type="button" data-id="'+esc(r.id)+'">'+pinoHtml(r,s,false)+
+      '<span class="info"><b>'+esc(TIPOS[r.tipo].nome)+'</b><span class="onde">'+esc(r.rua||'')+(r.perto?' · perto de '+esc(r.perto):'')+'</span>'+
+      '<span class="gente">'+(selos ? selos+' ' : '')+s.ve+(s.ve===1?' pessoa viu':' pessoas viram')+'</span></span>'+
+      '<span class="quanto">'+numero+'</span></button>';
+  }).join('') + '</div>';
+}
+document.getElementById('filtro').addEventListener('click', e => { const b=e.target.closest('[data-filtro]'); if (b) { filtro=b.dataset.filtro; render(); } });
+document.getElementById('lista').addEventListener('click', e => {
+  const b = e.target.closest('[data-id]'); if (!b) return;
+  const r = todos().mostrados.find(x => x.id===b.dataset.id); if (!r) return;
+  map.flyTo([r.lat,r.lon], Math.max(map.getZoom(),17), {duration:.6});
+  abrir(r.id);
+});
+
+/* ---------- Detalhe ---------- */
+let abertoId = null, armadoApagar = false, consertoAberto = null, consertoFoto = '', respostaRascunho = null;
+const fundoVer = document.getElementById('fundoVer'), folhaVer = document.getElementById('folhaVer');
+function abrir(id){ abertoId=id; armadoApagar=false; consertoAberto=null; consertoFoto=''; respostaRascunho=null; desenharDetalhe(id); fundoVer.hidden=false; }
+function fecharVer(){ fundoVer.hidden=true; abertoId=null; consertoAberto=null; }
+fundoVer.addEventListener('click', e => { if (e.target===fundoVer) fecharVer(); });
+const linkPlaca = r => r.exemplo ? LINK : LINK+'#p-'+r.id;
+function textoZap(r,s){
+  const t = TIPOS[r.tipo], onde = (r.rua||'cidade')+(r.perto?', perto de '+r.perto:'');
+  if (s.feito) return 'CONSERTADO: '+t.nome.toLowerCase()+' na '+onde+'. Levou '+diasTxt(s.dias)+' depois que os moradores marcaram no mapa. Reclamar funciona. Veja: '+linkPlaca(r);
+  return diasTxt(s.dias).toUpperCase()+' SEM CONSERTO: '+t.nome.toLowerCase()+' na '+onde+'. '+s.ve+(s.ve===1?' morador já confirmou.':' moradores já confirmaram.')+
+    (r.texto ? ' "'+r.texto+'"' : '')+' Quem resolve: Prefeitura de Rinópolis, (18) 3583-1321.'+(s.dias>=30?' Até quando?':'')+' Veja no mapa: '+linkPlaca(r);
+}
+function fotoBloco(r){
+  const partes = [];
+  for (const [chave,rot,cls,tem] of [[r.id,'Antes','',r.temFoto],[r.id+'_d','Depois','depois',r.temFotoDepois]]) {
+    if (!tem || r.exemplo) continue;
+    const decisao = Loja.estado.fotos[chave];
+    const pode = decisao==='ok' || (decisao!=='nao' && (r.autor===Loja.uid || Loja.dono));
+    if (!pode) { if (!decisao) partes.push('<p class="miudo">Foto '+rot.toLowerCase()+' em conferência.</p>'); continue; }
+    if (!Fotos.cache.has(chave)) { Fotos.ler(chave, r.autor).then(() => { if (abertoId===r.id) desenharDetalhe(r.id); }); partes.push('<p class="miudo">Carregando foto…</p>'); continue; }
+    const f = Fotos.cache.get(chave); if (!f) continue;
+    partes.push('<figure class="'+cls+'"><img src="'+f+'" alt="Foto '+rot.toLowerCase()+' do problema"><figcaption>'+rot+(decisao==='ok'?'':' · em conferência')+'</figcaption></figure>');
+  }
+  return partes.length ? '<div class="fotos">'+partes.join('')+'</div>' : '';
+}
+function desenharDetalhe(id){
+  const r = todos().mostrados.find(x => x.id===id);
+  if (!r) { fecharVer(); return; }
+  const s = situacao(r), meu = meuVoto(id);
+  const souAutor = r.autor && r.autor===Loja.uid;
+  const pode = Loja.podeEscrever && !r.exemplo;
+  const estadoTxt = r.exemplo ? 'Exemplo' : s.feito ? 'Consertado' : s.sem ? 'Sem notícia há 90 dias' : s.velho ? 'Esquecido há '+s.dias+' dias' : 'Esperando conserto';
+  const resp = r.resposta && RESPOSTAS[r.resposta.status] ? '<div class="resposta"><b>'+esc(RESPOSTAS[r.resposta.status])+'</b>'+(r.resposta.texto?'<span>'+esc(r.resposta.texto)+'</span>':'')+'<span class="miudo">'+new Date(r.resposta.em).toLocaleDateString('pt-BR')+'</span></div>' : '';
+  let h = '<div class="folha-topo '+estadoClasse(s)+'"><div class="icone">'+svg(r.tipo,2.4)+'</div><div><div class="onde">'+esc(estadoTxt)+'</div><h2>'+esc(TIPOS[r.tipo].nome)+'</h2><div class="onde">'+esc(r.rua||'')+(r.perto?' · perto de '+esc(r.perto):'')+'</div></div><button class="btn-leve" type="button" data-fecha>Fechar</button></div><div class="dentro">';
+  h += fotoBloco(r) + (r.texto ? '<p>"'+esc(r.texto)+'"</p>' : '') + resp;
+  h += '<div class="medidor"><div><b'+(s.velho?' style="color:var(--alerta)"':'')+'>'+s.dias+'</b><span>'+(s.feito?'dias até o conserto':'dias esperando')+'</span></div><div><b>'+s.ve+'</b><span>'+(s.ve===1?'pessoa viu':'pessoas viram')+'</span></div></div>';
+  if (consertoAberto===id) {
+    h += '<div class="bloco"><b>Que bom! Tem foto do conserto?</b><p class="miudo">A foto de antes e depois mostra que reclamar dá resultado. Ela aparece depois de conferida.</p>'+
+      '<div class="foto-campo"><input type="file" id="consertoFoto" accept="image/*" capture="environment">'+(consertoFoto?'<img src="'+consertoFoto+'" alt="Prévia">':'')+'</div>'+
+      '<div class="acoes"><button class="btn zap" type="button" data-acao="confirmaConserto">Confirmar conserto</button><button class="btn-leve" type="button" data-acao="cancelaConserto">Cancelar</button></div></div>';
+  } else if (pode && !s.feito) {
+    if (!souAutor && meu!=='ok') h += meu==='ve' ? '<button class="btn cinza" type="button" data-acao="ve">Você confirmou · desfazer</button>' : '<button class="btn" type="button" data-acao="ve">Eu também vi isso</button>';
+    h += meu==='ok' ? '<button class="btn cinza" type="button" data-acao="ok">Você disse que consertaram · desfazer</button>' : '<button class="btn cinza" type="button" data-acao="conserto">Já consertaram</button>';
+    if (s.sem || (souAutor && Date.now()-Math.max(r.criado,r.visto||0) > PERGUNTAR)) h += '<button class="btn cinza" type="button" data-acao="aindaEsta">Ainda está assim</button>';
+    if (s.ok===1 && meu!=='ok') h += '<p class="miudo">1 pessoa disse que já consertaram. Com mais uma, a placa fica verde.</p>';
+  }
+  h += r.exemplo ? '<p class="miudo">Esta placa é só um exemplo de como fica. Quando alguém marcar um problema de verdade, aparecem aqui os botões pra confirmar e cobrar no WhatsApp.</p>' :
+    '<div class="acoes"><a class="btn zap" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(textoZap(r,s))+'">Cobrar no WhatsApp</a><button class="btn cinza" type="button" data-acao="copiar">Copiar texto</button><button class="btn cinza" type="button" data-acao="link">Copiar link da placa</button></div>';
+  if (Loja.editor && !r.exemplo && !s.feito) {
+    const atual = respostaRascunho ? respostaRascunho.status : (r.resposta ? r.resposta.status : '');
+    h += '<h3>Resposta da prefeitura</h3><p class="miudo">Só quem cuida do mapa vê isto. Compartilhe o mapa como Editor com alguém da prefeitura pra ela mesma responder.</p><div class="opcoes">'+
+      Object.entries(RESPOSTAS).map(([k,t]) => '<button class="chip" type="button" data-resposta="'+k+'" aria-pressed="'+(atual===k)+'">'+t+'</button>').join('')+'</div>'+
+      '<input type="text" id="respostaTexto" maxlength="140" placeholder="Detalhe (opcional), ex.: equipe vai na quinta" value="'+esc(respostaRascunho ? respostaRascunho.texto : (r.resposta && r.resposta.texto) || '')+'">'+
+      '<div class="acoes"><button class="btn azul" type="button" data-acao="salvaResposta">Salvar resposta</button>'+(r.resposta?'<button class="btn-leve" type="button" data-acao="limpaResposta">Tirar resposta</button>':'')+'</div>';
+  }
+  if (Loja.dono && !r.exemplo) h += '<h3>Só você vê isto</h3><div class="acoes"><button class="btn cinza" type="button" data-acao="feito">'+(r.resolvido?'Reabrir':'Marcar como consertado')+'</button><button class="btn perigo" type="button" data-acao="apagar">'+(armadoApagar?'Toque de novo pra apagar':'Apagar')+'</button></div>';
+  folhaVer.innerHTML = h + '</div>';
+}
+folhaVer.addEventListener('change', async e => {
+  if (e.target.id!=='consertoFoto') return;
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  try { consertoFoto = await comprimir(f); desenharDetalhe(abertoId); } catch(err) { avisar('Não consegui abrir essa foto. Tente outra.'); }
+});
+folhaVer.addEventListener('input', e => {
+  if (e.target.id==='respostaTexto') respostaRascunho = Object.assign({status:(respostaRascunho||{}).status || ((Loja.recs.get(abertoId)||{}).resposta||{}).status || ''}, {texto:e.target.value});
+});
+folhaVer.addEventListener('click', async e => {
+  if (e.target.closest('[data-fecha]')) return fecharVer();
+  const r = todos().mostrados.find(x => x.id===abertoId); if (!r) return;
+  const rb = e.target.closest('[data-resposta]');
+  if (rb) { respostaRascunho = {status:rb.dataset.resposta, texto:(document.getElementById('respostaTexto')||{}).value||''}; desenharDetalhe(r.id); return; }
+  const b = e.target.closest('[data-acao]'); if (!b) return;
+  const a = b.dataset.acao, souAutor = r.autor===Loja.uid;
+  if (a==='ve' || a==='ok') apoiar(r.id, a);
+  else if (a==='conserto') { consertoAberto=r.id; consertoFoto=''; desenharDetalhe(r.id); }
+  else if (a==='cancelaConserto') { consertoAberto=null; desenharDetalhe(r.id); }
+  else if (a==='confirmaConserto') {
+    b.disabled = true;
+    try {
+      if (consertoFoto) { await Fotos.enviar(r.id+'_d', r.id, 'depois', consertoFoto); await atualizar(r.id, {temFotoDepois:true}); }
+      if (souAutor || Loja.editor) await atualizar(r.id, {resolvido:Date.now()});
+      else if (meuVoto(r.id)!=='ok') apoiar(r.id, 'ok');
+      consertoAberto=null; desenharDetalhe(r.id);
+      avisar(souAutor || Loja.editor ? 'Placa verde! Obrigado por avisar.' : 'Anotado! Com mais uma confirmação, a placa fica verde.');
+    } catch(err) { console.error(err); b.disabled=false; avisar('Não deu pra salvar. Tente de novo.'); }
+  }
+  else if (a==='aindaEsta') { const perg = guardado('rdo-perguntei', {}); perg[r.id]=Date.now(); guardar('rdo-perguntei', perg); atualizar(r.id, {visto:Date.now()}); avisar('Anotado. A placa continua contando.'); }
+  else if (a==='copiar') copiar(textoZap(r, situacao(r)), 'Texto copiado');
+  else if (a==='link') copiar(linkPlaca(r), 'Link copiado. Quem abrir cai direto nesta placa.');
+  else if (a==='salvaResposta') {
+    const st = respostaRascunho ? respostaRascunho.status : (r.resposta||{}).status;
+    if (!st) { avisar('Escolha uma das opções primeiro.'); return; }
+    const tx = (document.getElementById('respostaTexto')||{}).value || '';
+    respostaRascunho = null; await atualizar(r.id, {resposta:{status:st, texto:tx.trim().slice(0,140), em:Date.now()}}); desenharDetalhe(r.id); avisar('Resposta salva');
+  }
+  else if (a==='limpaResposta') { respostaRascunho=null; await atualizar(r.id, {resposta:null}); desenharDetalhe(r.id); }
+  else if (a==='feito') atualizar(r.id, {resolvido: r.resolvido ? 0 : Date.now()});
+  else if (a==='apagar') { if (!armadoApagar) { armadoApagar=true; desenharDetalhe(r.id); } else { apagar(r.id); fecharVer(); avisar('Apagado'); } }
+});
+
+/* ---------- Pergunta pra quem marcou ---------- */
+const perguntaCard = document.getElementById('perguntaCard');
+let perguntaId = null;
+function perguntarAutor(){
+  if (!Loja.uid || !Loja.podeEscrever) return;
+  const perg = guardado('rdo-perguntei', {}), agora = Date.now();
+  const alvo = todos().reais.filter(r => r.autor===Loja.uid && !situacao(r).feito)
+    .filter(r => agora - Math.max(r.criado, r.visto||0, perg[r.id]||0) > PERGUNTAR)
+    .sort((a,b) => a.criado-b.criado)[0];
+  if (!alvo) return;
+  perguntaId = alvo.id;
+  const dias = situacao(alvo).dias;
+  perguntaCard.innerHTML = '<b>Lembra disso?</b><p>Você marcou <b style="font-family:inherit;font-size:inherit;text-transform:none">'+esc(TIPOS[alvo.tipo].nome.toLowerCase())+'</b> na '+esc(alvo.rua)+' há '+diasTxt(dias)+'. Já consertaram?</p>'+
+    '<div class="acoes"><button class="btn zap" type="button" data-p="sim">Já consertaram</button><button class="btn cinza" type="button" data-p="nao">Ainda não</button><button class="btn-leve" type="button" data-p="fecha">Depois</button></div>';
+  perguntaCard.hidden = false;
+}
+perguntaCard.addEventListener('click', e => {
+  const b = e.target.closest('[data-p]'); if (!b || !perguntaId) return;
+  const perg = guardado('rdo-perguntei', {}); perg[perguntaId] = Date.now(); guardar('rdo-perguntei', perg);
+  perguntaCard.hidden = true;
+  if (b.dataset.p==='sim') { const r = Loja.recs.get(perguntaId); if (r) { map.flyTo([r.lat,r.lon],18,{duration:.6}); abrir(r.id); consertoAberto=r.id; desenharDetalhe(r.id); } }
+  else if (b.dataset.p==='nao') { atualizar(perguntaId, {visto:Date.now()}); avisar('Anotado. A placa continua contando os dias.'); }
+});
+
+/* ---------- Marcar novo ---------- */
+let marcando = false, ponto = null, tipoNovo = null, fotoNovo = '';
+const palco = document.getElementById('palco'), mira = document.getElementById('mira'), btnMarcar = document.getElementById('btnMarcar');
+function entrarMira(){ marcando=true; palco.classList.add('marcando'); mira.hidden=false; btnMarcar.hidden=true; perguntaCard.hidden=true; }
+function sairMira(){ marcando=false; palco.classList.remove('marcando'); mira.hidden=true; btnMarcar.hidden=false; }
+btnMarcar.addEventListener('click', entrarMira);
+document.getElementById('btnCancelaMira').addEventListener('click', sairMira);
+let marcaTemp = null;
+map.on('click', e => { if (marcando) escolherPonto(e.latlng); });
+const DENTRO = L.latLngBounds(LIMITE);
+const btnGps = document.getElementById('btnGps');
+if (!navigator.geolocation) btnGps.hidden = true;
+btnGps.addEventListener('click', () => {
+  btnGps.disabled = true; btnGps.textContent = 'Procurando…';
+  const volta = () => { btnGps.disabled = false; btnGps.textContent = 'Estou aqui'; };
+  navigator.geolocation.getCurrentPosition(p => {
+    volta();
+    const aqui = L.latLng(p.coords.latitude, p.coords.longitude);
+    if (!DENTRO.contains(aqui)) { avisar('Parece que você não está em Rinópolis agora. Toque no lugar no mapa.'); return; }
+    map.setView(aqui, 18); escolherPonto(aqui);
+  }, () => { volta(); avisar('Não deu pra usar sua localização. Toque no lugar no mapa.'); }, {enableHighAccuracy:true, timeout:12000, maximumAge:30000});
+});
+const formNovo = document.getElementById('formNovo'), fundoNovo = document.getElementById('fundoNovo'), aceite = document.getElementById('novoAceite');
+function escolherPonto(latlng){
+  ponto = latlng; sairMira();
+  if (marcaTemp) marcaTemp.remove();
+  marcaTemp = L.marker(ponto,{interactive:false,icon:L.divIcon({className:'pino-wrap',iconSize:[40,40],iconAnchor:[20,20],html:'<div class="pino exemplo">'+svg('outro',2.4)+'</div>'})}).addTo(map);
+  const o = ruaPerto(ponto.lat, ponto.lng); ponto.rua=o.rua; ponto.perto=o.perto;
+  document.getElementById('novoOnde').textContent = o.rua + (o.perto ? ' · perto de '+o.perto : '');
+  tipoNovo=null; fotoNovo=''; formNovo.reset(); document.getElementById('novoPrevia').hidden=true;
+  aceite.checked = !!guardado('rdo-aceite', false);
+  desenharTipos(); fundoNovo.hidden=false;
+}
+aceite.addEventListener('change', () => desenharTipos());
+function fecharNovo(){ fundoNovo.hidden=true; if (marcaTemp) { marcaTemp.remove(); marcaTemp=null; } }
+fundoNovo.addEventListener('click', e => { if (e.target===fundoNovo || e.target.closest('[data-fecha]')) fecharNovo(); });
+function desenharTipos(){
+  document.getElementById('tiposNovo').innerHTML = Object.entries(TIPOS).map(([k,t]) =>
+    '<button class="tipo" type="button" data-tipo="'+k+'" aria-pressed="'+(tipoNovo===k)+'">'+svg(k)+t.nome+'</button>').join('');
+  document.getElementById('btnEnviar').disabled = !tipoNovo || !aceite.checked;
+}
+document.getElementById('tiposNovo').addEventListener('click', e => { const b=e.target.closest('[data-tipo]'); if (b) { tipoNovo=b.dataset.tipo; desenharTipos(); } });
+document.getElementById('novoFoto').addEventListener('change', async e => {
+  const f = e.target.files && e.target.files[0]; if (!f) return;
+  try { fotoNovo = await comprimir(f); const p=document.getElementById('novoPrevia'); p.src=fotoNovo; p.hidden=false; }
+  catch(err) { fotoNovo=''; avisar('Não consegui abrir essa foto. Tente outra.'); }
+});
+/* redesenhar no canvas reduz a foto e descarta os metadados (EXIF, GPS, modelo do celular) */
+async function comprimir(file){
+  const img = await createImageBitmap(file);
+  const k = Math.min(1, 760/Math.max(img.width,img.height));
+  const c = document.createElement('canvas'); c.width=Math.round(img.width*k); c.height=Math.round(img.height*k);
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+  let q=.66, url=c.toDataURL('image/jpeg',q);
+  while (url.length>150000 && q>.3) { q-=.1; url=c.toDataURL('image/jpeg',q); }
+  return url;
+}
+formNovo.addEventListener('submit', async e => {
+  e.preventDefault(); if (!tipoNovo || !ponto || !aceite.checked) return;
+  guardar('rdo-aceite', true);
+  const foto = fotoNovo;
+  const r = {tipo:tipoNovo, lat:+ponto.lat.toFixed(6), lon:+ponto.lng.toFixed(6), rua:ponto.rua, perto:ponto.perto||'',
+    texto:document.getElementById('novoTexto').value.trim().slice(0,160), temFoto:!!foto};
+  document.getElementById('btnEnviar').disabled = true;
+  fecharNovo();
+  const id = await criar(r);
+  if (!id) return;
+  if (foto) { try { await Fotos.enviar(id, id, 'antes', foto); } catch(err) { console.error(err); avisar('A placa entrou, mas a foto não. Tente mandar de novo.'); return; } }
+  avisar(foto ? 'Pronto! A placa está no mapa. A foto aparece depois de conferida.' : 'Pronto! Sua placa está no mapa.');
+});
+
+/* ---------- Procurar rua ---------- */
+const nomesRuas = [...new Set(M.nomes.filter(n => n && !/^[A-Z]{2}-\d/.test(n)))].sort((a,b) => a.localeCompare(b,'pt-BR'));
+document.getElementById('listaRuas').innerHTML = nomesRuas.map(n => '<option value="'+esc(n)+'">').join('');
+const semAcento = s => s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim();
+let brilho = null;
+function irParaRua(txt){
+  const q = semAcento(txt); if (!q) return;
+  const nome = nomesRuas.find(n => semAcento(n)===q) || nomesRuas.find(n => semAcento(n).includes(q));
+  if (!nome) { avisar('Não achei essa rua. Tente só uma parte do nome.'); return; }
+  const partes = M.ruas.filter(([ni]) => M.nomes[ni]===nome).map(([,,f]) => pts(f));
+  if (brilho) brilho.remove();
+  brilho = L.polyline(partes,{renderer:tela,color:cor('--placa'),weight:10,opacity:.55,interactive:false}).addTo(map);
+  try { map.flyToBounds(brilho.getBounds(),{maxZoom:18,padding:[40,40],duration:.7}); } catch(e) {}
+  setTimeout(() => { if (brilho) { brilho.remove(); brilho=null; } }, 4500);
+  avisar(marcando ? nome+': agora toque no lugar exato' : nome);
+}
+const busca = document.getElementById('busca');
+busca.addEventListener('change', () => irParaRua(busca.value));
+busca.addEventListener('keydown', e => { if (e.key==='Enter') { e.preventDefault(); irParaRua(busca.value); busca.blur(); } });
+
+/* ---------- Abas ---------- */
+const ABAS = ['problemas','quem','contas','cobrar','painel'];
+function irAba(n){
+  if (!ABAS.includes(n) || (n==='painel' && !Loja.dono)) n='problemas';
+  document.querySelectorAll('.menu-itens button').forEach(b => { if (b.dataset.aba===n) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
+  ABAS.forEach(a => document.getElementById('aba-'+a).hidden = a!==n);
+  /* o mapa fica com a lista ao lado; as outras partes abrem como página inteira */
+  const eraPagina = app.classList.contains('pagina');
+  app.classList.toggle('pagina', n!=='problemas');
+  if (eraPagina && n==='problemas') setTimeout(() => map.invalidateSize(), 50);
+  document.getElementById('conteudo').scrollTop = 0;
+  if (n==='painel') carregarPainel();
+}
+const app = document.getElementById('app'), alca = document.getElementById('alca');
+document.querySelector('.menu-itens').addEventListener('click', e => { const b=e.target.closest('[data-aba]'); if (b) irAba(b.dataset.aba); });
+alca.addEventListener('click', () => { const ab = app.classList.toggle('expandido'); alca.setAttribute('aria-expanded', ab); alca.textContent = ab ? 'Ver mapa' : 'Puxar lista'; setTimeout(() => map.invalidateSize(), 300); });
+
+/* ---------- Promessas do plano de governo (TSE 2024), com o que as fontes oficiais mostram ---------- */
+const NOTICIA = id => 'https://www.rinopolis.sp.gov.br/?pag=T1RVPU9EZz1PV0k9T1RrPU9UUT1OMlE9T0dNPU9XST1PR1U9T0dNPU9HWT1PV009T1dZPQ==&id='+id;
+const PROMESSAS = [
+  ['Saúde', [
+    ['Mais autonomia aos chefes das ESF e menos burocracia para liberar exames'],
+    ['Manter e melhorar o transporte de pacientes e a casa de apoio em Jaú'],
+    ['Centro com vários profissionais para crianças com transtorno do neurodesenvolvimento e apoio às mães'],
+    ['Parceria com neuropediatria para retornos no prazo'],
+    ['Estudar uma casa de apoio em Marília para pacientes do HC'],
+    ['Organizar a hidroterapia e incluir pacientes autistas'],
+    ['Agilizar a entrega de remédios nas ESF e no Centro de Saúde'],
+    ['Grupos de apoio para esclerose múltipla, fibromialgia e famílias com Alzheimer'],
+    ['Ações contra o abandono de animais: castração, adoção e conscientização','andamento','Mutirão com 157 castrações (out/2025)',NOTICIA(181)],
+    ['Melhorar o atendimento em casa (curativos, home care)']
+  ]],
+  ['Educação e segurança', [
+    ['Cursos profissionalizantes com o Estado e empresas'],
+    ['Educador físico, fisioterapeuta e terapeuta ocupacional nas escolas'],
+    ['Preencher todas as vagas da Atividade Delegada'],
+    ['Câmeras do programa Detecta nas entradas e no centro']
+  ]],
+  ['Emprego', [
+    ['Isenção de imposto para empresa que der o 1º emprego ao jovem'],
+    ['Comprar da agricultura familiar para a merenda'],
+    ['Contratar MEIs para serviços da prefeitura'],
+    ['Campanhas para comprar no comércio local'],
+    ['Criar a feira de produtos e serviços de Rinópolis','feito','1ª EXAAER realizada (out/2025)',NOTICIA(177)]
+  ]],
+  ['Moradia e esporte', [
+    ['Comprar terrenos para casas populares','andamento','Escritura de terreno para moradias populares assinada (jul/2025); a fonte não cita a CDHU',NOTICIA(162)],
+    ['Incentivar o vôlei adaptado','andamento','Turma aberta para 45 anos ou mais (fev/2026)',NOTICIA(194)],
+    ['Realizar e apoiar Jogos Regionais e Estaduais'],
+    ['Apoiar os Jogos Regionais do Idoso (JORI)'],
+    ['Mais torneios no recinto poliesportivo'],
+    ['Reativar a área externa do Rinópolis Tênis Clube'],
+    ['Reformar as praças esportivas dos bairros e do centro']
+  ]],
+  ['Cultura e agricultura', [
+    ['Criar o Plano Municipal de Cultura'],
+    ['Calendário anual de eventos culturais'],
+    ['Eventos culturais todo mês em espaços públicos'],
+    ['Projetos de iniciação musical','andamento','Audição do Polo Guri e apresentação do Espaço Amigo (dez/2025)',NOTICIA(187)],
+    ['Incentivar feiras de artesanato'],
+    ['Manter as estradas rurais com parcerias','andamento','Melhorias na estrada RNP 020 com apoio do Estado (abr/2025)',NOTICIA(148)],
+    ['Programa de viveiros'],
+    ['Criar a lei do Serviço de Inspeção Municipal'],
+    ['Comprar equipamentos rurais com verba federal'],
+    ['Capacitar a mulher e o jovem do campo']
+  ]]
+];
+(function(){
+  const ROT = {feito:'Feito', andamento:'Em andamento', '':'Sem informação'};
+  const todas = PROMESSAS.flatMap(([,l]) => l);
+  const conta = k => todas.filter(p => (p[1]||'')===k).length;
+  document.getElementById('resumoPromessas').innerHTML =
+    '<div class="rp feito"><b>'+conta('feito')+'</b><span>'+(conta('feito')===1?'feita':'feitas')+'</span></div>'+
+    '<div class="rp andamento"><b>'+conta('andamento')+'</b><span>em andamento</span></div>'+
+    '<div class="rp neutro"><b>'+conta('')+'</b><span>ainda sem registro encontrado</span></div>';
+  document.getElementById('promessas').innerHTML = PROMESSAS.map(([area,l]) =>
+    '<details class="area"><summary>'+area+' <span class="miudo">'+l.length+' promessas · '+l.filter(p=>p[1]).length+' com sinal de andamento</span></summary><ul>'+
+    l.map(([txt,st,prova,url]) => '<li class="'+(st||'sem')+'"><span class="st">'+ROT[st||'']+'</span><span>'+txt+(prova ? '<span class="prova">'+prova+' · <a href="'+url+'" target="_blank" rel="noopener">fonte</a></span>' : '')+'</span></li>').join('')+
+    '</ul></details>').join('');
+})();
+
+/* ---------- Quem decide ---------- */
+document.getElementById('chefes').innerHTML = CHEFES.map(c => '<div class="cartao"><div class="cargo">'+c.cargo+'</div><div class="nome">'+c.nome+'</div><div class="det">'+c.det+'</div></div>').join('');
+document.getElementById('vereadores').innerHTML = VEREADORES.map(([u,p,v,tag]) =>
+  '<div class="ver"><b>'+u+'</b><span>'+p+' · '+v+' votos</span>'+(tag?'<span class="tag">'+tag+' da Câmara</span>':'')+'</div>').join('');
+document.getElementById('verbas').innerHTML = VERBAS.map(v =>
+  '<div class="grana'+(v.largo?' largo':'')+'"><span class="valor">'+v.valor+'</span><span class="titulo">'+v.titulo+'</span><p class="txt">'+v.txt+'</p><p class="pergunta"><b>Pergunte:</b> '+v.pergunta+'</p>'+
+  (v.copiar ? '<div class="acoes"><button class="btn" type="button" data-copia="'+esc(v.copiar)+'">Copiar pedido pro e-SIC</button><a class="btn cinza" href="https://www.rinopolis.sp.gov.br/esic/" target="_blank" rel="noopener">Abrir o e-SIC</a></div>' : '')+
+  '<a class="fonte" href="'+v.fonte+'" target="_blank" rel="noopener">Fonte oficial</a></div>').join('');
+document.getElementById('quemResolve').innerHTML = QUEM.map(([k,t]) => '<div>'+svg(k)+'<span>'+t+'</span></div>').join('');
+document.getElementById('contatos').innerHTML = CONTATOS.map(c =>
+  '<div class="contato"><span><b>'+c.rotulo+'</b>'+(c.valor?'<span class="valor">'+c.valor+'</span>':'')+'<span class="miudo" style="display:block">'+c.det+'</span></span>'+
+  (c.link ? '<a class="btn cinza" href="'+c.link+'" target="_blank" rel="noopener">Abrir</a>' : '<button class="btn cinza" type="button" data-copia="'+esc(c.valor)+'">Copiar</button>')+'</div>').join('');
+['aba-quem','aba-contas'].forEach(id => document.getElementById(id).addEventListener('click', e => { const b=e.target.closest('[data-copia]'); if (b) copiar(b.dataset.copia, b.textContent.includes('e-SIC') ? 'Pedido copiado. Cole no e-SIC.' : 'Copiado'); }));
+
+/* ---------- Contas da cidade (Siconfi: DCA 2025 e RREO 4º bimestre 2026) ---------- */
+const MORADORES = 9259;
+const DCA25 = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?an_exercicio=2025&no_anexo=DCA-Anexo%20I-C&id_ente=3543808';
+const DCA25F = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?an_exercicio=2025&no_anexo=DCA-Anexo%20I-E&id_ente=3543808';
+const RREO26 = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2026&nr_periodo=4&co_tipo_demonstrativo=RREO%20Simplificado&no_anexo=RREO-Anexo%2001&id_ente=3543808';
+const RECEBIDO26 = 42699924, FIM_AGO26 = Date.UTC(2026,8,1,3), INICIO26 = Date.UTC(2026,0,1,3);
+const ORIGEM25 = [
+  /* receita líquida (já sem a parte que vai para o Fundeb), total R$ 58.412.682 */
+  ['Impostos e taxas da prefeitura', 8094559, 'IPTU, ISS, ITBI, taxas, contribuição de iluminação e imposto de renda retido'],
+  ['Governo federal', 21471219, 'Fundo de Participação dos Municípios (parte do imposto de renda e do IPI), SUS e convênios'],
+  ['Governo do estado', 20387763, 'Parte do ICMS das compras, do IPVA dos carros e convênios'],
+  ['Fundeb', 3984149, 'Fundo que paga a educação básica'],
+  ['Outras receitas da prefeitura', 4474992, 'Serviços prestados, rendimentos bancários e outras']
+];
+const IMPOSTOS25 = [['ISS (imposto sobre serviços)',1892782],['Imposto de renda retido (descontado dos salários e pagamentos da própria prefeitura)',1610302],['IPTU',1525987],['Taxas',1255965],['ITBI (venda de imóveis)',1001019],['Contribuição de iluminação (CIP)',808504]];
+const DESTINO25 = [
+  ['Saúde',17755708],['Educação',11532843],['Serviços urbanos',7217840],['Administração',5250132],['Assistência social',3385215],
+  ['Água e esgoto',2542892],['Cultura',1523070],['Câmara Municipal',1212898],['Previdência dos servidores',1212063],['Trabalho',1113518],
+  ['Outras áreas',2397223,'Agricultura, meio ambiente, esporte, estradas e juros da dívida']
+];
+const reais = v => v>=1e6 ? 'R$ '+(v/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mi' : 'R$ '+Math.round(v/1e3).toLocaleString('pt-BR')+' mil';
+function barras(el, itens, destaque){
+  const total = itens.reduce((t,i) => t+i[1], 0), max = Math.max(...itens.map(i => i[1]));
+  el.innerHTML = itens.map(([nome,v,det]) => {
+    const pct = v/total*100, pm = Math.round(v/MORADORES);
+    const dica = nome+': '+reais(v)+' · '+pct.toLocaleString('pt-BR',{maximumFractionDigits:1})+'% · R$ '+pm.toLocaleString('pt-BR')+' por morador';
+    return '<div class="barra'+(nome===destaque?' destaque':'')+'" tabindex="0" data-dica="'+esc(dica)+'"><div class="barra-topo"><span>'+esc(nome)+'</span><b>'+reais(v)+'</b></div>'+
+      '<div class="trilho"><i style="width:'+(v/max*100).toFixed(1)+'%"></i></div>'+
+      '<span class="det">'+Math.round(pct)+'% · R$ '+pm.toLocaleString('pt-BR')+' por morador'+(det?' · '+esc(det):'')+'</span></div>';
+  }).join('');
+}
+barras(document.getElementById('origem'), ORIGEM25, 'Impostos e taxas da prefeitura');
+barras(document.getElementById('destino'), DESTINO25, 'Serviços urbanos');
+document.getElementById('impostosCidade').innerHTML = IMPOSTOS25.map(([n,v]) => '<li>'+n+': <b>'+reais(v)+'</b></li>').join('');
+document.getElementById('linksContas').innerHTML = [
+  ['Portal da Transparência de Rinópolis','O site oficial da prefeitura com as contas em detalhe','https://transparencia.rinopolis.sp.gov.br'],
+  ['Receitas de 2025 no Tesouro Nacional','Os números de "de onde vem"',DCA25],
+  ['Gastos de 2025 no Tesouro Nacional','Os números de "pra onde vai"',DCA25F],
+  ['Relatório de 2026 até agosto','O que foi recebido este ano',RREO26],
+  ['Impostômetro','Quanto o Brasil inteiro paga de imposto (Associação Comercial de SP)','https://impostometro.com.br/']
+].map(([t,d,u]) => '<div class="contato"><span><b>'+t+'</b><span class="miudo" style="display:block">'+d+'</span></span><a class="btn cinza" href="'+u+'" target="_blank" rel="noopener">Abrir</a></div>').join('');
+const ritmo = RECEBIDO26/(FIM_AGO26-INICIO26);
+const arrecadado = document.getElementById('arrecadado');
+function tique(){ arrecadado.textContent = (RECEBIDO26 + ritmo*Math.max(0, Date.now()-FIM_AGO26)).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}); }
+tique(); setInterval(tique, 1000);
+const dica = document.createElement('div'); dica.className='dica'; dica.hidden=true; document.body.appendChild(dica);
+document.getElementById('aba-contas').addEventListener('pointermove', e => {
+  const b = e.target.closest('[data-dica]'); if (!b) { dica.hidden=true; return; }
+  dica.textContent = b.dataset.dica; dica.hidden=false;
+  dica.style.left = Math.min(e.clientX+14, innerWidth-dica.offsetWidth-8)+'px'; dica.style.top = (e.clientY+16)+'px';
+});
+document.getElementById('aba-contas').addEventListener('pointerleave', () => dica.hidden=true);
+
+/* ---------- Cobrar: pedido oficial e boletim ---------- */
+function montarOficio(n){
+  const hoje = new Date().toLocaleDateString('pt-BR',{day:'numeric',month:'long',year:'numeric'});
+  const itens = n.abertos.slice().sort((a,b) => n.sit.get(b.id).dias - n.sit.get(a.id).dias).map((r,i) => {
+    const s = n.sit.get(r.id);
+    return (i+1)+'. '+TIPOS[r.tipo].nome+' — '+(r.rua||'')+(r.perto?', perto de '+r.perto:'')+'. Aberto há '+diasTxt(s.dias)+'. Confirmado por '+s.ve+(s.ve===1?' morador.':' moradores.')+(r.texto?' Observação: "'+r.texto+'".':'');
+  });
+  document.getElementById('oficio').value =
+'À Excelentíssima Senhora Prefeita Municipal de Rinópolis\nÀ Câmara Municipal de Rinópolis\n\nAssunto: Pedido de providências para problemas registrados por moradores\n\n'+
+'Os moradores de Rinópolis, por meio do mapa colaborativo "Rinópolis de Olho", registraram os problemas abaixo, que seguem sem solução. Com base no direito de petição (Constituição Federal, art. 5º, inciso XXXIV, alínea "a"), pedimos providências e uma previsão de conserto para cada item.\n\n'+
+(itens.length ? itens.join('\n') : '(Ainda não há problemas abertos no mapa.)')+'\n\nAgradecemos a atenção e aguardamos resposta.\n\nRinópolis, '+hoje+'.\n\n______________________________\nNome:\nEndereço:';
+  document.getElementById('zapResumo').href = 'https://wa.me/?text='+encodeURIComponent(textoBoletim(n));
+}
+function dadosBoletim(n){
+  const agora = Date.now(), mes = 30*DIA;
+  const novos = n.reais.filter(r => agora - r.criado < mes).length;
+  const resolvidos = n.reais.filter(r => r.resolvido);
+  const feitosMes = resolvidos.filter(r => agora - r.resolvido < mes).length;
+  const media = resolvidos.length ? Math.round(resolvidos.reduce((t,r) => t+(r.resolvido-r.criado), 0)/resolvidos.length/DIA) : null;
+  const porRua = new Map(); n.abertos.forEach(r => porRua.set(r.rua, (porRua.get(r.rua)||0)+1));
+  const top = [...porRua].filter(([nm]) => nm && nm!=='Área rural').sort((a,b) => b[1]-a[1])[0];
+  const titulo = new Date().toLocaleDateString('pt-BR',{month:'long',year:'numeric'});
+  return {novos, feitosMes, media, top, titulo, abertos:n.abertos.length, dias:n.dias};
+}
+function textoBoletim(n){
+  const b = dadosBoletim(n);
+  if (!n.reais.length) return 'Conheça o Rinópolis de Olho, o mapa onde a gente marca os problemas da cidade e acompanha o conserto: '+LINK;
+  return 'Boletim Rinópolis de Olho, '+b.titulo+'\n'+
+    '• '+b.abertos+' problemas esperando conserto, somando '+b.dias+' dias de espera\n'+
+    '• '+b.novos+' marcados nos últimos 30 dias\n'+
+    '• '+b.feitosMes+' consertados nos últimos 30 dias\n'+
+    (b.media!==null ? '• O conserto leva em média '+mediaTxt(b.media)+'\n' : '')+
+    (b.top && b.top[1]>1 ? '• Rua com mais problemas: '+b.top[0]+' ('+b.top[1]+')\n' : '')+
+    'Veja e confirme no mapa: '+LINK;
+}
+document.getElementById('btnCopiaBoletim').addEventListener('click', () => copiar(textoBoletim(numeros()), 'Boletim copiado'));
+let boletimBlob = null;
+document.getElementById('btnBoletim').addEventListener('click', async () => {
+  const btn = document.getElementById('btnBoletim'); btn.disabled = true; btn.textContent = 'Desenhando…';
+  try {
+    boletimBlob = await desenharBoletim(numeros());
+    const img = document.getElementById('boletimImg'); img.src = URL.createObjectURL(boletimBlob); img.hidden = false;
+    const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
+    document.getElementById('btnSalvarBoletim').hidden = !dl;
+    const dica = document.getElementById('boletimDica'); dica.hidden = !!dl; dica.textContent = 'No celular, toque e segure na imagem pra salvar ou compartilhar.';
+    btn.textContent = 'Gerar de novo';
+  } catch(e) { console.error(e); avisar('Não deu pra desenhar agora.'); btn.textContent = 'Gerar imagem'; }
+  btn.disabled = false;
+});
+document.getElementById('btnSalvarBoletim').addEventListener('click', async () => {
+  if (!boletimBlob) return;
+  try { const dl = await window.claude.use('downloads'); await dl.save({filename:'boletim-rinopolis-de-olho.png', data:boletimBlob}); avisar('Imagem salva'); }
+  catch(e) { if (e && e.code!=='declined') avisar('Não deu pra salvar. Toque e segure na imagem.'); }
+});
+async function desenharBoletim(n){
+  try { await Promise.all(['800 100px "Barlow Condensed"','700 40px "Barlow Condensed"','400 30px "Atkinson Hyperlegible"','700 30px "Atkinson Hyperlegible"'].map(f => document.fonts.load(f))); } catch(e) {}
+  const W=1080, H=1350, c=document.createElement('canvas'); c.width=W; c.height=H;
+  const g=c.getContext('2d'), b=dadosBoletim(n);
+  const C = {asf:cor('--asfalto'), asf2:cor('--asfalto-2'), asf3:cor('--asfalto-3'), placa:cor('--placa'), escuro:cor('--placa-escuro'), alerta:cor('--alerta'), ok:cor('--ok'), tinta:cor('--tinta'), tinta2:cor('--tinta-2'), rua:cor('--rua'), forte:cor('--rua-forte'), cinza:cor('--cinza-placa')};
+  const disp = (p,t) => p+' "Barlow Condensed", "Arial Narrow", sans-serif', txt = (p) => p+' "Atkinson Hyperlegible", sans-serif';
+  g.fillStyle=C.asf; g.fillRect(0,0,W,H);
+  // cabeçalho em placa amarela
+  g.fillStyle=C.placa; g.fillRect(0,0,W,190);
+  g.fillStyle=C.escuro; g.font=disp('700 34px'); g.fillText('RINÓPOLIS', 64, 78);
+  g.font=disp('800 92px'); g.fillText('DE OLHO', 64, 160);
+  g.textAlign='right'; g.font=disp('700 40px'); g.fillText('BOLETIM', W-64, 92); g.font=txt('700 30px'); g.fillText(b.titulo, W-64, 140); g.textAlign='left';
+  // número principal
+  g.fillStyle=C.alerta; g.font=disp('800 190px'); g.fillText(b.dias.toLocaleString('pt-BR'), 64, 400);
+  g.fillStyle=C.tinta; g.font=txt('700 34px'); g.fillText('dias de espera, somando os problemas abertos', 64, 450);
+  // três caixas
+  const caixas = [[b.abertos,'abertos',C.placa],[b.novos,'novos em 30 dias',C.tinta],[b.feitosMes,'consertados em 30 dias',C.ok]];
+  caixas.forEach(([v,t,cc],i) => { const x=64+i*325, y=500; g.fillStyle=C.asf3; g.fillRect(x,y,300,170); g.fillStyle=cc; g.font=disp('800 96px'); g.fillText(String(v), x+24, y+104); g.fillStyle=C.tinta2; g.font=txt('400 26px'); g.fillText(t, x+24, y+146); });
+  // mapa do centro com as placas
+  const mx=64, my=700, mw=W-128, mh=470, cLat=-21.7275, cLon=-50.7235, meiaLon=.0145, meiaLat=meiaLon*KX/KY*mh/mw;
+  const lat1=cLat-meiaLat, lat2=cLat+meiaLat, lon1=cLon-meiaLon, lon2=cLon+meiaLon;
+  g.save(); g.beginPath(); g.rect(mx,my,mw,mh); g.clip(); g.fillStyle=C.asf2; g.fillRect(mx,my,mw,mh);
+  const sx = lon => mx + (lon-lon1)/(lon2-lon1)*mw, sy = lat => my + (lat2-lat)/(lat2-lat1)*mh;
+  g.lineCap='round'; g.lineJoin='round';
+  for (const [ni,k,f] of M.ruas) { if (k>3) continue; g.strokeStyle = k<=1 ? C.forte : C.rua; g.lineWidth = k<=1 ? 5 : k===2 ? 3 : 2; g.beginPath(); for (let i=0;i<f.length;i+=2) { const p=ll(f[i],f[i+1]); i ? g.lineTo(sx(p[1]),sy(p[0])) : g.moveTo(sx(p[1]),sy(p[0])); } g.stroke(); }
+  for (const r of n.reais) { const s=n.sit.get(r.id); const x=sx(r.lon), y=sy(r.lat), t=14+Math.min(s.ve,10)*1.6; g.save(); g.translate(x,y); g.rotate(Math.PI/4); g.fillStyle = s.feito?C.ok : s.sem?C.cinza : s.velho?C.alerta : C.placa; g.fillRect(-t/2,-t/2,t,t); g.strokeStyle=C.escuro; g.lineWidth=3; g.strokeRect(-t/2,-t/2,t,t); g.restore(); }
+  g.restore();
+  // rodapé
+  g.fillStyle=C.tinta; g.font=txt('700 30px');
+  const linha2 = b.top && b.top[1]>1 ? 'Rua com mais problemas: '+b.top[0]+' ('+b.top[1]+')' : (b.media!==null ? 'O conserto leva em média '+mediaTxt(b.media) : 'Marque também o que você vê na sua rua.');
+  g.fillText(linha2, 64, 1230);
+  g.fillStyle=C.tinta2; g.font=txt('400 24px'); g.fillText('Mapa feito por moradores · sem partido · ruas © OpenStreetMap', 64, 1280);
+  return await new Promise((ok, erro) => c.toBlob(bl => bl ? ok(bl) : erro(new Error('sem imagem')), 'image/png'));
+}
+
+/* ---------- Painel de quem cuida ---------- */
+let pendentesCache = [];
+function atualizarPainelResumo(n){
+  document.getElementById('pSem').textContent = n.sem.length;
+  document.getElementById('semNoticia').innerHTML = n.sem.length ? listaHtml(n.sem, n.sit) : '<p class="vazio">Nenhuma placa parada.</p>';
+}
+document.getElementById('semNoticia').addEventListener('click', e => { const b=e.target.closest('[data-id]'); if (b) abrir(b.dataset.id); });
+async function carregarPainel(){
+  const box = document.getElementById('pendentes');
+  box.innerHTML = '<p class="miudo">Procurando fotos novas…</p>';
+  try { pendentesCache = await Fotos.pendentes(); } catch(e) { console.error(e); box.innerHTML = '<p class="vazio">Não deu pra carregar as fotos agora.</p>'; return; }
+  desenharPendentes();
+}
+function desenharPendentes(){
+  const box = document.getElementById('pendentes');
+  document.getElementById('pFotos').textContent = pendentesCache.length;
+  const bol = document.getElementById('bolinha'); bol.hidden = !pendentesCache.length; bol.textContent = pendentesCache.length;
+  if (!pendentesCache.length) { box.innerHTML = '<p class="vazio">Nenhuma foto esperando. Tudo em dia.</p>'; return; }
+  box.innerHTML = pendentesCache.map((p,i) => { const r = Loja.recs.get(p.reclamacao);
+    const ok = typeof p.foto==='string' && p.foto.startsWith('data:image/jpeg;base64,');
+    return '<div class="carta">'+(ok?'<img src="'+p.foto+'" alt="Foto enviada">':'')+'<div class="corpo"><span><b>'+(p.tipo==='depois'?'Foto do conserto':'Foto do problema')+'</b> · '+esc(r ? TIPOS[r.tipo].nome+' na '+r.rua : 'placa apagada')+'</span>'+
+      '<div class="acoes"><button class="btn zap" type="button" data-decide="'+i+'" data-v="1">Aprovar</button><button class="btn perigo" type="button" data-decide="'+i+'" data-v="0">Recusar</button></div></div></div>'; }).join('');
+}
+document.getElementById('pendentes').addEventListener('click', async e => {
+  const b = e.target.closest('[data-decide]'); if (!b) return;
+  const item = pendentesCache[+b.dataset.decide]; if (!item) return;
+  b.disabled = true;
+  try { await Fotos.decidir(item, b.dataset.v==='1'); pendentesCache = pendentesCache.filter(x => x!==item); desenharPendentes(); avisar(b.dataset.v==='1' ? 'Foto publicada' : 'Foto recusada e apagada'); }
+  catch(err) { console.error(err); b.disabled=false; avisar('Não deu pra salvar. Tente de novo.'); }
+});
+
+/* ---------- Boas-vindas e privacidade ---------- */
+const boas = document.getElementById('boas');
+if (!guardado('rdo-visto', false)) boas.hidden = false;
+function fecharIntro(){ boas.hidden = true; guardar('rdo-visto', true); }
+document.getElementById('btnComecar').addEventListener('click', fecharIntro);
+document.getElementById('btnMarcarJa').addEventListener('click', () => { fecharIntro(); if (Loja.podeEscrever) entrarMira(); else avisar('Pra marcar, entre com sua conta pelo link que te mandaram.'); });
+
+/* ---------- Já consertamos ---------- */
+const fundoVitrine = document.getElementById('fundoVitrine');
+function desenharVitrine(){
+  const n = numeros();
+  const feitos = n.feitos.slice().sort((a,b) => (b.resolvido||0)-(a.resolvido||0));
+  const zap = feitos.length ? 'Rinópolis de Olho: '+feitos.length+(feitos.length===1?' problema já foi consertado':' problemas já foram consertados')+' depois que os moradores marcaram no mapa. Reclamar funciona. Veja o antes e depois: '+LINK+'#consertados'
+    : 'Conheça o Rinópolis de Olho, o mapa onde a gente marca os problemas da cidade: '+LINK;
+  document.getElementById('zapVitrine').href = 'https://wa.me/?text='+encodeURIComponent(zap);
+  const box = document.getElementById('vitrine');
+  if (!feitos.length) { box.innerHTML = '<p class="vazio">Nenhum conserto confirmado ainda. Quando a prefeitura consertar algo que foi marcado aqui, o antes e depois aparece nesta página.</p>'; return; }
+  box.innerHTML = '<div class="vitrine">'+feitos.map(r => {
+    const s = n.sit.get(r.id), figs = [];
+    for (const [chave,rot,cls,tem] of [[r.id,'Antes','',r.temFoto],[r.id+'_d','Depois','depois',r.temFotoDepois]]) {
+      if (!tem || Loja.estado.fotos[chave]!=='ok') continue;
+      if (!Fotos.cache.has(chave)) { Fotos.ler(chave, r.autor).then(() => { if (!fundoVitrine.hidden) desenharVitrine(); }); continue; }
+      const f = Fotos.cache.get(chave); if (f) figs.push('<figure class="'+cls+'"><img src="'+f+'" alt="Foto '+rot.toLowerCase()+'"><figcaption>'+rot+'</figcaption></figure>');
+    }
+    return '<div class="conserto">'+(figs.length ? '<div class="fotos">'+figs.join('')+'</div>' : '')+
+      '<div class="corpo"><span><b>'+esc(TIPOS[r.tipo].nome)+'</b><span class="onde" style="display:block">'+esc(r.rua||'')+(r.perto?' · perto de '+esc(r.perto):'')+'</span></span><span class="tempo">'+diasTxt(s.dias)+'<small class="miudo" style="display:block;font-family:var(--f-texto);font-weight:400">até o conserto</small></span></div></div>';
+  }).join('')+'</div>';
+}
+function abrirVitrine(){ fecharIntro(); desenharVitrine(); fundoVitrine.hidden = false; }
+document.getElementById('btnVitrine').addEventListener('click', abrirVitrine);
+fundoVitrine.addEventListener('click', e => { if (e.target===fundoVitrine || e.target.closest('[data-fecha]')) fundoVitrine.hidden = true; });
+
+/* ---------- Link direto: #p-<id> abre a placa, #consertados abre a vitrine ---------- */
+function abrirDoLink(){
+  const h = (location.hash||'').slice(1);
+  if (h==='consertados') { abrirVitrine(); return true; }
+  if (!h.startsWith('p-')) return false;
+  const r = Loja.recs.get(h.slice(2));
+  if (!r) return false;
+  fecharIntro(); map.setView([r.lat,r.lon], 18); abrir(r.id); return true;
+}
+addEventListener('hashchange', abrirDoLink);
+const fundoPriv = document.getElementById('fundoPriv');
+document.getElementById('privContato').textContent = CFG.contato || 'pelo mesmo caminho por onde você recebeu o link deste mapa';
+document.addEventListener('click', e => { if (e.target.closest('[data-privacidade]')) { e.preventDefault(); fundoPriv.hidden = false; } });
+fundoPriv.addEventListener('click', e => { if (e.target===fundoPriv || e.target.closest('[data-fecha]')) fundoPriv.hidden = true; });
+
+/* ---------- Utilidades ---------- */
+let tToast;
+function avisar(t){ const el=document.getElementById('toast'); el.textContent=t; el.hidden=false; clearTimeout(tToast); tToast=setTimeout(()=>el.hidden=true, 2800); }
+function mostrarAviso(t){ const a=document.getElementById('aviso'); a.textContent=t; a.hidden=false; }
+function esconderAviso(){ document.getElementById('aviso').hidden=true; }
+function copiar(txt, ok){
+  const falha = () => { const o=document.getElementById('oficio'); if (txt===o.value) { o.focus(); o.select(); } avisar('Selecione o texto e copie'); };
+  try { navigator.clipboard.writeText(txt).then(() => avisar(ok), falha); } catch(e) { falha(); }
+}
+document.getElementById('btnCopiaOficio').addEventListener('click', () => copiar(document.getElementById('oficio').value, 'Pedido copiado'));
+document.addEventListener('keydown', e => {
+  if (e.key!=='Escape') return;
+  if (!fundoPriv.hidden) fundoPriv.hidden=true; else if (!boas.hidden) fecharIntro(); else if (!fundoVitrine.hidden) fundoVitrine.hidden=true; else if (!fundoVer.hidden) fecharVer(); else if (!fundoNovo.hidden) fecharNovo(); else if (marcando) sairMira();
+});
+
+lerLocal();
+/* publicado num site comum (GitHub Pages, por exemplo) ainda não há banco de dados nem login:
+   cada visitante só vê o que marcou no próprio aparelho, e o painel de aprovação fica escondido */
+const siteAberto = !window.claude && location.protocol!=='file:' && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+if (siteAberto) { Loja.dono = false; Loja.editor = false; }
+document.getElementById('abaPainel').hidden = !Loja.dono;
+irAba((location.hash||'').slice(1));
+if (siteAberto) mostrarAviso('Versão de demonstração: por enquanto, o que você marcar fica guardado só neste aparelho. Em breve as marcações vão aparecer pra cidade toda.');
+else if (!window.claude) mostrarAviso('Modo de teste: o que você marcar fica guardado só neste aparelho.');
+render();
+if (!abrirDoLink()) perguntarAutor();
+conectar().catch(e => console.error(e));
+})();
+</script>
+
+</body>
+</html>
