@@ -318,7 +318,7 @@ textarea{width:100%;min-height:240px;resize:vertical;background:var(--placa-escu
 .tipo svg{width:30px;height:30px;color:var(--placa)}
 .tipo[aria-pressed="true"]{border-color:var(--placa);background:var(--placa-escuro)}
 label{font-weight:700;font-size:14px;display:block;margin-bottom:6px}
-input[type=text]{width:100%;background:var(--placa-escuro);border:1px solid var(--linha);border-radius:8px;padding:11px 12px;color:var(--tinta);font:15px var(--f-texto)}
+input[type=text],input[type=email],input[type=password]{width:100%;background:var(--placa-escuro);border:1px solid var(--linha);border-radius:8px;padding:11px 12px;color:var(--tinta);font:15px var(--f-texto)}
 .foto-campo{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
 .foto-campo input{max-width:100%}
 .foto-campo img{width:72px;height:72px;object-fit:cover;border-radius:8px}
@@ -629,22 +629,32 @@ input[type=text]{width:100%;background:var(--placa-escuro);border:1px solid var(
 
       <section id="aba-painel" hidden>
         <h2>Painel de quem cuida</h2>
-        <p class="leve">Só você vê esta aba. As placas aparecem na hora; as fotos só depois que você aprova.</p>
-        <div class="resumo">
-          <div><b id="pFotos">0</b><span>fotos esperando você</span></div>
-          <div><b id="pSem">0</b><span>placas sem notícia</span></div>
+        <form class="bloco" id="loginPainel" hidden>
+          <b>Entrar como quem cuida do mapa</b>
+          <p class="leve">Só pra quem aprova as fotos e responde pela prefeitura. Moradores não precisam entrar pra marcar.</p>
+          <div><label for="loginEmail">E-mail</label><input type="email" id="loginEmail" autocomplete="username" required></div>
+          <div><label for="loginSenha">Senha</label><input type="password" id="loginSenha" autocomplete="current-password" required></div>
+          <div class="acoes"><button class="btn" type="submit" id="btnEntrar">Entrar</button></div>
+        </form>
+        <div id="painelDono">
+          <p class="leve">Só você vê esta aba. As placas aparecem na hora; as fotos só depois que você aprova.</p>
+          <div class="resumo">
+            <div><b id="pFotos">0</b><span>fotos esperando você</span></div>
+            <div><b id="pSem">0</b><span>placas sem notícia</span></div>
+          </div>
+          <h3>Fotos para conferir</h3>
+          <p class="miudo">Recuse se tiver rosto de pessoa, placa de carro, ofensa ou propaganda.</p>
+          <div class="cartas" id="pendentes"></div>
+          <h3>Sem notícia há mais de 90 dias</h3>
+          <div id="semNoticia"></div>
+          <div class="acoes" id="sairPainel" hidden style="margin-top:18px"><button class="btn-leve" type="button" id="btnSair">Sair do painel</button></div>
         </div>
-        <h3>Fotos para conferir</h3>
-        <p class="miudo">Recuse se tiver rosto de pessoa, placa de carro, ofensa ou propaganda.</p>
-        <div class="cartas" id="pendentes"></div>
-        <h3>Sem notícia há mais de 90 dias</h3>
-        <div id="semNoticia"></div>
       </section>
 
       <footer class="rodape">
         <div class="rodape-selo"><svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><use href="#logo"/></svg><span><b>Sem partido. Sem patrão.</b><small>Projeto independente de moradores</small></span></div>
         <p>O Rinópolis de Olho não tem ligação com a prefeitura, a Câmara, partidos ou candidatos, e não apoia nem ataca ninguém. Mostramos o que os moradores marcam e o que as fontes oficiais dizem, com o link de cada uma.</p>
-        <p class="miudo">Achou um erro? Fale com quem cuida do mapa que a gente corrige. · Ruas © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button></p>
+        <p class="miudo">Achou um erro? Fale com quem cuida do mapa que a gente corrige. <button class="link" type="button" id="linkEntrar" hidden>Entrar (quem cuida do mapa)</button> · Ruas © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button></p>
       </footer>
     </div>
   </aside>
@@ -687,14 +697,14 @@ input[type=text]{width:100%;background:var(--placa-escuro);border:1px solid var(
       <div class="priv">
         <p><b>O que fica guardado.</b> O tipo do problema, o lugar dele no mapa, a data, e a frase e a foto, se você mandar.</p>
         <p><b>O que não pedimos.</b> Nome, telefone, e-mail ou CPF. O mapa não mostra quem marcou.</p>
-        <p><b>Sua conta.</b> Pra marcar, você entra pelo link que recebeu, com sua conta. Junto com cada marcação, confirmação e foto fica guardado um código da conta (não o seu nome), pra você acompanhar o que marcou e pra cada pessoa confirmar uma vez só.</p>
+        <p><b>Código do aparelho.</b> Junto com cada marcação, confirmação e foto fica guardado um código embaralhado do seu aparelho (ou da sua conta, na versão dentro do Claude), nunca o seu nome. Ele serve pra você acompanhar o que marcou e pra cada pessoa confirmar uma vez só.</p>
         <p><b>A foto.</b> Antes de enviar, o site diminui a foto e apaga as informações escondidas nela, como a localização do celular e o modelo do aparelho. Ela só aparece pra todos depois de conferida. Foto com rosto ou placa de carro não é publicada.</p>
         <p><b>Conferência.</b> Quem cuida do mapa confere as marcações e apaga o que tiver dado pessoal, ofensa ou propaganda.</p>
         <p><b>Seu aparelho.</b> O site lembra o que você marcou pra te perguntar depois se já consertaram. Isso não diz quem você é.</p>
         <p><b>Pra que serve.</b> Mostrar os problemas da cidade e cobrar quem pode resolver. Você concorda ao marcar a caixinha antes de enviar (LGPD, art. 7º, I).</p>
         <p><b>Seus direitos.</b> Você pode pedir pra apagar uma marcação sua quando quiser (LGPD, art. 18). Fale com quem cuida do mapa: <b id="privContato"></b></p>
         <p><b>Prefeita e vereadores.</b> Nomes, partidos e votos são dados públicos do TSE, usados aqui pra acompanhar o trabalho de quem foi eleito (LGPD, art. 7º, §§ 3º e 4º).</p>
-        <p><b>Onde fica.</b> O site e os dados ficam guardados no claude.ai, da empresa Anthropic. As letras (Google Fonts) e o programa do mapa (Cloudflare) recebem o endereço de internet do aparelho, como em qualquer site. Não usamos propaganda nem rastreadores.</p>
+        <p><b>Onde fica.</b> As marcações do site público ficam no Supabase, com servidor em São Paulo; a versão dentro do Claude guarda no claude.ai, da empresa Anthropic. As letras (Google Fonts) e o programa do mapa (Cloudflare) recebem o endereço de internet do aparelho, como em qualquer site. Não usamos propaganda nem rastreadores.</p>
         <p><b>Sem partido.</b> O mapa mostra fatos. Não apoia nem ataca nenhum político.</p>
         <p class="miudo">Resumo em linguagem simples. Não substitui orientação de advogado.</p>
       </div>
@@ -703,6 +713,7 @@ input[type=text]{width:100%;background:var(--placa-escuro);border:1px solid var(
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script src="config.js"></script>
 <script src="ruas.js"></script>
 <script>
@@ -907,21 +918,25 @@ async function conectar(){
 
 function criar(r){
   r.criado = Date.now(); r.autor = Loja.uid;
+  if (Loja.modo==='nuvem') return Nuvem.criar(r);
   if (Loja.modo==='db') return enfileirar(async () => { const ref = await Loja.db.collection('reclamacoes').add(r); r.id = ref.id; }).then(() => r.id);
   r.id = 'r'+Date.now().toString(36); Loja.recs.set(r.id,r); gravarLocal(); render(); return Promise.resolve(r.id);
 }
 function atualizar(id, campos){
   const r = Loja.recs.get(id); if (!r) return Promise.resolve();
+  if (Loja.modo==='nuvem') return Nuvem.atualizar(id, campos);
   if (Loja.modo==='db') return enfileirar(() => Loja.db.doc('reclamacoes/'+id).update(campos));
   Object.assign(r, campos); gravarLocal(); render(); return Promise.resolve();
 }
 function apagar(id){
+  if (Loja.modo==='nuvem') return Nuvem.apagar(id);
   if (Loja.modo==='db') return enfileirar(() => Loja.db.doc('reclamacoes/'+id).delete());
   Loja.recs.delete(id); gravarLocal(); render(); return Promise.resolve();
 }
 const meuApoio = () => Object.assign({r:{}}, Loja.apoios.get(Loja.uid)||{});
-const meuVoto = id => (meuApoio().r||{})[id] || '';
+const meuVoto = id => Loja.modo==='nuvem' ? (Nuvem.meus[id] || '') : ((meuApoio().r||{})[id] || '');
 function apoiar(id, tipo){
+  if (Loja.modo==='nuvem') return Nuvem.apoiar(id, tipo);
   const r = Object.assign({}, meuApoio().r);
   if (r[id]===tipo) delete r[id]; else r[id]=tipo;
   const novo = {r};
@@ -937,7 +952,8 @@ function apoiar(id, tipo){
 const Fotos = {
   cache: new Map(),
   async enviar(chave, reclamacao, tipo, foto){
-    if (Loja.modo==='db') {
+    if (Loja.modo==='nuvem') await Nuvem.enviarFoto(chave, reclamacao, tipo, foto);
+    else if (Loja.modo==='db') {
       const uid = Loja.uid;
       await Loja.db.doc('fotos/'+uid).set({em:Date.now()});
       await Loja.db.doc('fotos/'+uid+'/itens/'+chave).set({foto, reclamacao, tipo, criado:Date.now()});
@@ -950,7 +966,8 @@ const Fotos = {
     if (this.cache.has(chave)) return this.cache.get(chave);
     let foto = null;
     try {
-      if (Loja.modo!=='db') { const x = guardado('rdo-fotos', {})[chave]; foto = x ? x.foto : null; }
+      if (Loja.modo==='nuvem') foto = await Nuvem.lerFoto(chave, autor);
+      else if (Loja.modo!=='db') { const x = guardado('rdo-fotos', {})[chave]; foto = x ? x.foto : null; }
       else if (Loja.estado.fotos[chave]==='ok') { const s = await Loja.db.doc('fotosPublicas/'+chave).get(); foto = s.exists ? s.data().foto : null; }
       else if (autor===Loja.uid || Loja.dono) { const s = await Loja.db.doc('fotos/'+autor+'/itens/'+chave).get(); foto = s.exists ? s.data().foto : null; }
     } catch(e) { console.error(e); }
@@ -958,6 +975,7 @@ const Fotos = {
     this.cache.set(chave, foto); return foto;
   },
   async pendentes(){
+    if (Loja.modo==='nuvem') return Nuvem.pendentes();
     const out = [];
     if (Loja.modo!=='db') {
       for (const [chave,x] of Object.entries(guardado('rdo-fotos', {}))) if (!Loja.estado.fotos[chave]) out.push(Object.assign({chave}, x));
@@ -972,6 +990,7 @@ const Fotos = {
   },
   async decidir(item, aprovar){
     const valor = aprovar ? 'ok' : 'nao';
+    if (Loja.modo==='nuvem') { await Nuvem.decidir(item, aprovar); this.cache.delete(item.chave); return; }
     if (Loja.modo!=='db') {
       Loja.estado.fotos[item.chave] = valor;
       if (!aprovar) { const f = guardado('rdo-fotos', {}); delete f[item.chave]; guardar('rdo-fotos', f); }
@@ -986,10 +1005,134 @@ const Fotos = {
   }
 };
 
+/* ---------- Banco público (Supabase) ----------
+   Usado no site aberto (GitHub Pages) quando o config.js tem as chaves. Os moradores só escrevem
+   pelas funções do banco (criar_reclamacao, apoiar...), que conferem tudo; quem cuida do mapa entra com e-mail e senha.
+   Cada aparelho tem um código secreto guardado no navegador; o banco guarda só a versão embaralhada (sha-256). */
+const NUVEM = !!(CFG.supabaseUrl && CFG.supabaseChave && window.supabase);
+async function sha256hex(t){
+  const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(t));
+  return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2,'0')).join('');
+}
+const Nuvem = {
+  sb: null, segredo: '', contagem: new Map(), meus: {},
+  async iniciar(){
+    this.sb = window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseChave);
+    let seg = guardado('rdo-segredo', '');
+    if (!seg || seg.length < 20) { seg = (crypto.randomUUID ? crypto.randomUUID()+crypto.randomUUID() : Math.random().toString(36).slice(2)+Date.now().toString(36)+Math.random().toString(36).slice(2)).replace(/-/g,''); guardar('rdo-segredo', seg); }
+    this.segredo = seg;
+    Loja.modo = 'nuvem'; Loja.uid = await sha256hex(seg); Loja.podeEscrever = true; Loja.dono = false; Loja.editor = false;
+    Loja.recs = new Map(); Loja.apoios = new Map(); Loja.estado = {fotos:{}}; Loja.carregou = false; Fotos.cache.clear();
+    const {data} = await this.sb.auth.getSession();
+    if (data && data.session) await this.checarAdmin();
+    await this.carregar();
+    setInterval(() => this.carregar().catch(e => console.error(e)), 60000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) this.carregar().catch(e => console.error(e)); });
+  },
+  rec(x){
+    return {id:x.id, tipo:x.tipo, lat:x.lat, lon:x.lon, rua:x.rua||'', perto:x.perto||'', texto:x.texto||'',
+      temFoto:!!x.tem_foto, temFotoDepois:!!x.tem_foto_depois, autor:x.autor, criado:Date.parse(x.criado),
+      visto:x.visto ? Date.parse(x.visto) : 0, resolvido:x.resolvido ? Date.parse(x.resolvido) : 0, resposta:x.resposta||null};
+  },
+  async carregar(){
+    const sb = this.sb;
+    const [r,c,f,v] = await Promise.all([
+      sb.from('reclamacoes').select('*').order('criado',{ascending:false}).limit(1000),
+      sb.from('contagem').select('*'),
+      sb.from('fotos_publicas').select('chave'),
+      sb.rpc('meus_votos', {p_segredo:this.segredo})
+    ]);
+    if (r.error) throw r.error;
+    Loja.recs = new Map(r.data.map(x => [x.id, this.rec(x)]));
+    this.contagem = new Map((c.data||[]).map(x => [x.reclamacao, {ve:+x.ve||0, ok:+x.ok||0}]));
+    Loja.estado = {fotos:Object.fromEntries((f.data||[]).map(x => [x.chave,'ok']))};
+    this.meus = Object.fromEntries((v.data||[]).map(x => [x.reclamacao, x.tipo]));
+    const primeira = !Loja.carregou; Loja.carregou = true;
+    render(); if (primeira && !abrirDoLink()) perguntarAutor();
+  },
+  erro(e){
+    console.error(e);
+    const m = String(e && e.message || '');
+    avisar(m.includes('limite') ? 'Você já marcou 5 problemas nesta hora. Tente mais tarde.' : 'Não deu pra salvar. Confira a internet e tente de novo.');
+  },
+  async criar(r){
+    const {data,error} = await this.sb.rpc('criar_reclamacao', {p_tipo:r.tipo, p_lat:r.lat, p_lon:r.lon, p_rua:r.rua, p_perto:r.perto, p_texto:r.texto, p_tem_foto:!!r.temFoto, p_segredo:this.segredo});
+    if (error) { this.erro(error); return null; }
+    await this.carregar().catch(e => console.error(e));
+    return data;
+  },
+  async atualizar(id, campos){
+    let res;
+    if (Loja.dono) {
+      const m = {};
+      if ('resolvido' in campos) m.resolvido = campos.resolvido ? new Date(campos.resolvido).toISOString() : null;
+      if ('visto' in campos) m.visto = new Date(campos.visto).toISOString();
+      if ('resposta' in campos) m.resposta = campos.resposta;
+      if (!Object.keys(m).length) return;
+      res = await this.sb.from('reclamacoes').update(m).eq('id', id);
+    }
+    else if ('resolvido' in campos) res = await this.sb.rpc('confirmar_conserto', {p_id:id, p_segredo:this.segredo});
+    else if ('visto' in campos) res = await this.sb.rpc('ainda_esta', {p_id:id});
+    else return; /* foto do conserto: o banco já marca quando a foto chega */
+    if (res.error) return this.erro(res.error);
+    await this.carregar().catch(e => console.error(e));
+  },
+  async apagar(id){
+    const {error} = await this.sb.from('reclamacoes').delete().eq('id', id);
+    if (error) return this.erro(error);
+    await this.carregar().catch(e => console.error(e));
+  },
+  async apoiar(id, tipo){
+    const {error} = await this.sb.rpc('apoiar', {p_id:id, p_segredo:this.segredo, p_tipo:tipo});
+    if (error) return this.erro(error);
+    await this.carregar().catch(e => console.error(e));
+  },
+  async enviarFoto(chave, reclamacao, tipo, foto){
+    const {error} = await this.sb.rpc('enviar_foto', {p_id:reclamacao, p_tipo:tipo, p_foto:foto, p_segredo:this.segredo});
+    if (error) throw error;
+    const minhas = guardado('rdo-minhas-fotos', {}); minhas[chave] = foto;
+    const chaves = Object.keys(minhas); if (chaves.length > 6) delete minhas[chaves[0]];
+    guardar('rdo-minhas-fotos', minhas);
+  },
+  async lerFoto(chave, autor){
+    if (Loja.estado.fotos[chave]==='ok') { const {data} = await this.sb.from('fotos_publicas').select('foto').eq('chave', chave).maybeSingle(); return data ? data.foto : null; }
+    if (Loja.dono) { const {data} = await this.sb.from('fotos_pendentes').select('foto').eq('chave', chave).maybeSingle(); return data ? data.foto : null; }
+    if (autor===Loja.uid) return guardado('rdo-minhas-fotos', {})[chave] || null;
+    return null;
+  },
+  async pendentes(){
+    const {data,error} = await this.sb.from('fotos_pendentes').select('chave,reclamacao,tipo,foto,autor').order('criado');
+    if (error) throw error;
+    return data || [];
+  },
+  async decidir(item, aprovar){
+    if (aprovar) { const {error} = await this.sb.from('fotos_publicas').upsert({chave:item.chave, reclamacao:item.reclamacao, foto:item.foto}); if (error) throw error; }
+    else { const campo = item.tipo==='depois' ? 'tem_foto_depois' : 'tem_foto'; await this.sb.from('reclamacoes').update({[campo]:false}).eq('id', item.reclamacao); }
+    const {error} = await this.sb.from('fotos_pendentes').delete().eq('chave', item.chave);
+    if (error) throw error;
+    await this.carregar().catch(e => console.error(e));
+  },
+  async checarAdmin(){
+    const {data} = await this.sb.rpc('sou_admin');
+    Loja.dono = Loja.editor = !!data;
+    document.getElementById('abaPainel').hidden = !Loja.dono;
+    return Loja.dono;
+  },
+  async entrar(email, senha){
+    const {error} = await this.sb.auth.signInWithPassword({email, password:senha});
+    if (error) { avisar('E-mail ou senha errados.'); return false; }
+    if (!(await this.checarAdmin())) { await this.sb.auth.signOut(); avisar('Esse e-mail não está na lista de quem cuida do mapa.'); return false; }
+    await this.carregar().catch(e => console.error(e));
+    return true;
+  },
+  async sair(){ await this.sb.auth.signOut(); Loja.dono = Loja.editor = false; document.getElementById('abaPainel').hidden = true; render(); }
+};
+
 /* ---------- Contas ---------- */
 function situacao(r){
   let ve=1, ok=0;
   if (r.exemplo) ve=r.ve;
+  else if (Loja.modo==='nuvem') { const c = Nuvem.contagem.get(r.id) || {ve:0,ok:0}; ve = 1+c.ve; ok = c.ok; }
   else for (const [uid,a] of Loja.apoios) { if (uid===r.autor) continue; const v=a && a.r && a.r[r.id]; if (v==='ve') ve++; else if (v==='ok') ok++; }
   const feito = !!r.resolvido || ok>=2;
   const agora = Date.now();
@@ -1342,7 +1485,7 @@ busca.addEventListener('keydown', e => { if (e.key==='Enter') { e.preventDefault
 /* ---------- Abas ---------- */
 const ABAS = ['problemas','quem','contas','cobrar','painel'];
 function irAba(n){
-  if (!ABAS.includes(n) || (n==='painel' && !Loja.dono)) n='problemas';
+  if (!ABAS.includes(n) || (n==='painel' && !Loja.dono && Loja.modo!=='nuvem')) n='problemas';
   document.querySelectorAll('.menu-itens button').forEach(b => { if (b.dataset.aba===n) b.setAttribute('aria-current','page'); else b.removeAttribute('aria-current'); });
   ABAS.forEach(a => document.getElementById('aba-'+a).hidden = a!==n);
   /* o mapa fica com a lista ao lado; as outras partes abrem como página inteira */
@@ -1351,8 +1494,24 @@ function irAba(n){
   if (n!=='problemas' && app.classList.contains('expandido')) gaveta(false);
   if (eraPagina && n==='problemas') setTimeout(() => map.invalidateSize(), 50);
   document.getElementById('conteudo').scrollTop = 0;
-  if (n==='painel') carregarPainel();
+  if (n==='painel') mostrarPainel();
 }
+function mostrarPainel(){
+  const precisaEntrar = Loja.modo==='nuvem' && !Loja.dono;
+  document.getElementById('loginPainel').hidden = !precisaEntrar;
+  document.getElementById('painelDono').hidden = precisaEntrar;
+  document.getElementById('sairPainel').hidden = Loja.modo!=='nuvem';
+  if (!precisaEntrar) carregarPainel();
+}
+document.getElementById('loginPainel').addEventListener('submit', async e => {
+  e.preventDefault();
+  const b = document.getElementById('btnEntrar'); b.disabled = true; b.textContent = 'Entrando…';
+  const ok = await Nuvem.entrar(document.getElementById('loginEmail').value.trim(), document.getElementById('loginSenha').value);
+  b.disabled = false; b.textContent = 'Entrar';
+  if (ok) { document.getElementById('loginSenha').value = ''; avisar('Pronto, você entrou.'); mostrarPainel(); }
+});
+document.getElementById('btnSair').addEventListener('click', async () => { await Nuvem.sair(); irAba('problemas'); avisar('Você saiu do painel.'); });
+document.getElementById('linkEntrar').addEventListener('click', () => irAba('painel'));
 const app = document.getElementById('app'), alca = document.getElementById('alca');
 document.querySelector('.menu-itens').addEventListener('click', e => { const b=e.target.closest('[data-aba]'); if (b) irAba(b.dataset.aba); });
 /* no celular a lista é uma gaveta: toque ou arraste a faixa pra subir e descer */
@@ -1720,10 +1879,12 @@ const siteAberto = !window.claude && location.protocol!=='file:' && !/^(localhos
 if (siteAberto) { Loja.dono = false; Loja.editor = false; }
 document.getElementById('abaPainel').hidden = !Loja.dono;
 irAba((location.hash||'').slice(1));
-if (siteAberto) mostrarAviso('Versão de demonstração: por enquanto, o que você marcar fica guardado só neste aparelho. Em breve as marcações vão aparecer pra cidade toda.');
+const usarNuvem = NUVEM && !window.claude;
+if (usarNuvem) { Loja.recs = new Map(); Loja.carregou = false; document.getElementById('linkEntrar').hidden = false; }
+else if (siteAberto) mostrarAviso('Versão de demonstração: por enquanto, o que você marcar fica guardado só neste aparelho. Em breve as marcações vão aparecer pra cidade toda.');
 else if (!window.claude) mostrarAviso('Modo de teste: o que você marcar fica guardado só neste aparelho.');
 render();
-if (!abrirDoLink()) perguntarAutor();
-conectar().catch(e => console.error(e));
+if (usarNuvem) Nuvem.iniciar().catch(e => { console.error(e); mostrarAviso('Não deu pra carregar o mapa agora. Confira a internet e abra de novo.'); });
+else { if (!abrirDoLink()) perguntarAutor(); conectar().catch(e => console.error(e)); }
 })();
 </script>
