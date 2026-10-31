@@ -539,6 +539,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
   .boas-card .acoes{flex-direction:column;align-items:stretch;gap:10px;margin-top:4px}
   .boas-card .acoes .btn{width:100%;font-size:18px;padding:15px}
   .boas-card > .link{align-self:center;text-align:center}
+  .boas-card > .link.boas-nao{margin-top:-6px}
 }
 </style>
 
@@ -555,6 +556,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
     </ol>
     <div class="acoes"><button class="btn grande" type="button" id="btnMarcarJa">Marcar um problema</button><button class="btn cinza grande" type="button" id="btnComecar">Ver o mapa</button></div>
     <button class="link" type="button" data-privacidade>Seu nome não aparece. Veja como cuidamos dos seus dados</button>
+    <button class="link boas-nao" type="button" id="btnNaoMostrar">Não mostrar mais esta tela</button>
   </div>
 </div>
 
@@ -855,7 +857,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p>Não vendemos nem cedemos dados a terceiros. Para funcionar, o site usa os seguintes serviços, que podem registrar o endereço IP de quem acessa: GitHub Pages (hospedagem do site), Supabase (banco de dados das marcações), Google Fonts (fontes de texto), Cloudflare cdnjs e jsDelivr (bibliotecas do mapa e do banco). A versão do mapa dentro do Claude guarda os dados no claude.ai, da Anthropic. Não usamos publicidade, cookies de rastreamento nem ferramentas de análise de audiência.</p>
 
         <h3>7. Armazenamento no seu aparelho</h3>
-        <p>O navegador guarda localmente o código do aparelho, as marcações que você fez e preferências como "já vi a tela inicial". Você pode apagar esses dados a qualquer momento limpando os dados do site no navegador.</p>
+        <p>O navegador guarda localmente o código do aparelho, as marcações que você fez e preferências como "não mostrar mais a tela inicial". Você pode apagar esses dados a qualquer momento limpando os dados do site no navegador.</p>
 
         <h3>8. Por quanto tempo guardamos</h3>
         <p>As marcações permanecem enquanto forem úteis ao acompanhamento dos problemas da cidade ou até que seja pedida a sua exclusão. Fotos recusadas são excluídas no momento da recusa. Os registros de ações da equipe são mantidos para fins de transparência e segurança.</p>
@@ -2275,9 +2277,11 @@ async function carregarHistorico(){
 
 /* ---------- Boas-vindas e privacidade ---------- */
 const boas = document.getElementById('boas');
-if (!guardado('rdo-visto', false)) boas.hidden = false;
-function fecharIntro(){ boas.hidden = true; guardar('rdo-visto', true); }
+/* aparece em toda visita, até a pessoa pedir pra não mostrar mais */
+if (!guardado('rdo-sem-intro', false)) boas.hidden = false;
+function fecharIntro(){ boas.hidden = true; }
 document.getElementById('btnComecar').addEventListener('click', fecharIntro);
+document.getElementById('btnNaoMostrar').addEventListener('click', () => { guardar('rdo-sem-intro', true); fecharIntro(); avisar('Combinado. Esta tela não aparece mais neste aparelho.'); });
 document.getElementById('boasAntigo').addEventListener('click', e => { fecharIntro(); irPlaca(e.currentTarget.dataset.id); });
 document.getElementById('btnMarcarJa').addEventListener('click', () => { fecharIntro(); if (Loja.podeEscrever) entrarMira(); else avisar('Pra marcar, entre com sua conta pelo link que te mandaram.'); });
 
