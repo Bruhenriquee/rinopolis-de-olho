@@ -183,9 +183,15 @@ button.campea:hover{border-color:var(--placa)}
 .perto{background:var(--asfalto-3);border-left:4px solid var(--placa);border-radius:0 8px 8px 0;padding:12px;display:flex;flex-direction:column;gap:8px}
 .perto .item{border-radius:6px}
 .perto .quanto b{font-size:15px;color:var(--placa);white-space:nowrap}
-.boas-antigo{background:none;border:0;padding:0;text-align:left;font-size:15px;color:var(--tinta-2)}
+.boas-antigo{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px;background:none;border:0;border-top:1px solid var(--linha);padding:9px 16px;text-align:left;font-size:14px;color:var(--tinta-2);width:100%}
+.boas-antigo:hover{background:rgba(255,255,255,.03)}
+.boas-antigo .ba-rot{font-family:var(--f-placa);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:.1em;color:var(--alerta)}
 .boas-antigo b{color:var(--tinta)}
-.boas-antigo span{color:var(--placa);text-decoration:underline;white-space:nowrap}
+.boas-antigo .ba-ver{margin-left:auto;color:var(--placa);font-weight:700;white-space:nowrap}
+.boas-pe{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px 18px;border-top:1px solid var(--linha);padding-top:14px}
+.boas-pe .link{font-size:13px;color:var(--tinta-2);text-decoration-color:var(--linha)}
+.boas-pe .link:hover{color:var(--tinta)}
+.boas-pe #btnNaoMostrar{color:var(--apagado)}
 .filtro{display:flex;gap:8px;flex-wrap:wrap}
 .chip{background:var(--asfalto-3);border:1px solid var(--linha);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--tinta-2)}
 .chip[aria-pressed="true"]{background:var(--tinta);color:var(--placa-escuro);border-color:var(--tinta);font-weight:700}
@@ -407,9 +413,12 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
 .boas-card h2{font-size:44px;line-height:.95}
 .boas-card h2 em{font-style:normal;color:var(--placa);display:block;margin-top:6px}
 .boas-eti{font-family:var(--f-placa);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.14em;color:var(--placa)}
-.boas-num{display:flex;align-items:center;gap:16px;border:1px solid var(--linha);border-left:6px solid var(--alerta);border-radius:8px;padding:10px 16px;background:var(--placa-escuro)}
-.boas-num b{font-family:var(--f-placa);font-weight:800;font-size:84px;line-height:.85;color:var(--alerta);font-variant-numeric:tabular-nums}
-.boas-num span{font-size:15px;color:var(--tinta-2);max-width:26ch}
+.boas-topo{display:flex;align-items:center;gap:10px}
+.boas-topo .logo{width:30px;height:30px}
+.boas-num{display:flex;flex-direction:column;border:1px solid var(--linha);border-left:6px solid var(--alerta);border-radius:0 8px 8px 0;background:var(--placa-escuro)}
+.boas-num-linha{display:flex;align-items:center;gap:16px;padding:10px 16px}
+.boas-num-linha b{font-family:var(--f-placa);font-weight:800;font-size:84px;line-height:.85;color:var(--alerta);font-variant-numeric:tabular-nums}
+.boas-num-linha span{font-size:15px;color:var(--tinta-2);max-width:26ch}
 .btn.grande{font-size:17px;padding:14px 22px}
 .leaflet-top,.leaflet-bottom{z-index:500}
 /* placas mais fortes no mapa */
@@ -471,8 +480,8 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
   .toast{top:100px}
   .boas-card{padding:20px 18px 18px;gap:14px}
   .boas-card h2{font-size:31px}
-  .boas-num b{font-size:56px}
-  .boas-num span{font-size:13px}
+  .boas-num-linha b{font-size:56px}
+  .boas-num-linha span{font-size:13px}
   .num.quente b{font-size:30px}
 }
 /* ===== celular: mapa em tela cheia, topo numa linha só, lista como gaveta ===== */
@@ -513,24 +522,25 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
   .boas{padding:0;place-items:stretch}
   .boas-card{max-width:none;height:100%;border-radius:0;border:0;border-top:6px solid var(--placa);justify-content:center;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));gap:16px}
   .boas-card h2{font-size:34px}
-  .boas-num{padding:10px 14px}
-  .boas-num b{font-size:60px}
+  .boas-num-linha{padding:10px 14px}
+  .boas-num-linha b{font-size:60px}
   .passos{gap:8px}
   .passos li{grid-template-columns:30px minmax(0,1fr)}
   .passos li::before{width:28px;height:28px;font-size:15px}
   .passos li .leve{display:none}
   .boas-card .acoes{flex-direction:column;align-items:stretch;gap:10px;margin-top:4px}
   .boas-card .acoes .btn{width:100%;font-size:18px;padding:15px}
-  .boas-card > .link{align-self:center;text-align:center}
-  .boas-card > .link.boas-nao{margin-top:-6px}
+  .boas-pe{flex-direction:column;justify-content:center;text-align:center;gap:10px;padding-top:12px}
 }
 </style>
 
 <div class="boas" id="boas" hidden>
   <div class="boas-card" role="dialog" aria-modal="true" aria-labelledby="tBoas">
-    <span class="boas-eti">Rinópolis · SP · o mapa dos moradores</span>
-    <div class="boas-num" id="boasNum" hidden><b id="boasDias">0</b><span>dias de espera, somando os problemas que ainda estão abertos na cidade</span></div>
-    <button class="boas-antigo" id="boasAntigo" type="button" hidden></button>
+    <div class="boas-topo"><svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><use href="#logo"/></svg><span class="boas-eti">Rinópolis · SP · o mapa dos moradores</span></div>
+    <div class="boas-num" id="boasNum" hidden>
+      <div class="boas-num-linha"><b id="boasDias">0</b><span>dias de espera, somando os problemas que ainda estão abertos na cidade</span></div>
+      <button class="boas-antigo" id="boasAntigo" type="button" hidden></button>
+    </div>
     <h2 id="tBoas">Buraco, poste apagado, lixo, esgoto. <em>Se ninguém marca, ninguém conserta.</em></h2>
     <ol class="passos">
       <li><span><b>Marque o problema</b> <span class="leve">no lugar exato do mapa.</span></span></li>
@@ -538,8 +548,10 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
       <li><span><b>A cidade inteira vê</b> <span class="leve">quantos dias está esperando.</span></span></li>
     </ol>
     <div class="acoes"><button class="btn grande" type="button" id="btnMarcarJa">Marcar um problema</button><button class="btn cinza grande" type="button" id="btnComecar">Ver o mapa</button></div>
-    <button class="link" type="button" data-privacidade>Seu nome não aparece. Veja como cuidamos dos seus dados</button>
-    <button class="link boas-nao" type="button" id="btnNaoMostrar">Não mostrar mais esta tela</button>
+    <div class="boas-pe">
+      <button class="link" type="button" data-privacidade>Seu nome não aparece. Veja como cuidamos dos seus dados</button>
+      <button class="link" type="button" id="btnNaoMostrar">Não mostrar mais esta tela</button>
+    </div>
   </div>
 </div>
 
@@ -1384,7 +1396,7 @@ function render(){
   document.getElementById('campea').innerHTML = antigo && dAntigo>=1 ? '<button class="campea" type="button" data-id="'+esc(antigo.id)+'"><span class="medalha">'+dAntigo+'</span><div><span class="miudo">'+(dAntigo===1?'dia':'dias')+' esperando: o problema mais antigo sem conserto</span><b>'+esc(TIPOS[antigo.tipo].nome)+' · '+esc(antigo.rua||'')+'</b></div></button>' : '';
   const boasAntigo = document.getElementById('boasAntigo');
   boasAntigo.hidden = !(antigo && dAntigo>=1);
-  if (!boasAntigo.hidden) { boasAntigo.dataset.id = antigo.id; boasAntigo.innerHTML = 'O mais antigo: <b>'+esc(TIPOS[antigo.tipo].nome.toLowerCase())+' na '+esc(antigo.rua||'cidade')+'</b>, esperando há '+diasTxt(dAntigo)+'. <span>Ver no mapa</span>'; }
+  if (!boasAntigo.hidden) { boasAntigo.dataset.id = antigo.id; boasAntigo.innerHTML = '<span class="ba-rot">O mais antigo</span><span><b>'+esc(TIPOS[antigo.tipo].nome)+'</b> na '+esc(antigo.rua||'cidade')+', há '+diasTxt(dAntigo)+'</span><span class="ba-ver">Ver no mapa →</span>'; }
 
   /* ranking de ruas (só marcações reais) */
   const ruas = new Map();
