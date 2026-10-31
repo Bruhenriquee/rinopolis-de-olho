@@ -782,7 +782,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
       <footer class="rodape">
         <div class="rodape-selo"><svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><use href="#logo"/></svg><span><b>Sem partido. Sem patrão.</b><small>Projeto independente de moradores</small></span></div>
         <p>O Rinópolis de Olho não tem ligação com a prefeitura, a Câmara, partidos ou candidatos, e não apoia nem ataca ninguém. Mostramos o que os moradores marcam e o que as fontes oficiais dizem, com o link de cada uma.</p>
-        <p class="miudo">Achou um erro? Fale com quem cuida do mapa que a gente corrige. <button class="link" type="button" id="linkEntrar" hidden>Entrar (quem cuida do mapa)</button> · Ruas © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button></p>
+        <p class="miudo">Achou um erro? Fale com quem cuida do mapa que a gente corrige. · Ruas © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button></p>
       </footer>
     </div>
   </aside>
@@ -1768,7 +1768,8 @@ document.getElementById('loginPainel').addEventListener('submit', async e => {
   if (ok) { document.getElementById('loginSenha').value = ''; avisar('Pronto, você entrou.'); mostrarPainel(); }
 });
 document.getElementById('btnSair').addEventListener('click', async () => { await Nuvem.sair(); irAba('problemas'); avisar('Você saiu do painel.'); });
-document.getElementById('linkEntrar').addEventListener('click', () => irAba('painel'));
+/* a equipe entra pelo endereço do site com #painel no fim; não há link público pro login */
+addEventListener('hashchange', () => { if (location.hash==='#painel') irAba('painel'); });
 const app = document.getElementById('app'), alca = document.getElementById('alca');
 document.querySelector('.menu-itens').addEventListener('click', e => { const b=e.target.closest('[data-aba]'); if (b) irAba(b.dataset.aba); });
 /* no celular a lista é uma gaveta: toque ou arraste a faixa pra subir e descer */
@@ -2344,7 +2345,7 @@ if (siteAberto) { Loja.dono = false; Loja.editor = false; }
 document.getElementById('abaPainel').hidden = !Loja.dono;
 irAba((location.hash||'').slice(1));
 const usarNuvem = NUVEM && !window.claude;
-if (usarNuvem) { Loja.recs = new Map(); Loja.carregou = false; document.getElementById('linkEntrar').hidden = false; }
+if (usarNuvem) { Loja.recs = new Map(); Loja.carregou = false; }
 else if (siteAberto) mostrarAviso('Versão de demonstração: por enquanto, o que você marcar fica guardado só neste aparelho. Em breve as marcações vão aparecer pra cidade toda.');
 else if (!window.claude) mostrarAviso('Modo de teste: o que você marcar fica guardado só neste aparelho.');
 render();
