@@ -21,6 +21,8 @@ No ar em **https://bruhenriquee.github.io/rinopolis-de-olho/**
 - `supabase.sql`, `supabase-painel.sql` e `supabase-denuncias.sql`: o banco. Rodar uma vez, nessa ordem, no SQL Editor do Supabase.
 - `gerar_site.py`: monta a pasta `docs/`, que é o que o GitHub Pages publica.
 - `gerar_previa.py`: gera `previa.png`, a imagem que aparece quando o link é mandado no WhatsApp.
+- `manifest.webmanifest` e `sw.js`: deixam instalar o site na tela do celular, como um aplicativo.
+- `gerar_icones.py`: gera os ícones do site instalado (`icone-192.png`, `icone-512.png`, `icone-maskable.png`, `apple-touch-icon.png`).
 
 Depois de mudar qualquer coisa:
 

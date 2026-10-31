@@ -44,6 +44,11 @@ cabeca = f'''<!doctype html>
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#1b1d20">
 <link rel="icon" href="{ICONE}">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="De Olho">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <style>:root{{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}}body{{margin:0;font:14px system-ui,sans-serif}}img{{max-width:100%}}[hidden]{{display:none!important}}</style>
 </head>
 <body>
@@ -51,7 +56,9 @@ cabeca = f'''<!doctype html>
 
 DOCS.mkdir(exist_ok=True)
 (DOCS / 'index.html').write_text(cabeca + corpo + '\n</body>\n</html>\n', encoding='utf-8')
-for arquivo in ('ruas.js', 'config.js', 'previa.png'):
+# manifest, sw.js e ícones: o que deixa instalar o site no celular (ícones: python gerar_icones.py)
+for arquivo in ('ruas.js', 'config.js', 'previa.png', 'manifest.webmanifest', 'sw.js',
+                'icone-192.png', 'icone-512.png', 'icone-maskable.png', 'apple-touch-icon.png'):
     shutil.copy2(PASTA / arquivo, DOCS / arquivo)
 (DOCS / '.nojekyll').write_text('', encoding='utf-8')
 print('Site gerado em', DOCS)

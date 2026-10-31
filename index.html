@@ -110,6 +110,19 @@ body{display:flex;flex-direction:column}
 .mira .mira-txt{display:flex;flex-direction:column;align-items:center;text-align:center;flex-basis:100%}
 .mira .mira-rua{font-size:13px;color:var(--placa);min-height:1.3em}
 .toast{position:absolute;z-index:700;left:50%;transform:translateX(-50%);top:110px;background:var(--tinta);color:var(--placa-escuro);padding:8px 14px;border-radius:6px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,.4);max-width:calc(100% - 32px);text-align:center}
+/* filtro por tipo: fileira de placas logo abaixo do topo do mapa */
+.tipos-mapa{position:absolute;top:calc(100% + 8px);left:0;display:flex;gap:6px;max-width:100%;overflow-x:auto;scrollbar-width:none;padding:2px}
+.tipos-mapa button{flex:none;height:40px;min-width:40px;border-radius:999px;border:1px solid var(--linha);background:rgba(36,39,43,.95);color:var(--tinta);display:grid;place-items:center;padding:0 10px;font-size:13px;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+.tipos-mapa button svg{width:20px;height:20px}
+.tipos-mapa button[aria-pressed="true"]{background:var(--placa);color:var(--placa-escuro);border-color:var(--placa)}
+.palco.marcando .tipos-mapa{display:none}
+/* histórico da placa */
+.linha-tempo ol{list-style:none;margin:12px 0 2px 6px;padding:0 0 0 18px;border-left:2px solid var(--linha);display:flex;flex-direction:column;gap:12px}
+.linha-tempo li{position:relative;font-size:14px;color:var(--tinta)}
+.linha-tempo li::before{content:"";position:absolute;left:-25px;top:4px;width:10px;height:10px;background:var(--placa);transform:rotate(45deg);border-radius:2px}
+.linha-tempo li.ok::before{background:var(--ok)}
+.linha-tempo li.oficial::before{background:var(--oficial)}
+.linha-tempo li small{display:block;color:var(--apagado);font-size:12px}
 .legenda{position:absolute;z-index:500;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(26px + env(safe-area-inset-bottom,0px));background:rgba(27,29,32,.92);border:1px solid var(--linha);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--tinta-2)}
 .legenda div{display:flex;align-items:center;gap:8px}
 .legenda i{width:12px;height:12px;transform:rotate(45deg);border-radius:2px;background:var(--placa);flex:none}
@@ -592,6 +605,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
     <div class="boas-pe">
       <button class="link" type="button" data-privacidade>Seu nome não aparece. Veja como cuidamos dos seus dados</button>
       <button class="link" type="button" id="btnNaoMostrar">Não mostrar mais esta tela</button>
+      <button class="link" type="button" data-instalar hidden>Instalar no celular</button>
     </div>
   </div>
 </div>
@@ -642,6 +656,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <input id="busca" type="search" list="listaRuas" placeholder="Procurar rua" autocomplete="off" aria-label="Procurar rua">
       </label>
       <datalist id="listaRuas"></datalist>
+      <div class="tipos-mapa" id="tiposMapa" role="group" aria-label="Mostrar só um tipo de problema"></div>
     </header>
     <div class="legenda" aria-hidden="true">
       <div><i></i>Esperando conserto</div>
@@ -828,7 +843,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
       <footer class="rodape">
         <div class="rodape-selo"><svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><use href="#logo"/></svg><span><b>Sem partido. Sem patrão.</b><small>Projeto independente de moradores</small></span></div>
         <p>O Rinópolis de Olho não tem ligação com a prefeitura, a Câmara, partidos ou candidatos, e não apoia nem ataca ninguém. Mostramos o que os moradores marcam e o que as fontes oficiais dizem, com o link de cada uma.</p>
-        <p class="miudo">Achou um erro? Fale com quem cuida do mapa que a gente corrige. · Ruas © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button></p>
+        <p class="miudo">Achou um erro? Fale com quem cuida do mapa que a gente corrige. · Ruas © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button><span data-instalar hidden> · <button class="link" type="button">Instalar no celular</button></span></p>
       </footer>
     </div>
   </aside>
@@ -911,7 +926,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p>Existe também uma cópia privada do mapa no claude.ai (Anthropic), usada só pela equipe para testes. Ela tem dados próprios e não recebe nada do site público. Não usamos publicidade, cookies de rastreamento nem ferramentas de análise de audiência.</p>
 
         <h3>7. Armazenamento no seu aparelho</h3>
-        <p>O navegador guarda localmente o código do aparelho, as marcações que você fez e preferências como "não mostrar mais a tela inicial". Você pode apagar esses dados a qualquer momento limpando os dados do site no navegador.</p>
+        <p>O navegador guarda localmente o código do aparelho, as marcações que você fez e preferências como "não mostrar mais a tela inicial". Se você instalar o site no celular, ele também guarda uma cópia das páginas (sem marcações nem fotos de outras pessoas) pra abrir mais rápido. Você pode apagar esses dados a qualquer momento limpando os dados do site no navegador.</p>
 
         <h3>8. Por quanto tempo guardamos</h3>
         <p>As marcações permanecem enquanto forem úteis ao acompanhamento dos problemas da cidade ou até que seja pedida a sua exclusão. Fotos recusadas são excluídas no momento da recusa. Os registros de ações da equipe são mantidos para fins de transparência e segurança.</p>
@@ -1412,7 +1427,12 @@ function todos(){
 
 /* ---------- Desenho ---------- */
 const camada = L.layerGroup().addTo(map);
-let filtro = 'abertos';
+let filtro = 'abertos', filtroTipo = '';
+const passaTipo = r => !filtroTipo || r.tipo===filtroTipo;
+function desenharTiposMapa(){
+  document.getElementById('tiposMapa').innerHTML = '<button type="button" data-tipo-mapa="" aria-pressed="'+!filtroTipo+'">Todos</button>'+
+    Object.entries(TIPOS).map(([k,t]) => '<button type="button" data-tipo-mapa="'+k+'" aria-pressed="'+(filtroTipo===k)+'" title="'+t.nome+'" aria-label="Só '+t.nome.toLowerCase()+'">'+svg(k)+'</button>').join('');
+}
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 const diasTxt = d => d===0 ? 'hoje' : d===1 ? '1 dia' : d+' dias';
 const mediaTxt = d => d===0 ? 'menos de 1 dia' : diasTxt(d);
@@ -1468,6 +1488,7 @@ function render(){
 
   camada.clearLayers();
   for (const r of mostrados) {
+    if (!passaTipo(r)) continue;
     const s = sit.get(r.id), tam = Math.round(40 + Math.min(s.ve,12)*2.4);
     L.marker([r.lat,r.lon],{title:TIPOS[r.tipo].nome+' · '+(r.rua||''),zIndexOffset:(s.feito||s.sem)?-100:s.ve*10,
       icon:L.divIcon({className:'pino-wrap',iconSize:[tam,tam],iconAnchor:[tam/2,tam/2],html:pinoHtml(r,s,true)})})
@@ -1498,7 +1519,7 @@ function render(){
     (melhores.length ? '<h3>Ruas com mais consertos</h3><ol class="ranking verde">'+melhores.map(([nm,x],i) => linhaRua(nm,i,x.feitos,x.feitos===1?'1 conserto':x.feitos+' consertos')).join('')+'</ol>' : '');
 
   const conta = {abertos:0, feitos:0, sem:0, sigo:0};
-  const base = reais.length ? reais : mostrados;
+  const base = (reais.length ? reais : mostrados).filter(passaTipo);
   const grupo = r => { const s=sit.get(r.id); return s.feito ? 'feitos' : s.sem ? 'sem' : 'abertos'; };
   base.forEach(r => { conta[grupo(r)]++; if (sigo(r.id)) conta.sigo++; });
   if ((filtro==='sem' && !conta.sem) || (filtro==='sigo' && !conta.sigo)) filtro='abertos';
@@ -1515,7 +1536,7 @@ function render(){
   if (!fundoVitrine.hidden) desenharVitrine();
   const lista = document.getElementById('lista');
   if (!reais.length && filtro==='abertos') lista.innerHTML = '<p class="vazio" style="margin-bottom:10px">Ninguém marcou nada ainda. As 3 placas tracejadas são <b>exemplos</b>. Toque em <b>Marcar problema</b> e seja o primeiro.</p>' + listaHtml(vis, sit);
-  else if (!vis.length) lista.innerHTML = '<p class="vazio">'+(filtro==='feitos' ? 'Nenhum conserto confirmado ainda.' : 'Nenhum problema aberto. Que bom!')+'</p>';
+  else if (!vis.length) lista.innerHTML = '<p class="vazio">'+(filtroTipo ? 'Nenhuma placa de '+TIPOS[filtroTipo].nome.toLowerCase()+' aqui.' : filtro==='feitos' ? 'Nenhum conserto confirmado ainda.' : 'Nenhum problema aberto. Que bom!')+'</p>';
   else lista.innerHTML = listaHtml(vis, sit);
 
   montarOficio(n);
@@ -1533,6 +1554,13 @@ function listaHtml(v, sit){
       '<span class="quanto">'+numero+'</span></button>';
   }).join('') + '</div>';
 }
+desenharTiposMapa();
+document.getElementById('tiposMapa').addEventListener('click', e => {
+  const b = e.target.closest('[data-tipo-mapa]'); if (!b) return;
+  filtroTipo = b.dataset.tipoMapa===filtroTipo ? '' : b.dataset.tipoMapa;
+  desenharTiposMapa(); render();
+  avisar(filtroTipo ? 'Mostrando só: '+TIPOS[filtroTipo].nome.toLowerCase() : 'Mostrando todos os problemas');
+});
 document.getElementById('filtro').addEventListener('click', e => { const b=e.target.closest('[data-filtro]'); if (b) { filtro=b.dataset.filtro; render(); } });
 function irPlaca(id){
   const r = todos().mostrados.find(x => x.id===id); if (!r) return;
@@ -1551,7 +1579,7 @@ document.getElementById('rankingRuas').addEventListener('click', e => {
 let abertoId = null, armadoApagar = false, consertoAberto = null, consertoFoto = '', respostaRascunho = null;
 let denunciaAberta = null, denunciaMotivo = '', denunciaTexto = '';
 const fundoVer = document.getElementById('fundoVer'), folhaVer = document.getElementById('folhaVer');
-function abrir(id){ abertoId=id; armadoApagar=false; redesAbertas=null; denunciaAberta=null; consertoAberto=null; consertoFoto=''; respostaRascunho=null; desenharDetalhe(id); fundoVer.hidden=false; }
+function abrir(id){ abertoId=id; armadoApagar=false; redesAbertas=null; denunciaAberta=null; historicoAberto=false; consertoAberto=null; consertoFoto=''; respostaRascunho=null; desenharDetalhe(id); fundoVer.hidden=false; }
 function fecharVer(){ fundoVer.hidden=true; abertoId=null; consertoAberto=null; }
 fundoVer.addEventListener('click', e => { if (e.target===fundoVer) fecharVer(); });
 const linkPlaca = r => r.exemplo ? LINK : LINK+'#p-'+r.id;
@@ -1619,6 +1647,24 @@ function fotoBloco(r){
   }
   return partes.length ? '<div class="fotos">'+partes.join('')+'</div>' : '';
 }
+/* linha do tempo da placa, montada com o que já está guardado */
+let historicoAberto = false;
+function linhaTempoHtml(r, s){
+  const data = t => new Date(t).toLocaleDateString('pt-BR');
+  const itens = [[r.criado, 'Marcada no mapa'+(r.temFoto ? ', com foto' : ''), '']];
+  const semData = [];
+  if (s.ve>1) semData.push([0, (s.ve-1)+(s.ve-1===1 ? ' vizinho confirmou que viu' : ' vizinhos confirmaram que viram'), '']);
+  if (!s.feito && s.ok) semData.push([0, s.ok+(s.ok===1 ? ' pessoa disse' : ' pessoas disseram')+' que já consertaram', '']);
+  const depois = [];
+  if (r.visto && r.visto - r.criado > 36e5) depois.push([r.visto, 'Última vez que confirmaram que continua assim', '']);
+  if (r.resposta && RESPOSTAS[r.resposta.status] && r.resposta.em) depois.push([r.resposta.em, RESPOSTAS[r.resposta.status]+(r.resposta.texto ? ': '+r.resposta.texto : ''), 'oficial']);
+  if (r.resolvido) depois.push([r.resolvido, 'Consertada, depois de '+diasTxt(s.dias)+(r.temFotoDepois ? ', com foto do conserto' : ''), 'ok']);
+  else if (s.feito) depois.push([Date.now(), 'Os moradores confirmaram o conserto', 'ok']);
+  depois.sort((a,b) => a[0]-b[0]);
+  const fim = s.feito ? [] : [[Date.now(), 'Hoje: '+diasTxt(s.dias)+' esperando conserto', '']];
+  return '<details class="linha-tempo"'+(historicoAberto ? ' open' : '')+'><summary>Histórico desta placa</summary><ol>'+
+    itens.concat(semData, depois, fim).map(([t,txt,c]) => '<li'+(c ? ' class="'+c+'"' : '')+'>'+esc(txt)+(t ? '<small>'+data(t)+'</small>' : '')+'</li>').join('')+'</ol></details>';
+}
 function denunciaHtml(r){
   if (guardado('rdo-denunciei', {})[r.id]) return '<p class="miudo">Você denunciou esta placa. A equipe vai conferir.</p>';
   if (denunciaAberta!==r.id) return '<button class="link denunciar" type="button" data-acao="denunciar">Denunciar: informação falsa, ofensiva ou repetida</button>';
@@ -1654,6 +1700,7 @@ function desenharDetalhe(id){
     (redesAbertas===id ? redesHtml(textoSemLink(textoZap(r,s)), linkPlaca(r)) : '')+
     '<button class="btn-leve" type="button" data-acao="seguir">'+(sigo(id) ? 'Você acompanha esta placa · parar' : 'Acompanhar esta placa')+'</button>'+
     (sigo(id) ? '' : '<p class="miudo">Quando consertarem ou a prefeitura responder, você fica sabendo ao abrir o site.</p>');
+  if (!r.exemplo) h += linhaTempoHtml(r, s);
   if (!r.exemplo && !souAutor && Loja.podeEscrever && Denuncias.pode()) h += denunciaHtml(r);
   if (Loja.editor && !r.exemplo && !s.feito) {
     const atual = respostaRascunho ? respostaRascunho.status : (r.resposta ? r.resposta.status : '');
@@ -1665,6 +1712,7 @@ function desenharDetalhe(id){
   if (Loja.dono && !r.exemplo) h += '<h3>Só você vê isto</h3><div class="acoes"><button class="btn cinza" type="button" data-acao="feito">'+(r.resolvido?'Reabrir':'Marcar como consertado')+'</button><button class="btn perigo" type="button" data-acao="apagar">'+(armadoApagar?'Toque de novo pra apagar':'Apagar')+'</button></div>';
   folhaVer.innerHTML = h + '</div>';
 }
+folhaVer.addEventListener('toggle', e => { if (e.target.classList && e.target.classList.contains('linha-tempo')) historicoAberto = e.target.open; }, true);
 folhaVer.addEventListener('change', async e => {
   if (e.target.id!=='consertoFoto') return;
   const f = e.target.files && e.target.files[0]; if (!f) return;
@@ -2534,7 +2582,7 @@ fundoPriv.addEventListener('click', e => { if (e.target===fundoPriv || e.target.
 
 /* ---------- Utilidades ---------- */
 let tToast;
-function avisar(t){ const el=document.getElementById('toast'); el.textContent=t; el.hidden=false; clearTimeout(tToast); tToast=setTimeout(()=>el.hidden=true, 2800); }
+function avisar(t, ms){ const el=document.getElementById('toast'); el.textContent=t; el.hidden=false; clearTimeout(tToast); tToast=setTimeout(()=>el.hidden=true, ms||2800); }
 function mostrarAviso(t){ const a=document.getElementById('aviso'); a.textContent=t; a.hidden=false; }
 function esconderAviso(){ document.getElementById('aviso').hidden=true; }
 function copiar(txt, ok){
@@ -2552,6 +2600,20 @@ lerLocal();
    cada visitante só vê o que marcou no próprio aparelho, e o painel de aprovação fica escondido */
 const siteAberto = !window.claude && location.protocol!=='file:' && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
 if (siteAberto) { Loja.dono = false; Loja.editor = false; }
+/* instalar no celular: Android/Chrome oferecem o pedido; no iPhone é pelo menu Compartilhar */
+let pedidoInstalar = null;
+const ehIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+const instalado = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+function mostrarInstalar(){ document.querySelectorAll('[data-instalar]').forEach(b => b.hidden = !siteAberto || instalado() || !(pedidoInstalar || ehIOS)); }
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); pedidoInstalar = e; mostrarInstalar(); });
+addEventListener('appinstalled', () => { pedidoInstalar = null; mostrarInstalar(); avisar('Pronto! O Rinópolis de Olho está na tela do seu celular.'); });
+document.addEventListener('click', async e => {
+  if (!e.target.closest('[data-instalar]')) return;
+  if (pedidoInstalar) { pedidoInstalar.prompt(); await pedidoInstalar.userChoice.catch(() => {}); pedidoInstalar = null; mostrarInstalar(); }
+  else if (ehIOS) avisar('No iPhone: toque em Compartilhar (o quadrado com a seta) e depois em "Adicionar à Tela de Início".', 9000);
+});
+if (siteAberto && 'serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(e => console.error(e));
+mostrarInstalar();
 document.getElementById('abaPainel').hidden = !Loja.dono;
 irAba((location.hash||'').slice(1));
 const usarNuvem = NUVEM && !window.claude;
