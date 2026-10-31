@@ -541,7 +541,11 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
   .boas-card .acoes .btn{width:100%;font-size:18px;padding:15px}
   .boas-pe{flex-direction:column;justify-content:center;text-align:center;gap:10px;padding-top:12px}
   .boas-meio{grid-template-columns:minmax(0,1fr)}
-  .boas-placas{display:none}
+  /* no celular as placas viram uma fileira acima do título */
+  .boas-placas{order:-1;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding:0;max-width:520px}
+  .boas-placas .bp:nth-child(even){transform:none}
+  .boas-placas .pino{width:min(14vw,64px);height:min(14vw,64px)}
+  @media (max-width:480px){.boas-placas span{display:none}}
 }
 </style>
 
