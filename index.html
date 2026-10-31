@@ -280,8 +280,9 @@ button.campea:hover{border-color:var(--placa)}
 .grana .txt{font-size:13px;color:var(--tinta-2)}
 .grana .pergunta{font-size:13px;border-top:1px solid var(--linha);padding-top:7px;margin-top:auto}
 .grana .pergunta b{color:var(--placa)}
-.grana a.fonte{font-size:12px;color:var(--apagado)}
-.grana .link.fonte{font-size:12.5px;align-self:flex-start;text-align:left}
+.grana a.fonte{font-size:13px;color:var(--apagado);padding-block:8px;align-self:flex-start}
+.miudo a{padding-block:6px}
+.grana .link.fonte{font-size:13px;align-self:flex-start;text-align:left;padding-block:8px}
 .passos-fonte{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;color:var(--tinta-2);font-size:14.5px}
 .contatos{display:flex;flex-direction:column;gap:8px}
 .contato{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;background:var(--asfalto-3);border-radius:8px;padding:10px 12px}
@@ -296,7 +297,9 @@ button.campea:hover{border-color:var(--placa)}
 .contador .eti{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--placa)}
 .contador b{font-family:var(--f-placa);font-weight:800;font-size:44px;line-height:1;font-variant-numeric:tabular-nums;color:var(--tinta);overflow-wrap:anywhere}
 .barras{display:flex;flex-direction:column;gap:12px}
-.barra{display:flex;flex-direction:column;gap:5px;border-radius:6px;padding:4px 6px;margin:-4px -6px;outline-offset:2px}
+.barra{display:flex;flex-direction:column;gap:5px;border-radius:6px;padding:4px 6px;margin:-4px 0;outline-offset:2px}
+.recolhida > .extra{display:none}
+.ver-mais{align-self:flex-start}
 .barra:hover,.barra:focus-visible{background:var(--asfalto-3)}
 .barra-topo{display:flex;justify-content:space-between;gap:10px;font-size:14px}
 .barra-topo b{font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -327,7 +330,10 @@ textarea{width:100%;min-height:240px;resize:vertical;background:var(--placa-escu
 .cartas{display:flex;flex-direction:column;gap:12px}
 .carta{background:var(--asfalto-3);border-radius:10px;overflow:hidden}
 .carta img{display:block;width:100%;max-height:300px;object-fit:cover}
+.acoes.compartilha{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.acoes.compartilha .zap{grid-column:1/-1}
 .carta .corpo{padding:12px;display:flex;flex-direction:column;gap:10px}
+.carta .acoes .btn{flex:1 1 0;padding:14px;font-size:17px}
 .resumo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 /* painel completo */
 .resumo4{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -345,7 +351,12 @@ textarea{width:100%;min-height:240px;resize:vertical;background:var(--placa-escu
 .linha-placa.sem{border-left-color:var(--cinza-placa)}
 .lp-info{min-width:0;flex:1 1 220px;font-size:14px}
 .linha-placa .acoes{gap:6px}
-.linha-placa .btn-leve{padding:5px 10px;font-size:13px}
+.linha-placa .btn-leve{padding:9px 14px;font-size:14px;min-height:40px}
+.linha-placa .lp-perigo{margin-left:auto}
+/* no painel são 5 filtros: chips soltos que quebram linha, em vez da pílula da lista */
+#filtroPainel{flex-wrap:wrap;background:none;border:0;border-radius:0;padding:0;gap:6px}
+#filtroPainel .chip{flex:none;white-space:nowrap;border:1px solid var(--linha);background:var(--asfalto-3)}
+#filtroPainel .chip[aria-pressed="true"]{background:var(--placa);border-color:var(--placa);color:var(--placa-escuro)}
 .btn-leve.perigo-leve{color:var(--alerta);border-color:rgba(239,90,60,.45)}
 .linha-hist{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:10px;align-items:baseline;background:var(--asfalto-3);border-radius:6px;padding:8px 10px;font-size:13.5px}
 .semanas{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;height:150px;align-items:end;background:var(--asfalto-3);border-radius:8px;padding:10px 10px 6px}
@@ -362,7 +373,7 @@ i.leg{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-ali
 .ntrilho i{display:block;height:100%;background:var(--tinta-2);border-radius:5px}
 .ntrilho i.leg-novo{background:var(--placa)}
 .nbarra b{text-align:right;font-variant-numeric:tabular-nums}
-@media (max-width:600px){.resumo4{grid-template-columns:repeat(2,minmax(0,1fr))}.linha-hist{grid-template-columns:minmax(0,1fr)}.nbarra{grid-template-columns:minmax(0,110px) minmax(0,1fr) 30px}}
+@media (max-width:600px){.resumo4{gap:6px}.resumo4 div{padding:8px 4px;text-align:center}.resumo4 b{font-size:22px}.resumo4 span{display:block;font-size:10.5px;line-height:1.15}.subabas{overflow:visible;gap:0}.subabas button{flex:1 1 0;padding:10px 2px;font-size:14px;letter-spacing:.01em}.carta img{max-height:210px}.linha-placa .lp-info{flex-basis:100%}.linha-hist{grid-template-columns:minmax(0,1fr)}.nbarra{grid-template-columns:minmax(0,110px) minmax(0,1fr) 30px}}
 .resumo div{background:var(--asfalto-3);border-radius:8px;padding:10px 12px}
 .resumo b{display:block;font-family:var(--f-placa);font-weight:800;font-size:30px;line-height:1}
 .resumo span{font-size:12.5px;color:var(--tinta-2)}
@@ -703,8 +714,10 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p class="miudo">"Serviços urbanos" é a área onde costumam entrar limpeza, iluminação e conservação das ruas. Em 2026, só de janeiro a agosto, já foram R$ 6,3 milhões nela.</p>
         <h3>Verbas e emendas</h3>
         <div class="grana-lista" id="verbas"></div>
-        <h3>Confira você mesmo</h3>
-        <div class="links" id="linksContas"></div>
+        <details>
+          <summary>Confira você mesmo: os sites oficiais</summary>
+          <div class="links" id="linksContas" style="margin-top:10px"></div>
+        </details>
         <p class="miudo">Fonte dos números: relatórios que a própria prefeitura entrega ao Tesouro Nacional (Siconfi): balanço anual de 2025 e relatório do 4º bimestre de 2026. Valores de gasto são despesas liquidadas. Os valores por morador usam a população do Censo 2022 (9.259 pessoas).</p>
       </section>
 
@@ -745,7 +758,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
             <div><b id="pFotos">0</b><span>fotos esperando</span></div>
             <div><b id="pAbertos">0</b><span>placas abertas</span></div>
             <div><b id="pSem">0</b><span>sem notícia</span></div>
-            <div><b id="pMedia">–</b><span>dias, em média, até consertar</span></div>
+            <div><b id="pMedia">–</b><span>dias até consertar (média)</span></div>
           </div>
           <nav class="subabas" id="subabas">
             <button type="button" data-sub="fotos" aria-pressed="true">Fotos<i class="bolinha2" id="bolinhaFotos" hidden></i></button>
@@ -1586,13 +1599,13 @@ function desenharDetalhe(id){
     if (s.ok===1 && meu!=='ok') h += '<p class="miudo">1 pessoa disse que já consertaram. Com mais uma, a placa fica verde.</p>';
   }
   h += r.exemplo ? '<p class="miudo">Esta placa é só um exemplo de como fica. Quando alguém marcar um problema de verdade, aparecem aqui os botões pra confirmar e cobrar no WhatsApp.</p>' :
-    '<div class="acoes"><a class="btn zap" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(textoZap(r,s))+'">Cobrar no WhatsApp</a><button class="btn cinza" type="button" data-acao="compartilhar">Compartilhar</button><button class="btn cinza" type="button" data-acao="link">Copiar link</button></div>'+
+    '<div class="acoes compartilha"><a class="btn zap" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(textoZap(r,s))+'">Cobrar no WhatsApp</a><button class="btn cinza" type="button" data-acao="compartilhar">Compartilhar</button><button class="btn cinza" type="button" data-acao="link">Copiar link</button></div>'+
     (redesAbertas===id ? redesHtml(textoSemLink(textoZap(r,s)), linkPlaca(r)) : '')+
     '<button class="btn-leve" type="button" data-acao="seguir">'+(sigo(id) ? 'Você acompanha esta placa · parar' : 'Acompanhar esta placa')+'</button>'+
     (sigo(id) ? '' : '<p class="miudo">Quando consertarem ou a prefeitura responder, você fica sabendo ao abrir o site.</p>');
   if (Loja.editor && !r.exemplo && !s.feito) {
     const atual = respostaRascunho ? respostaRascunho.status : (r.resposta ? r.resposta.status : '');
-    h += '<h3>Resposta da prefeitura</h3><p class="miudo">Só quem cuida do mapa vê isto. Compartilhe o mapa como Editor com alguém da prefeitura pra ela mesma responder.</p><div class="opcoes">'+
+    h += '<h3>Resposta da prefeitura</h3><p class="miudo">Só a equipe vê isto. Anote o que a prefeitura respondeu: a resposta aparece na placa pra todo mundo.</p><div class="opcoes">'+
       Object.entries(RESPOSTAS).map(([k,t]) => '<button class="chip" type="button" data-resposta="'+k+'" aria-pressed="'+(atual===k)+'">'+t+'</button>').join('')+'</div>'+
       '<input type="text" id="respostaTexto" maxlength="140" placeholder="Detalhe (opcional), ex.: equipe vai na quinta" value="'+esc(respostaRascunho ? respostaRascunho.texto : (r.resposta && r.resposta.texto) || '')+'">'+
       '<div class="acoes"><button class="btn azul" type="button" data-acao="salvaResposta">Salvar resposta</button>'+(r.resposta?'<button class="btn-leve" type="button" data-acao="limpaResposta">Tirar resposta</button>':'')+'</div>';
@@ -1975,6 +1988,20 @@ function barras(el, itens, destaque){
 }
 barras(document.getElementById('origem'), ORIGEM25, 'Impostos e taxas da prefeitura');
 barras(document.getElementById('destino'), DESTINO25, 'Serviços urbanos');
+/* listas compridas: mostra as primeiras e um botão pra ver o resto (o item em destaque nunca some) */
+function recolher(el, n, rotulo){
+  const extras = [...el.children].slice(n).filter(x => !x.classList.contains('destaque'));
+  if (!extras.length) return;
+  extras.forEach(x => x.classList.add('extra'));
+  el.classList.add('recolhida');
+  const b = document.createElement('button'); b.type = 'button'; b.className = 'btn cinza ver-mais';
+  const txt = () => el.classList.contains('recolhida') ? rotulo+' ('+extras.length+')' : 'Mostrar menos';
+  b.textContent = txt();
+  b.addEventListener('click', () => { el.classList.toggle('recolhida'); b.textContent = txt(); });
+  el.after(b);
+}
+recolher(document.getElementById('destino'), 5, 'Ver todas as áreas');
+recolher(document.getElementById('verbas'), 4, 'Ver mais verbas');
 document.getElementById('impostosCidade').innerHTML = IMPOSTOS25.map(([n,v]) => '<li>'+n+': <b>'+reais(v)+'</b></li>').join('');
 document.getElementById('linksContas').innerHTML = [
   ['Portal da Transparência de Rinópolis','O site oficial da prefeitura com as contas em detalhe','https://transparencia.rinopolis.sp.gov.br'],
@@ -2202,6 +2229,7 @@ function desenharPlacasPainel(){
       '<div class="acoes">'+
         '<button class="btn-leve" type="button" data-lp="abrir" data-id="'+esc(r.id)+'">Abrir</button>'+
         '<button class="btn-leve" type="button" data-lp="feito" data-id="'+esc(r.id)+'">'+(r.resolvido ? 'Reabrir' : 'Consertado')+'</button>'+
+      '</div><div class="acoes lp-perigo">'+
         '<button class="btn-leve perigo-leve" type="button" data-lp="apagar" data-id="'+esc(r.id)+'">'+(armado('apagar') ? 'Confirmar apagar' : 'Apagar')+'</button>'+
         (Loja.modo==='nuvem' ? '<button class="btn-leve perigo-leve" type="button" data-lp="bloquear" data-id="'+esc(r.id)+'">'+(armado('bloquear') ? 'Confirmar bloqueio' : 'Bloquear aparelho')+'</button>' : '')+
       '</div></div>';
