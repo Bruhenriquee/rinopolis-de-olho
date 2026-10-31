@@ -379,6 +379,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
 .priv{display:flex;flex-direction:column;gap:12px;font-size:14.5px}
 .priv b{color:var(--tinta)}
 .priv p{color:var(--tinta-2)}
+.priv h3{margin:10px 0 -4px;font-size:15px;color:var(--tinta)}
 
 /* boas-vindas */
 .boas{position:fixed;z-index:900;inset:0;display:grid;place-items:center;padding:16px;background:rgba(14,15,17,.86)}
@@ -787,20 +788,49 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
 <div class="fundo" id="fundoPriv" hidden>
   <div class="folha" role="dialog" aria-modal="true" aria-labelledby="tPriv">
     <div class="dentro">
-      <header><h2 id="tPriv">Privacidade</h2><button class="btn-leve" type="button" data-fecha>Fechar</button></header>
+      <header><div><h2 id="tPriv">Política de Privacidade</h2><div class="onde">Última atualização: 31 de outubro de 2026</div></div><button class="btn-leve" type="button" data-fecha>Fechar</button></header>
       <div class="priv">
-        <p><b>O que fica guardado.</b> O tipo do problema, o lugar dele no mapa, a data, e a frase e a foto, se você mandar.</p>
-        <p><b>O que não pedimos.</b> Nome, telefone, e-mail ou CPF. O mapa não mostra quem marcou.</p>
-        <p><b>Código do aparelho.</b> Junto com cada marcação, confirmação e foto fica guardado um código embaralhado do seu aparelho (ou da sua conta, na versão dentro do Claude), nunca o seu nome. Ele serve pra você acompanhar o que marcou e pra cada pessoa confirmar uma vez só.</p>
-        <p><b>A foto.</b> Antes de enviar, o site diminui a foto e apaga as informações escondidas nela, como a localização do celular e o modelo do aparelho. Ela só aparece pra todos depois de conferida. Foto com rosto ou placa de carro não é publicada.</p>
-        <p><b>Conferência.</b> Quem cuida do mapa confere as marcações e apaga o que tiver dado pessoal, ofensa ou propaganda.</p>
-        <p><b>Seu aparelho.</b> O site lembra o que você marcou pra te perguntar depois se já consertaram. Isso não diz quem você é.</p>
-        <p><b>Pra que serve.</b> Mostrar os problemas da cidade e cobrar quem pode resolver. Você concorda ao marcar a caixinha antes de enviar (LGPD, art. 7º, I).</p>
-        <p><b>Seus direitos.</b> Você pode pedir pra apagar uma marcação sua quando quiser (LGPD, art. 18). Fale com quem cuida do mapa: <b id="privContato"></b></p>
-        <p><b>Prefeita e vereadores.</b> Nomes, partidos e votos são dados públicos do TSE, usados aqui pra acompanhar o trabalho de quem foi eleito (LGPD, art. 7º, §§ 3º e 4º).</p>
-        <p><b>Onde fica.</b> As marcações do site público ficam no Supabase, com servidor em São Paulo; a versão dentro do Claude guarda no claude.ai, da empresa Anthropic. As letras (Google Fonts), o programa do mapa (Cloudflare) e a ligação com o banco (jsDelivr) recebem o endereço de internet do aparelho, como em qualquer site. Não usamos propaganda nem rastreadores.</p>
-        <p><b>Sem partido.</b> O mapa mostra fatos. Não apoia nem ataca nenhum político.</p>
-        <p class="miudo">Resumo em linguagem simples. Não substitui orientação de advogado.</p>
+        <p>Esta política explica como o Rinópolis de Olho trata dados pessoais, nos termos da Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018, LGPD).</p>
+
+        <h3>1. Quem é o responsável</h3>
+        <p>O Rinópolis de Olho é um projeto independente de moradores de Rinópolis-SP, sem fins lucrativos e sem vínculo com a Prefeitura, a Câmara Municipal, partidos políticos ou candidatos. A equipe que mantém o mapa é a controladora dos dados aqui descritos. Contato para assuntos de privacidade: <b id="privContato"></b></p>
+
+        <h3>2. Dados que tratamos</h3>
+        <p><b>Ao marcar um problema:</b> tipo do problema, localização no mapa, rua e ponto de referência, data e hora e, se você quiser, uma descrição curta e uma foto.</p>
+        <p><b>Ao confirmar um problema:</b> o registro de que um aparelho confirmou ("eu também vi" ou "já consertaram") e a data.</p>
+        <p><b>Código do aparelho:</b> um código aleatório gerado no seu navegador. O banco de dados guarda apenas uma versão cifrada (hash) desse código, que não permite identificar a pessoa. Ele serve para limitar cada confirmação a uma por aparelho, permitir que você acompanhe o que marcou e evitar abusos.</p>
+        <p><b>Não coletamos</b> nome, CPF, telefone, e-mail, endereço residencial nem localização do aparelho em segundo plano. A localização só é usada quando você toca em "Estou aqui", e apenas para posicionar a marcação.</p>
+        <p><b>Equipe:</b> as pessoas que moderam o mapa entram com e-mail e senha. Suas ações (aprovar ou recusar fotos, responder, apagar, bloquear) ficam registradas com e-mail, data e hora.</p>
+
+        <h3>3. Fotos</h3>
+        <p>Antes do envio, o site reduz a foto e remove os metadados do arquivo, como a localização GPS e o modelo do aparelho. Toda foto passa por conferência antes de ser publicada. Fotos que mostrem rostos, placas de veículos ou outros dados pessoais são recusadas e excluídas.</p>
+
+        <h3>4. Finalidade e base legal</h3>
+        <p>Os dados são usados exclusivamente para exibir os problemas urbanos da cidade, permitir que outros moradores os confirmem, acompanhar o tempo até o conserto e encaminhar pedidos ao poder público. A base legal é o consentimento (LGPD, art. 7º, I), dado ao marcar a caixa de concordância antes do envio. As marcações publicadas ficam visíveis a qualquer pessoa, sem identificação de quem as fez.</p>
+
+        <h3>5. Agentes públicos</h3>
+        <p>Nomes, partidos e votações da prefeita, do vice-prefeito e dos vereadores, bem como o plano de governo, são informações tornadas públicas pelos próprios titulares no registro de candidatura e divulgadas pela Justiça Eleitoral. São usadas apenas para informação e controle social, sem juízo de valor (LGPD, art. 7º, §§ 3º e 4º).</p>
+
+        <h3>6. Compartilhamento e serviços utilizados</h3>
+        <p>Não vendemos nem cedemos dados a terceiros. Para funcionar, o site usa os seguintes serviços, que podem registrar o endereço IP de quem acessa: GitHub Pages (hospedagem do site), Supabase (banco de dados das marcações), Google Fonts (fontes de texto), Cloudflare cdnjs e jsDelivr (bibliotecas do mapa e do banco). A versão do mapa dentro do Claude guarda os dados no claude.ai, da Anthropic. Não usamos publicidade, cookies de rastreamento nem ferramentas de análise de audiência.</p>
+
+        <h3>7. Armazenamento no seu aparelho</h3>
+        <p>O navegador guarda localmente o código do aparelho, as marcações que você fez e preferências como "já vi a tela inicial". Você pode apagar esses dados a qualquer momento limpando os dados do site no navegador.</p>
+
+        <h3>8. Por quanto tempo guardamos</h3>
+        <p>As marcações permanecem enquanto forem úteis ao acompanhamento dos problemas da cidade ou até que seja pedida a sua exclusão. Fotos recusadas são excluídas no momento da recusa. Os registros de ações da equipe são mantidos para fins de transparência e segurança.</p>
+
+        <h3>9. Seus direitos</h3>
+        <p>Você pode, a qualquer momento, pedir confirmação da existência de tratamento, acesso, correção ou exclusão das suas marcações e fotos, além de revogar o consentimento (LGPD, art. 18). Como não guardamos seu nome, informe a rua, o tipo de problema e a data aproximada para localizarmos o registro. Os pedidos são atendidos em até 15 dias. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</p>
+
+        <h3>10. Segurança</h3>
+        <p>O banco de dados só aceita gravações por funções que validam cada pedido, com limite de marcações por hora e bloqueio de aparelhos que enviem conteúdo abusivo. Apenas a equipe autenticada tem acesso às fotos ainda não conferidas.</p>
+
+        <h3>11. Neutralidade</h3>
+        <p>O Rinópolis de Olho não tem partido e não apoia nem ataca nenhum agente político. Os dados exibidos vêm dos moradores e de fontes oficiais, sempre indicadas.</p>
+
+        <h3>12. Alterações</h3>
+        <p>Esta política pode ser atualizada. A data da versão em vigor aparece no topo desta página.</p>
       </div>
     </div>
   </div>
@@ -2161,7 +2191,7 @@ function abrirDoLink(){
 }
 addEventListener('hashchange', abrirDoLink);
 const fundoPriv = document.getElementById('fundoPriv');
-document.getElementById('privContato').textContent = CFG.contato || 'pelo mesmo caminho por onde você recebeu o link deste mapa';
+document.getElementById('privContato').textContent = CFG.contato || 'pelos canais de divulgação do projeto.';
 document.addEventListener('click', e => { if (e.target.closest('[data-privacidade]')) { e.preventDefault(); fundoPriv.hidden = false; } });
 fundoPriv.addEventListener('click', e => { if (e.target===fundoPriv || e.target.closest('[data-fecha]')) fundoPriv.hidden = true; });
 
