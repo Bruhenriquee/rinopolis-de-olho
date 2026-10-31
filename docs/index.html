@@ -1189,6 +1189,8 @@ const Nuvem = {
     Loja.recs = new Map(); Loja.apoios = new Map(); Loja.estado = {fotos:{}}; Loja.carregou = false; Fotos.cache.clear();
     const {data} = await this.sb.auth.getSession();
     if (data && data.session) await this.checarAdmin();
+    /* site aberto com #painel no fim: agora que o banco respondeu, mostra o login (ou o painel, se já entrou) */
+    if (location.hash==='#painel') irAba('painel');
     await this.carregar();
     setInterval(() => this.carregar().catch(e => console.error(e)), 60000);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) this.carregar().catch(e => console.error(e)); });
