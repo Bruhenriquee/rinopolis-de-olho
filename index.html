@@ -100,7 +100,15 @@ body{display:flex;flex-direction:column}
 .mira .btn{padding:8px 14px}
 .btn-leve{background:transparent;border:1px solid var(--linha);border-radius:8px;padding:6px 12px;color:var(--tinta-2)}
 .btn-leve:hover{border-color:var(--tinta-2);color:var(--tinta)}
-.palco.marcando #mapa{cursor:crosshair}
+.palco.marcando #mapa{cursor:grab}
+/* alfinete fixo no meio do mapa: a ponta marca o lugar, quem mexe é o mapa */
+.alfinete{position:absolute;z-index:550;left:50%;top:50%;width:48px;height:56px;margin:-56px 0 0 -24px;pointer-events:none;transition:transform .15s ease-out}
+.alfinete svg{width:100%;height:100%;filter:drop-shadow(0 6px 8px rgba(0,0,0,.6))}
+.alfinete::after{content:"";position:absolute;left:50%;bottom:-3px;width:10px;height:5px;margin-left:-5px;border-radius:50%;background:rgba(0,0,0,.55);transition:transform .15s ease-out}
+.alfinete.subindo{transform:translateY(-10px)}
+.alfinete.subindo::after{transform:translateY(10px) scale(1.4)}
+.mira .mira-txt{display:flex;flex-direction:column;align-items:center;text-align:center;flex-basis:100%}
+.mira .mira-rua{font-size:13px;color:var(--placa);min-height:1.3em}
 .toast{position:absolute;z-index:700;left:50%;transform:translateX(-50%);top:110px;background:var(--tinta);color:var(--placa-escuro);padding:8px 14px;border-radius:6px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,.4);max-width:calc(100% - 32px);text-align:center}
 .legenda{position:absolute;z-index:500;left:max(12px,env(safe-area-inset-left,0px));bottom:calc(26px + env(safe-area-inset-bottom,0px));background:rgba(27,29,32,.92);border:1px solid var(--linha);border-radius:6px;padding:8px 10px;display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--tinta-2)}
 .legenda div{display:flex;align-items:center;gap:8px}
@@ -633,7 +641,8 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
       Marcar problema
     </button>
-    <div class="mira" id="mira" hidden><b>Toque no lugar do problema</b><button class="btn" id="btnGps" type="button">Estou aqui</button><button class="btn-leve" id="btnCancelaMira" type="button">Cancelar</button></div>
+    <div class="alfinete" id="alfinete" hidden aria-hidden="true"><svg viewBox="0 0 48 56"><path d="M24 2C13 2 5 10.5 5 21c0 13.5 19 33 19 33s19-19.5 19-33C43 10.5 35 2 24 2z" fill="var(--placa)" stroke="var(--placa-escuro)" stroke-width="3"/><circle cx="24" cy="21" r="7" fill="var(--placa-escuro)"/></svg></div>
+    <div class="mira" id="mira" hidden><span class="mira-txt"><b>Arraste o mapa até o alfinete</b><span class="mira-rua" id="miraRua"></span></span><button class="btn" id="btnAqui" type="button">Marcar aqui</button><button class="btn cinza" id="btnGps" type="button">Estou aqui</button><button class="btn-leve" id="btnCancelaMira" type="button">Cancelar</button></div>
     <div class="pergunta-card" id="perguntaCard" hidden></div>
     <div class="toast" id="toast" hidden></div>
   </section>
@@ -1408,7 +1417,7 @@ function render(){
     const s = sit.get(r.id), tam = Math.round(40 + Math.min(s.ve,12)*2.4);
     L.marker([r.lat,r.lon],{title:TIPOS[r.tipo].nome+' · '+(r.rua||''),zIndexOffset:(s.feito||s.sem)?-100:s.ve*10,
       icon:L.divIcon({className:'pino-wrap',iconSize:[tam,tam],iconAnchor:[tam/2,tam/2],html:pinoHtml(r,s,true)})})
-      .on('click', () => abrir(r.id)).addTo(camada);
+      .on('click', () => { if (marcando) map.panBy(map.latLngToContainerPoint([r.lat,r.lon]).subtract(map.latLngToContainerPoint(pontoDoAlfinete()))); else abrir(r.id); }).addTo(camada);
   }
 
   /* o problema aberto mais antigo, em destaque na lista e na tela de entrada */
@@ -1664,12 +1673,27 @@ perguntaCard.addEventListener('click', e => {
 /* ---------- Marcar novo ---------- */
 let marcando = false, ponto = null, tipoNovo = null, fotoNovo = '';
 const palco = document.getElementById('palco'), mira = document.getElementById('mira'), btnMarcar = document.getElementById('btnMarcar');
-function entrarMira(){ marcando=true; palco.classList.add('marcando'); mira.hidden=false; btnMarcar.hidden=true; perguntaCard.hidden=true; }
-function sairMira(){ marcando=false; palco.classList.remove('marcando'); mira.hidden=true; btnMarcar.hidden=false; }
+/* marcar: um alfinete fica parado no meio e a pessoa arrasta o mapa até ele (mais preciso que acertar o dedo na rua) */
+const alfinete = document.getElementById('alfinete'), miraRua = document.getElementById('miraRua');
+function pontoDoAlfinete(){
+  /* offset ignora a animação de "subir"; o mapa ocupa o palco inteiro, então a origem é a mesma */
+  return map.containerPointToLatLng([alfinete.offsetLeft + alfinete.offsetWidth/2, alfinete.offsetTop + alfinete.offsetHeight]);
+}
+function mostrarRua(){ if (!marcando) return; const q = pontoDoAlfinete(); miraRua.textContent = ruaPerto(q.lat, q.lng).rua; }
+function entrarMira(){
+  marcando=true; palco.classList.add('marcando'); mira.hidden=false; alfinete.hidden=false; btnMarcar.hidden=true; perguntaCard.hidden=true;
+  if (map.getZoom() < 17) map.setZoom(17);
+  mostrarRua();
+}
+function sairMira(){ marcando=false; palco.classList.remove('marcando'); mira.hidden=true; alfinete.hidden=true; btnMarcar.hidden=false; }
 btnMarcar.addEventListener('click', entrarMira);
 document.getElementById('btnCancelaMira').addEventListener('click', sairMira);
+document.getElementById('btnAqui').addEventListener('click', () => escolherPonto(pontoDoAlfinete()));
+map.on('movestart', () => { if (marcando) alfinete.classList.add('subindo'); });
+map.on('moveend', () => { alfinete.classList.remove('subindo'); mostrarRua(); });
 let marcaTemp = null;
-map.on('click', e => { if (marcando) escolherPonto(e.latlng); });
+/* tocar no mapa leva aquele ponto até o alfinete */
+map.on('click', e => { if (marcando) map.panBy(map.latLngToContainerPoint(e.latlng).subtract(map.latLngToContainerPoint(pontoDoAlfinete()))); });
 const DENTRO = L.latLngBounds(LIMITE);
 const btnGps = document.getElementById('btnGps');
 if (!navigator.geolocation) btnGps.hidden = true;
@@ -1679,9 +1703,12 @@ btnGps.addEventListener('click', () => {
   navigator.geolocation.getCurrentPosition(p => {
     volta();
     const aqui = L.latLng(p.coords.latitude, p.coords.longitude);
-    if (!DENTRO.contains(aqui)) { avisar('Parece que você não está em Rinópolis agora. Toque no lugar no mapa.'); return; }
-    map.setView(aqui, 18); escolherPonto(aqui);
-  }, () => { volta(); avisar('Não deu pra usar sua localização. Toque no lugar no mapa.'); }, {enableHighAccuracy:true, timeout:12000, maximumAge:30000});
+    if (!DENTRO.contains(aqui)) { avisar('Parece que você não está em Rinópolis agora. Arraste o mapa até o lugar.'); return; }
+    map.setView(aqui, 18);
+    /* a ponta do alfinete fica um pouco acima do centro: corrige pra ela cair em cima da pessoa */
+    setTimeout(() => map.panBy(map.latLngToContainerPoint(aqui).subtract(map.latLngToContainerPoint(pontoDoAlfinete())), {animate:false}), 0);
+    avisar('Achamos você. Ajuste o alfinete se precisar e toque em Marcar aqui.');
+  }, () => { volta(); avisar('Não deu pra usar sua localização. Arraste o mapa até o lugar.'); }, {enableHighAccuracy:true, timeout:12000, maximumAge:30000});
 });
 const formNovo = document.getElementById('formNovo'), fundoNovo = document.getElementById('fundoNovo'), aceite = document.getElementById('novoAceite');
 function escolherPonto(latlng){
@@ -1753,7 +1780,7 @@ function irParaRua(txt){
   brilho = L.polyline(partes,{renderer:tela,color:cor('--placa'),weight:10,opacity:.55,interactive:false}).addTo(map);
   try { map.flyToBounds(brilho.getBounds(),{maxZoom:18,padding:[40,40],duration:.7}); } catch(e) {}
   setTimeout(() => { if (brilho) { brilho.remove(); brilho=null; } }, 4500);
-  avisar(marcando ? nome+': agora toque no lugar exato' : nome);
+  avisar(marcando ? nome+': agora arraste até o alfinete' : nome);
 }
 const busca = document.getElementById('busca');
 busca.addEventListener('change', () => irParaRua(busca.value));
