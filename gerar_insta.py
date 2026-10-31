@@ -2,15 +2,16 @@
 
     python gerar_insta.py
 
-Monta cada imagem como uma página (com as letras e os ícones do site) e tira a foto com o
-Chrome sem janela. Sai tudo na pasta insta/.
+Monta cada imagem como uma página (com as letras, os ícones e as ruas de verdade do site) e tira
+a foto com o Chrome sem janela. Sai tudo na pasta insta/.
 """
 import pathlib
+import shutil
 import subprocess
 
 PASTA = pathlib.Path(__file__).parent
 SAIDA = PASTA / 'insta'
-FONTES = SAIDA / '_paginas'
+PAGINAS = SAIDA / '_paginas'
 CHROME = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 
 ICONE = {
@@ -23,11 +24,6 @@ ICONE = {
 }
 NOMES = {'buraco': 'Buraco', 'luz': 'Luz apagada', 'lixo': 'Lixo', 'agua': 'Esgoto', 'mato': 'Mato alto', 'outro': 'Outro'}
 
-
-def icone(k, largura=2.4):
-    return f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{largura}" stroke-linecap="round" stroke-linejoin="round">{ICONE[k]}</svg>'
-
-
 LOGO = '''<svg class="logo" viewBox="0 0 48 48">
   <rect x="8.5" y="8.5" width="31" height="31" rx="4" transform="rotate(45 24 24)" fill="#f6c21a"/>
   <rect x="11.5" y="11.5" width="25" height="25" rx="2.5" transform="rotate(45 24 24)" fill="none" stroke="#17150e" stroke-width="2"/>
@@ -36,48 +32,75 @@ LOGO = '''<svg class="logo" viewBox="0 0 48 48">
   <circle cx="25.6" cy="22.5" r="1.3" fill="#ece9df"/>
 </svg>'''
 
-# ruas ao fundo, inclinadas como no mapa da cidade
-RUAS = '''<svg class="ruas" viewBox="0 0 1080 1350" preserveAspectRatio="none">
-  <g stroke="#2c3036" stroke-width="10" fill="none" stroke-linecap="round">
-    <path d="M-100 260L1180 -120"/><path d="M-100 520L1180 140"/><path d="M-100 780L1180 400"/><path d="M-100 1040L1180 660"/><path d="M-100 1300L1180 920"/><path d="M-100 1560L1180 1180"/>
-    <path d="M90 -50L360 1400"/><path d="M420 -50L690 1400"/><path d="M750 -50L1020 1400"/>
-  </g>
-  <path d="M-100 1150L1180 330" stroke="#34383e" stroke-width="22" fill="none"/>
-</svg>'''
-
 BASE = '''<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0}
-html,body{width:%(w)dpx;height:%(h)dpx;overflow:hidden;background:%(fundo)s}
+html,body{width:@W@px;height:@H@px;overflow:hidden;background:@FUNDO@}
 body{font-family:"Atkinson Hyperlegible",sans-serif;color:#ece9df;position:relative}
-.ruas{position:absolute;inset:0;width:100%%;height:100%%}
-.placa-txt{font-family:"Barlow Condensed",sans-serif;font-weight:800;text-transform:uppercase;line-height:.95;letter-spacing:.005em}
-.topo{position:absolute;left:0;right:0;top:0;height:18px;background:#f6c21a}
-.marca{display:flex;align-items:center;gap:18px}
-.marca .logo{width:86px;height:86px}
-.marca small{display:block;font-family:"Barlow Condensed";font-weight:700;font-size:26px;letter-spacing:.2em;color:#f6c21a;line-height:1}
-.marca strong{display:block;font-family:"Barlow Condensed";font-weight:800;font-size:52px;line-height:.9;letter-spacing:.01em}
-.miolo{position:absolute;inset:18px 0 0 0;padding:70px 76px 64px;display:flex;flex-direction:column}
-.eti{font-family:"Barlow Condensed";font-weight:700;font-size:34px;letter-spacing:.16em;text-transform:uppercase;color:#f6c21a}
-.rodape{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:24px}
-.bio{background:#f6c21a;color:#17150e;font-family:"Barlow Condensed";font-weight:800;font-size:40px;letter-spacing:.04em;padding:16px 30px;border-radius:999px;white-space:nowrap}
-.semp{font-size:24px;color:#b9b6ab;line-height:1.3;text-align:right}
+canvas{position:absolute;left:0;top:0}
+.veu{position:absolute;inset:0}
+.m{position:absolute;inset:0;padding:88px;display:flex;flex-direction:column}
+.marca{display:flex;align-items:center;gap:16px}
+.marca .logo{width:58px;height:58px}
+.marca b{font-family:"Barlow Condensed";font-weight:700;font-size:30px;letter-spacing:.14em;text-transform:uppercase}
+.marca b span{color:#f6c21a}
+.txt{margin-top:auto}
+.eti{font-family:"Barlow Condensed";font-weight:600;font-size:28px;letter-spacing:.22em;text-transform:uppercase;color:#f6c21a}
+h1{font-family:"Barlow Condensed";font-weight:800;text-transform:uppercase;line-height:.92;margin-top:18px}
+h1 em{font-style:normal;color:#f6c21a}
+.sub{font-size:32px;line-height:1.45;color:#b9b6ab;margin-top:30px;max-width:860px}
+.pe{display:flex;justify-content:space-between;align-items:flex-end;border-top:1px solid #33373d;padding-top:30px;margin-top:46px}
+.pe b{font-family:"Barlow Condensed";font-weight:700;font-size:34px;letter-spacing:.12em;text-transform:uppercase;color:#f6c21a}
+.pe span{font-size:24px;color:#8f949b;text-align:right;line-height:1.4}
+.solto{position:absolute}
 .pino{position:relative;display:grid;place-items:center}
-.pino::before{content:"";position:absolute;inset:15%%;background:#f6c21a;border-radius:6px;transform:rotate(45deg);outline:4px solid #17150e;outline-offset:-10px;box-shadow:0 10px 24px rgba(0,0,0,.55)}
+.pino::before{content:"";position:absolute;inset:15%;background:#f6c21a;border-radius:6px;transform:rotate(45deg);outline:4px solid #17150e;outline-offset:-10px;box-shadow:0 10px 24px rgba(0,0,0,.5)}
 .pino.velho::before{background:#ef5a3c}
 .pino.feito::before{background:#43b27e}
-.pino svg{position:relative;width:44%%;height:44%%;color:#17150e}
-.dias{position:absolute;top:92%%;left:50%%;transform:translateX(-50%%);background:#17150e;color:#f6c21a;font-family:"Barlow Condensed";font-weight:800;font-size:34px;line-height:1;padding:6px 10px;border-radius:6px;white-space:nowrap}
+.pino svg{position:relative;width:44%;height:44%;color:#17150e}
+.dias{position:absolute;top:92%;left:50%;transform:translateX(-50%);background:#17150e;color:#f6c21a;font-family:"Barlow Condensed";font-weight:800;font-size:30px;line-height:1;padding:6px 10px;border-radius:5px;white-space:nowrap}
 .velho .dias{color:#ef5a3c}.feito .dias{color:#43b27e}
-%(css)s
-</style></head><body>%(corpo)s</body></html>'''
+@CSS@
+</style></head><body>@CORPO@</body></html>'''
+
+# o mapa de verdade de Rinópolis (ruas.js), desenhado no alto da imagem
+MAPA = '''<canvas id="c" width="1080" height="1350"></canvas>
+<div class="veu" style="background:linear-gradient(180deg,rgba(23,25,28,.1) 0%,rgba(23,25,28,.2) @A@%,rgba(23,25,28,.95) @B@%,#17191c @C@%)"></div>
+<script src="ruas.js"></script>
+<script>
+const M = window.MAPA, g = document.getElementById('c').getContext('2d'), KX = Math.cos(M.lat0*Math.PI/180);
+let minx=1e9,maxx=-1e9,miny=1e9,maxy=-1e9; const ruas=[];
+for (const [ni,k,f] of M.ruas) { const l=[]; for (let j=0;j<f.length;j+=2) { const x=f[j+1]*KX, y=-f[j]; l.push([x,y]);
+  if (k===2) { minx=Math.min(minx,x);maxx=Math.max(maxx,x);miny=Math.min(miny,y);maxy=Math.max(maxy,y); } } ruas.push([k,l]); }
+const cx=(minx+maxx)/2, cy=(miny+maxy)/2, esc=@ZOOM@/(maxx-minx);
+g.lineCap='round'; g.lineJoin='round';
+for (const [k,l] of ruas) { g.beginPath(); l.forEach(([x,y],i) => { const X=540+(x-cx)*esc, Y=@CY@+(y-cy)*esc; i?g.lineTo(X,Y):g.moveTo(X,Y); });
+  g.strokeStyle = k<=1 ? '#565a61' : '#3a3e45'; g.lineWidth = k<=1 ? 8 : 5; g.stroke(); }
+</script>'''
 
 
-def pagina(nome, corpo, css='', w=1080, h=1350, fundo='#1b1d20'):
-    FONTES.mkdir(parents=True, exist_ok=True)
-    arq = FONTES / (nome + '.html')
-    arq.write_text(BASE % {'w': w, 'h': h, 'corpo': corpo, 'css': css, 'fundo': fundo}, encoding='utf-8')
+def mapa(centro_y=470, zoom=1180, veu=(20, 38, 60, 72)):
+    a, b, c, d = veu
+    return (MAPA.replace('@CY@', str(centro_y)).replace('@ZOOM@', str(zoom))
+            .replace('@A@', str(b)).replace('@B@', str(c)).replace('@C@', str(d)))
+
+
+def icone(k, largura=2.4):
+    return f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="{largura}" stroke-linecap="round" stroke-linejoin="round">{ICONE[k]}</svg>'
+
+
+def pino(tipo, estado='', dias='', tam=150):
+    rot = f'<span class="dias">{dias}</span>' if dias else ''
+    return f'<div class="pino {estado}" style="width:{tam}px;height:{tam}px">{icone(tipo)}{rot}</div>'
+
+
+def pagina(nome, corpo, css='', w=1080, h=1350, fundo='#17191c'):
+    PAGINAS.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(PASTA / 'ruas.js', PAGINAS / 'ruas.js')
+    arq = PAGINAS / (nome + '.html')
+    arq.write_text(BASE.replace('@W@', str(w)).replace('@H@', str(h)).replace('@FUNDO@', fundo)
+                   .replace('@CSS@', css).replace('@CORPO@', corpo), encoding='utf-8')
     png = SAIDA / (nome + '.png')
     args = [CHROME, '--headless=new', '--disable-gpu', '--hide-scrollbars', '--force-device-scale-factor=1',
             f'--window-size={w},{h}', '--virtual-time-budget=8000', f'--screenshot={png}', arq.as_uri()]
@@ -87,59 +110,54 @@ def pagina(nome, corpo, css='', w=1080, h=1350, fundo='#1b1d20'):
     print('ok', png.name)
 
 
-def pino(tipo, estado='', dias='', tam=150):
-    rot = f'<span class="dias">{dias}</span>' if dias else ''
-    return f'<div class="pino {estado}" style="width:{tam}px;height:{tam}px">{icone(tipo)}{rot}</div>'
-
-
-MARCA = f'<div class="marca">{LOGO}<span><small>RINÓPOLIS · SP</small><strong>DE OLHO</strong></span></div>'
-RODAPE = '<div class="rodape"><span class="bio">LINK NA BIO</span><span class="semp">Projeto independente de moradores.<br>Sem partido.</span></div>'
+MARCA = f'<div class="marca">{LOGO}<b>Rinópolis <span>de Olho</span></b></div>'
+RODAPE = '<div class="pe"><b>Link na bio →</b><span>Projeto independente de moradores<br>Sem vínculo partidário</span></div>'
 
 # ---------- logos ----------
 pagina('logo-perfil', f'<div style="position:absolute;inset:0;display:grid;place-items:center">{LOGO}</div>',
-       '.logo{width:880px;height:880px}', 1080, 1080)
+       '.logo{width:880px;height:880px}', 1080, 1080, '#1b1d20')
 pagina('logo-sem-fundo', f'<div style="position:absolute;inset:0;display:grid;place-items:center">{LOGO}</div>',
        '.logo{width:1000px;height:1000px}', 1080, 1080, 'transparent')
-pagina('logo-com-nome', f'<div style="position:absolute;inset:0;display:flex;align-items:center;padding:0 60px">{MARCA}</div>',
-       '.marca{gap:40px}.marca .logo{width:300px;height:300px}.marca small{font-size:62px}.marca strong{font-size:170px}', 1200, 420, 'transparent')
+pagina('logo-com-nome', f'''<div style="position:absolute;inset:0;display:flex;align-items:center;padding:0 60px">
+  <div class="marca">{LOGO}<span><small>RINÓPOLIS · SP</small><strong>DE OLHO</strong></span></div></div>''',
+       '.marca{gap:40px}.marca .logo{width:300px;height:300px}'
+       '.marca small{display:block;font-family:"Barlow Condensed";font-weight:700;font-size:62px;letter-spacing:.2em;color:#f6c21a;line-height:1}'
+       '.marca strong{display:block;font-family:"Barlow Condensed";font-weight:800;font-size:170px;line-height:.9}', 1200, 420, 'transparent')
 
 # ---------- post 1: a chamada ----------
-pagina('post-1-chamada', RUAS + '<div class="topo"></div><div class="miolo">' + MARCA + f'''
-  <div class="cena">
-    <div style="left:120px;top:40px">{pino('buraco', 'velho', '52 DIAS', 200)}</div>
-    <div style="left:500px;top:100px">{pino('luz', '', '12 DIAS', 150)}</div>
-    <div style="left:770px;top:10px">{pino('mato', 'feito', 'OK', 140)}</div>
-  </div>
-  <h1 class="placa-txt t1">Buraco, poste apagado, lixo, esgoto.</h1>
-  <h1 class="placa-txt t2">Se ninguém marca, ninguém conserta.</h1>
-  <p class="sub">O mapa dos moradores de Rinópolis. Marque o problema pelo celular, sem cadastro, e acompanhe os dias até o conserto.</p>
-''' + RODAPE + '</div>',
-       '.cena{position:relative;height:330px;margin:30px 0 40px}.cena>div{position:absolute}'
-       '.t1{font-size:96px;margin-top:20px}.t2{font-size:96px;color:#f6c21a;margin-top:14px}'
-       '.sub{font-size:32px;line-height:1.35;color:#d6d3c9;margin-top:30px;max-width:900px}')
+pagina('post-1-chamada', mapa() + f'''
+<div class="solto" style="left:250px;top:250px">{pino('buraco', 'velho', '52 DIAS', 150)}</div>
+<div class="solto" style="left:610px;top:380px">{pino('luz', '', '12 DIAS', 120)}</div>
+<div class="solto" style="left:780px;top:170px">{pino('mato', 'feito', 'OK', 110)}</div>
+<div class="m">{MARCA}<div class="txt">
+  <div class="eti">O mapa dos moradores de Rinópolis</div>
+  <h1 style="font-size:118px">Se ninguém marca,<br><em>ninguém conserta.</em></h1>
+  <p class="sub">Buraco, poste apagado, lixo, esgoto. Marque pelo celular e acompanhe os dias até o conserto.</p>
+  {RODAPE}</div></div>''')
 
 # ---------- post 2: como funciona ----------
 passos = [
-    ('Toque em <b>Marcar problema</b> e arraste o mapa até o alfinete ficar no lugar.', 'buraco'),
-    ('Escolha o tipo e, se quiser, mande uma <b>foto</b>.', 'lixo'),
-    ('Os vizinhos <b>confirmam</b>, e a placa conta os dias até o conserto.', 'luz'),
+    'Toque em <b>Marcar problema</b> e arraste o mapa até o alfinete ficar no lugar.',
+    'Escolha o tipo e, se quiser, mande uma <b>foto</b>.',
+    'Os vizinhos <b>confirmam</b>, e a placa conta os dias até o conserto.',
 ]
-lista = ''.join(f'<li><span class="num placa-txt">{i}</span><p>{t}</p></li>' for i, (t, _) in enumerate(passos, 1))
-tipos = ''.join(f'<div class="tp">{pino(k, "", "", 120)}<span>{NOMES[k]}</span></div>' for k in ICONE)
-pagina('post-2-como-funciona', RUAS + '<div class="topo"></div><div class="miolo">' + MARCA + f'''
-  <span class="eti" style="margin-top:64px">Como funciona</span>
-  <h1 class="placa-txt titulo">Marque em 3 passos</h1>
-  <ol class="passos">{lista}</ol>
+lista = ''.join(f'<li><span class="num">{i}</span><p>{t}</p></li>' for i, t in enumerate(passos, 1))
+tipos = ''.join(f'<div class="tp">{pino(k, "", "", 92)}<span>{NOMES[k]}</span></div>' for k in ICONE)
+pagina('post-2-como-funciona', mapa(330, 1300, (10, 18, 30, 38)) + f'''
+<div class="m">{MARCA}
   <div class="tipos">{tipos}</div>
-''' + RODAPE + '</div>',
-       '.titulo{font-size:120px;margin-top:12px}'
-       '.passos{list-style:none;padding:0;margin-top:46px;display:flex;flex-direction:column;gap:34px}'
-       '.passos li{display:grid;grid-template-columns:96px 1fr;gap:30px;align-items:center}'
-       '.num{width:92px;height:92px;display:grid;place-items:center;font-size:56px;color:#17150e;position:relative;isolation:isolate}'
-       '.num::before{content:"";position:absolute;inset:8px;background:#f6c21a;transform:rotate(45deg);border-radius:6px;z-index:-1}'
-       '.passos p{font-size:40px;line-height:1.25;color:#d6d3c9}.passos b{color:#ece9df}'
-       '.tipos{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:56px}'
-       '.tp{display:flex;flex-direction:column;align-items:center;gap:4px}.tp span{font-size:23px;color:#b9b6ab;text-align:center}')
+  <div class="txt">
+  <div class="eti">Como funciona</div>
+  <h1 style="font-size:104px">Marque em <em>3 passos</em></h1>
+  <ol class="passos">{lista}</ol>
+  {RODAPE}</div></div>''',
+       '.tipos{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;margin-top:240px}'
+       '.tp{display:flex;flex-direction:column;align-items:center;gap:2px}.tp span{font-size:21px;color:#b9b6ab;text-align:center}'
+       '.passos{list-style:none;padding:0;margin-top:40px;display:flex;flex-direction:column;gap:26px}'
+       '.passos li{display:grid;grid-template-columns:72px 1fr;gap:26px;align-items:center}'
+       '.num{width:68px;height:68px;display:grid;place-items:center;font-family:"Barlow Condensed";font-weight:800;font-size:40px;color:#17150e;position:relative;isolation:isolate}'
+       '.num::before{content:"";position:absolute;inset:7px;background:#f6c21a;transform:rotate(45deg);border-radius:5px;z-index:-1}'
+       '.passos p{font-size:32px;line-height:1.35;color:#b9b6ab}.passos b{color:#ece9df}')
 
 # ---------- post 3: como cuidamos ----------
 itens = [
@@ -149,18 +167,20 @@ itens = [
     '<b>Não apoiamos nem atacamos</b> nenhum político.',
 ]
 cuidados = ''.join(f'<li><span class="ok"></span><p>{t}</p></li>' for t in itens)
-pagina('post-3-sem-partido', RUAS + '<div class="topo"></div><div class="miolo">' + MARCA + f'''
-  <span class="eti" style="margin-top:64px">Como cuidamos</span>
-  <h1 class="placa-txt titulo">Sem partido.<br><span style="color:#f6c21a">Sem patrão.</span></h1>
+pagina('post-3-sem-partido', mapa(380, 1180, (10, 22, 40, 50)) + f'''
+<div class="m">{MARCA}<div class="txt">
+  <div class="eti">Como cuidamos</div>
+  <h1 style="font-size:124px">Sem partido.<br><em>Sem patrão.</em></h1>
   <ul class="cuid">{cuidados}</ul>
   <p class="nota">Termos de uso e política de privacidade no site.</p>
-''' + RODAPE + '</div>',
-       '.titulo{font-size:140px;margin-top:12px}'
-       '.cuid{list-style:none;padding:0;margin-top:56px;display:flex;flex-direction:column;gap:30px}'
-       '.cuid li{display:grid;grid-template-columns:70px 1fr;gap:26px;align-items:center}'
-       '.ok{width:62px;height:62px;position:relative}'
-       '.ok::before{content:"";position:absolute;inset:8px;background:#43b27e;transform:rotate(45deg);border-radius:5px}'
-       '.ok::after{content:"";position:absolute;left:21px;top:16px;width:14px;height:24px;border:solid #17150e;border-width:0 6px 6px 0;transform:rotate(45deg)}'
-       '.cuid p{font-size:40px;line-height:1.25;color:#d6d3c9}.cuid b{color:#ece9df}'
-       '.nota{font-size:28px;color:#8f949b;margin-top:44px}')
+  {RODAPE}</div></div>''',
+       '.cuid{list-style:none;padding:0;margin-top:40px;display:flex;flex-direction:column;gap:22px}'
+       '.cuid li{display:grid;grid-template-columns:56px 1fr;gap:22px;align-items:center}'
+       '.ok{width:50px;height:50px;position:relative}'
+       '.ok::before{content:"";position:absolute;inset:7px;background:#43b27e;transform:rotate(45deg);border-radius:4px}'
+       '.ok::after{content:"";position:absolute;left:17px;top:12px;width:11px;height:19px;border:solid #17150e;border-width:0 5px 5px 0;transform:rotate(45deg)}'
+       '.cuid p{font-size:32px;line-height:1.35;color:#b9b6ab}.cuid b{color:#ece9df}'
+       '.nota{font-size:24px;color:#8f949b;margin-top:30px}')
+
+shutil.rmtree(PAGINAS, ignore_errors=True)
 print('Imagens em', SAIDA)
