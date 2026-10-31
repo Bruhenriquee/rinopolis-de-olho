@@ -811,6 +811,11 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
               <h3 style="margin-top:0">Denúncias dos moradores</h3>
               <div class="cartas" id="denunciasPainel"></div>
             </div>
+            <div id="frasesBox" hidden>
+              <h3 style="margin-top:0">Frases</h3>
+              <p class="miudo">Recuse se tiver nome de pessoa, telefone, ofensa, acusação ou propaganda.</p>
+              <div class="cartas" id="frasesPainel"></div>
+            </div>
             <h3 style="margin-top:0">Fotos</h3>
             <p class="miudo">Recuse se tiver rosto de pessoa, placa de carro, ofensa ou propaganda.</p>
             <div class="cartas" id="pendentes"></div>
@@ -865,7 +870,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
       <footer class="rodape">
         <div class="rodape-selo"><svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><use href="#logo"/></svg><span><b>Sem partido. Sem patrão.</b><small>Projeto independente de moradores</small></span></div>
         <p>O Rinópolis de Olho não tem ligação com a prefeitura, a Câmara, partidos ou candidatos, e não apoia nem ataca ninguém. Mostramos o que os moradores marcam e o que as fontes oficiais dizem, com o link de cada uma.</p>
-        <p class="miudo">Achou um erro? Fale com quem cuida do mapa que a gente corrige. · Ruas © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button><span data-instalar hidden> · <button class="link" type="button">Instalar no celular</button></span></p>
+        <p class="miudo">Achou um erro? Fale com quem cuida do mapa que a gente corrige. · Ruas © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button> · <button class="link" type="button" data-termos>Termos de uso</button><span data-instalar hidden> · <button class="link" type="button">Instalar no celular</button></span></p>
       </footer>
     </div>
   </aside>
@@ -883,6 +888,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
       <div>
         <label for="novoTexto">Conte em uma frase (se quiser)</label>
         <input type="text" id="novoTexto" maxlength="160" placeholder="Ex.: buraco fundo na frente do número 120">
+        <p class="miudo" style="margin-top:6px">A frase aparece depois de conferida. Não escreva nomes, telefones nem acusações.</p>
       </div>
       <div>
         <label for="novoFoto">Foto (ajuda muito)</label>
@@ -893,6 +899,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p class="miudo" style="margin-top:6px">A foto aparece depois de conferida. Não fotografe rosto de pessoas nem placa de carro. O site apaga sozinho os dados escondidos da foto, como a localização do celular.</p>
       </div>
       <label class="consente" for="novoAceite"><input type="checkbox" id="novoAceite"><span>Entendi que isto fica público no mapa, sem o meu nome. <button class="link" type="button" data-privacidade>Ler a privacidade</button></span></label>
+      <label class="consente" for="novoVerdade"><input type="checkbox" id="novoVerdade"><span>Declaro que as informações correspondem ao que observei e que não estou usando o mapa para divulgar informações falsas ou atacar outras pessoas. <button class="link" type="button" data-termos>Ler os termos de uso</button></span></label>
       <button class="btn" type="submit" id="btnEnviar" disabled>Colocar no mapa</button>
     </div>
   </form>
@@ -905,6 +912,46 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
 <div class="fundo" id="fundoFonte" hidden>
   <div class="folha" role="dialog" aria-modal="true" aria-labelledby="tFonte">
     <div class="dentro" id="fonteConteudo"></div>
+  </div>
+</div>
+
+<div class="fundo" id="fundoTermos" hidden>
+  <div class="folha" role="dialog" aria-modal="true" aria-labelledby="tTermos">
+    <div class="dentro">
+      <header><div><h2 id="tTermos">Termos de Uso</h2><div class="onde">Última atualização: 31 de outubro de 2026</div></div><button class="btn-leve" type="button" data-fecha>Fechar</button></header>
+      <div class="priv">
+        <p>Ao marcar, confirmar ou denunciar uma placa, você concorda com estes termos. Eles valem junto com a <button class="link" type="button" data-privacidade>Política de Privacidade</button>.</p>
+
+        <h3>1. O que é o Rinópolis de Olho</h3>
+        <p>Um mapa colaborativo, mantido por moradores voluntários, sem fins lucrativos e sem vínculo com a Prefeitura, a Câmara Municipal, partidos políticos ou candidatos. Serve para registrar problemas em ruas e espaços públicos de Rinópolis-SP e acompanhar quanto tempo levam para ser resolvidos.</p>
+        <p>O mapa <b>não substitui os canais oficiais</b> da Prefeitura e não atende emergências. Em caso de emergência, ligue 190 (Polícia), 192 (SAMU), 193 (Bombeiros) ou 199 (Defesa Civil).</p>
+
+        <h3>2. Regras de participação</h3>
+        <ul>
+          <li>Marque só problemas reais, em locais públicos de Rinópolis, que você mesmo viu.</li>
+          <li>Se o problema já está no mapa, confirme a placa que existe em vez de marcar de novo.</li>
+          <li>Não publique dados pessoais: nomes, telefones, endereços de pessoas, rostos ou placas de veículos.</li>
+          <li>Não publique ofensas, ameaças, acusações contra pessoas ou empresas, propaganda comercial ou política, nem qualquer conteúdo ilegal.</li>
+          <li>Não use o mapa para atacar ou perseguir ninguém, inclusive agentes públicos.</li>
+        </ul>
+
+        <h3>3. Responsabilidade pelas informações</h3>
+        <p>Quem envia uma marcação, frase ou foto é responsável pela veracidade do que envia. As placas mostram relatos de moradores, não constatações oficiais: a equipe confere fotos e frases, mas não vai ao local verificar cada marcação. O projeto não garante que os problemas serão consertados nem em que prazo.</p>
+        <p>As informações sobre eleitos, plano de governo e contas da cidade vêm de fontes oficiais, sempre indicadas, e podem ter atraso em relação a elas.</p>
+
+        <h3>4. Moderação</h3>
+        <p>As placas aparecem no mapa assim que são marcadas. Frases e fotos só aparecem depois de conferidas pela equipe. A equipe pode recusar frases e fotos, apagar placas e bloquear aparelhos que descumpram estas regras, sem aviso prévio. Todas as ações da equipe ficam registradas internamente.</p>
+
+        <h3>5. Contestação</h3>
+        <p>Se você acha que uma placa é falsa, ofensiva, repetida ou prejudica alguém, use o botão <b>Denunciar</b> na própria placa, ou escreva para a equipe informando a rua, o tipo de problema e o motivo: <b class="contato-projeto"></b> A equipe analisa e responde em até 15 dias. Quando decide manter a placa, explica o motivo. Pedidos sobre seus dados pessoais seguem a Política de Privacidade.</p>
+
+        <h3>6. Neutralidade</h3>
+        <p>O Rinópolis de Olho não tem partido e não apoia nem ataca nenhum agente político. Mostra o que os moradores marcam e o que as fontes oficiais dizem.</p>
+
+        <h3>7. Alterações e lei aplicável</h3>
+        <p>Estes termos podem ser atualizados; a data da versão em vigor aparece no topo. Valem as leis brasileiras, em especial o Marco Civil da Internet (Lei nº 12.965/2014) e a Lei Geral de Proteção de Dados (Lei nº 13.709/2018).</p>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -926,8 +973,8 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p><b>Não coletamos</b> nome, CPF, telefone, e-mail, endereço residencial nem localização do aparelho em segundo plano. A localização só é usada quando você toca em "Estou aqui", e apenas para posicionar a marcação.</p>
         <p><b>Equipe:</b> as pessoas que moderam o mapa entram com e-mail e senha. Suas ações (aprovar ou recusar fotos, responder, apagar, bloquear) ficam registradas com e-mail, data e hora.</p>
 
-        <h3>3. Fotos</h3>
-        <p>Antes do envio, o site reduz a foto e remove os metadados do arquivo, como a localização GPS e o modelo do aparelho. Toda foto passa por conferência antes de ser publicada. Fotos que mostrem rostos, placas de veículos ou outros dados pessoais são recusadas e excluídas.</p>
+        <h3>3. Fotos e frases</h3>
+        <p>Antes do envio, o site reduz a foto e remove os metadados do arquivo, como a localização GPS e o modelo do aparelho. Toda foto e toda frase passam por conferência antes de serem publicadas. Fotos que mostrem rostos, placas de veículos ou outros dados pessoais, e frases com nomes, telefones, ofensas ou acusações, são recusadas e excluídas.</p>
 
         <h3>4. Finalidade e base legal</h3>
         <p>Os dados são usados exclusivamente para exibir os problemas urbanos da cidade, permitir que outros moradores os confirmem, acompanhar o tempo até o conserto e encaminhar pedidos ao poder público. A base legal é o consentimento (LGPD, art. 7º, I), dado ao marcar a caixa de concordância antes do envio. As marcações publicadas ficam visíveis a qualquer pessoa, sem identificação de quem as fez.</p>
@@ -939,7 +986,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p>Não vendemos nem cedemos dados a terceiros. O site depende dos serviços abaixo, alguns com servidores fora do Brasil (LGPD, art. 33):</p>
         <ul>
           <li><b>Hospedagem do site: GitHub Pages</b> (GitHub, Inc.), no endereço bruhenriquee.github.io/rinopolis-de-olho. Guarda só as páginas e o mapa das ruas; registra o endereço IP de quem acessa, como qualquer hospedagem.</li>
-          <li><b>Marcações, confirmações, fotos, equipe e histórico: Supabase</b> (Supabase, Inc.), banco de dados PostgreSQL. Ali ficam as marcações e confirmações (com o código cifrado do aparelho), as fotos em conferência e as publicadas, as denúncias de placas, a lista da equipe, os aparelhos bloqueados e o registro das ações da equipe.</li>
+          <li><b>Marcações, confirmações, fotos, equipe e histórico: Supabase</b> (Supabase, Inc.), banco de dados PostgreSQL. Ali ficam as marcações e confirmações (com o código cifrado do aparelho), as fotos e frases em conferência e as publicadas, as denúncias de placas, a lista da equipe, os aparelhos bloqueados e o registro das ações da equipe.</li>
           <li><b>Login da equipe: Supabase Auth</b>, o mesmo serviço. Guarda o e-mail e a senha cifrada de quem modera. Moradores não têm login.</li>
           <li><b>Letras do site: Google Fonts</b> (Google LLC). <b>Programa do mapa: cdnjs</b> (Cloudflare, Inc.). <b>Ligação com o banco: jsDelivr.</b> Esses três só entregam arquivos ao abrir a página e recebem o endereço IP; não recebem marcações nem fotos.</li>
           <li><b>Mapa das ruas: OpenStreetMap.</b> Os dados das ruas já vêm dentro do site; usar o mapa não envia nada ao OpenStreetMap.</li>
@@ -951,7 +998,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p>O navegador guarda localmente o código do aparelho, as marcações que você fez e preferências como "não mostrar mais a tela inicial". Se você instalar o site no celular, ele também guarda uma cópia das páginas (sem marcações nem fotos de outras pessoas) pra abrir mais rápido. Você pode apagar esses dados a qualquer momento limpando os dados do site no navegador.</p>
 
         <h3>8. Por quanto tempo guardamos</h3>
-        <p>As marcações permanecem enquanto forem úteis ao acompanhamento dos problemas da cidade ou até que seja pedida a sua exclusão. Fotos recusadas são excluídas no momento da recusa. Os registros de ações da equipe são mantidos para fins de transparência e segurança.</p>
+        <p>As marcações permanecem enquanto forem úteis ao acompanhamento dos problemas da cidade ou até que seja pedida a sua exclusão. Fotos e frases recusadas são excluídas no momento da recusa. Os registros de ações da equipe são mantidos para fins de transparência e segurança.</p>
 
         <h3>9. Seus direitos</h3>
         <p>Você pode, a qualquer momento, pedir confirmação da existência de tratamento, acesso, correção ou exclusão das suas marcações e fotos, além de revogar o consentimento (LGPD, art. 18). Como não guardamos seu nome, informe a rua, o tipo de problema e a data aproximada para localizarmos o registro. Os pedidos são atendidos em até 15 dias. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</p>
@@ -1177,7 +1224,9 @@ function criar(r){
   r.criado = Date.now(); r.autor = Loja.uid;
   if (Loja.modo==='nuvem') return Nuvem.criar(r);
   if (Loja.modo==='db') return enfileirar(async () => { const ref = await Loja.db.collection('reclamacoes').add(r); r.id = ref.id; }).then(() => r.id);
-  r.id = 'r'+Date.now().toString(36); Loja.recs.set(r.id,r); gravarLocal(); render(); return Promise.resolve(r.id);
+  r.id = 'r'+Date.now().toString(36);
+  if (r.texto) { const pend = guardado('rdo-textos-pendentes', {}); pend[r.id] = r.texto; guardar('rdo-textos-pendentes', pend); r.texto = ''; }
+  Loja.recs.set(r.id,r); gravarLocal(); render(); return Promise.resolve(r.id);
 }
 function atualizar(id, campos){
   const r = Loja.recs.get(id); if (!r) return Promise.resolve();
@@ -1259,6 +1308,20 @@ const Fotos = {
     const ref = db.doc('moderacao/estado');
     if (Loja.estadoExiste) await ref.update({fotos:{[item.chave]:valor}}); else { await ref.set({fotos:Object.assign({}, Loja.estado.fotos, {[item.chave]:valor})}); Loja.estadoExiste = true; }
     this.cache.delete(item.chave);
+  }
+};
+
+/* frases das placas: só aparecem depois de aprovadas (no modo de teste, a fila fica neste aparelho) */
+const Frases = {
+  async pendentes(){
+    if (Loja.modo==='nuvem') return Nuvem.frasesPendentes();
+    if (Loja.modo==='db') return [];
+    return Object.entries(guardado('rdo-textos-pendentes', {})).map(([reclamacao,texto]) => ({reclamacao, texto}));
+  },
+  async decidir(item, aprovar){
+    if (Loja.modo==='nuvem') return Nuvem.decidirFrase(item.reclamacao, aprovar);
+    const pend = guardado('rdo-textos-pendentes', {}); delete pend[item.reclamacao]; guardar('rdo-textos-pendentes', pend);
+    if (aprovar) await atualizar(item.reclamacao, {texto:item.texto});
   }
 };
 
@@ -1404,6 +1467,8 @@ const Nuvem = {
   async removerModerador(email){ const {error} = await this.sb.from('admins').delete().eq('email', email); if (error) throw error; },
   async bloquear(autor, motivo){ const {error} = await this.sb.from('bloqueios').upsert({autor, motivo:(motivo||'').slice(0,200)}); if (error) throw error; },
   async desbloquear(autor){ const {error} = await this.sb.from('bloqueios').delete().eq('autor', autor); if (error) throw error; },
+  async frasesPendentes(){ const {data,error} = await this.sb.from('textos_pendentes').select('reclamacao,texto').order('criado'); if (error) throw error; return data||[]; },
+  async decidirFrase(id, aprovar){ const {error} = await this.sb.rpc(aprovar ? 'aprovar_frase' : 'recusar_frase', {p_id:id}); if (error) throw error; await this.carregar(); },
   async denunciar(id, motivo, detalhe){ const {error} = await this.sb.rpc('denunciar', {p_id:id, p_motivo:motivo, p_detalhe:detalhe||'', p_segredo:this.segredo}); if (error) throw error; },
   async denuncias(){
     const [d,t] = await Promise.all([this.sb.from('denuncias').select('reclamacao,motivo,detalhe,criado').order('criado',{ascending:false}), this.sb.from('textos_escondidos').select('reclamacao,texto')]);
@@ -1687,6 +1752,11 @@ function linhaTempoHtml(r, s){
   return '<details class="linha-tempo"'+(historicoAberto ? ' open' : '')+'><summary>Histórico desta placa</summary><ol>'+
     itens.concat(semData, depois, fim).map(([t,txt,c]) => '<li'+(c ? ' class="'+c+'"' : '')+'>'+esc(txt)+(t ? '<small>'+data(t)+'</small>' : '')+'</li>').join('')+'</ol></details>';
 }
+function fraseHtml(r){
+  if (r.texto) return '<p>"'+esc(r.texto)+'"</p>';
+  const minha = r.autor && r.autor===Loja.uid && guardado('rdo-meus-textos', {})[r.id];
+  return minha ? '<p>"'+esc(minha)+'" <span class="selo exemplo">em conferência</span></p>' : '';
+}
 function denunciaHtml(r){
   if (guardado('rdo-denunciei', {})[r.id]) return '<p class="miudo">Você denunciou esta placa. A equipe vai conferir.</p>';
   if (denunciaAberta!==r.id) return '<button class="link denunciar" type="button" data-acao="denunciar">Denunciar: informação falsa, ofensiva ou repetida</button>';
@@ -1705,7 +1775,7 @@ function desenharDetalhe(id){
   const estadoTxt = r.exemplo ? 'Exemplo' : s.feito ? 'Consertado' : s.sem ? 'Sem notícia há 90 dias' : s.velho ? 'Esquecido há '+s.dias+' dias' : 'Esperando conserto';
   const resp = r.resposta && RESPOSTAS[r.resposta.status] ? '<div class="resposta"><b>'+esc(RESPOSTAS[r.resposta.status])+'</b>'+(r.resposta.texto?'<span>'+esc(r.resposta.texto)+'</span>':'')+'<span class="miudo">'+new Date(r.resposta.em).toLocaleDateString('pt-BR')+'</span></div>' : '';
   let h = '<div class="folha-topo '+estadoClasse(s)+'"><div class="icone">'+svg(r.tipo,2.4)+'</div><div><div class="onde">'+esc(estadoTxt)+'</div><h2>'+esc(TIPOS[r.tipo].nome)+'</h2><div class="onde">'+esc(r.rua||'')+(r.perto?' · perto de '+esc(r.perto):'')+'</div></div><button class="btn-leve" type="button" data-fecha>Fechar</button></div><div class="dentro">';
-  h += fotoBloco(r) + (r.texto ? '<p>"'+esc(r.texto)+'"</p>' : '') + resp;
+  h += fotoBloco(r) + fraseHtml(r) + resp;
   h += '<div class="medidor"><div><b'+(s.velho?' style="color:var(--alerta)"':'')+'>'+s.dias+'</b><span>'+(s.feito?'dias até o conserto':'dias esperando')+'</span></div><div><b>'+s.ve+'</b><span>'+(s.ve===1?'pessoa viu':'pessoas viram')+'</span></div></div>';
   if (consertoAberto===id) {
     h += '<div class="bloco"><b>Que bom! Tem foto do conserto?</b><p class="miudo">A foto de antes e depois mostra que reclamar dá resultado. Ela aparece depois de conferida.</p>'+
@@ -1863,6 +1933,8 @@ btnGps.addEventListener('click', () => {
   }, () => { volta(); avisar('Não deu pra usar sua localização. Arraste o mapa até o lugar.'); }, {enableHighAccuracy:true, timeout:12000, maximumAge:30000});
 });
 const formNovo = document.getElementById('formNovo'), fundoNovo = document.getElementById('fundoNovo'), aceite = document.getElementById('novoAceite');
+/* a declaração de veracidade é marcada a cada envio; a da privacidade fica lembrada */
+const verdade = document.getElementById('novoVerdade');
 function escolherPonto(latlng){
   ponto = latlng; sairMira();
   if (marcaTemp) marcaTemp.remove();
@@ -1879,13 +1951,14 @@ function escolherPonto(latlng){
   desenharTipos(); fundoNovo.hidden=false;
 }
 aceite.addEventListener('change', () => desenharTipos());
+verdade.addEventListener('change', () => desenharTipos());
 document.getElementById('novoPerto').addEventListener('click', e => { const b = e.target.closest('[data-perto]'); if (b) { fecharNovo(); abrir(b.dataset.perto); } });
 function fecharNovo(){ fundoNovo.hidden=true; if (marcaTemp) { marcaTemp.remove(); marcaTemp=null; } }
 fundoNovo.addEventListener('click', e => { if (e.target===fundoNovo || e.target.closest('[data-fecha]')) fecharNovo(); });
 function desenharTipos(){
   document.getElementById('tiposNovo').innerHTML = Object.entries(TIPOS).map(([k,t]) =>
     '<button class="tipo" type="button" data-tipo="'+k+'" aria-pressed="'+(tipoNovo===k)+'">'+svg(k)+t.nome+'</button>').join('');
-  document.getElementById('btnEnviar').disabled = !tipoNovo || !aceite.checked;
+  document.getElementById('btnEnviar').disabled = !tipoNovo || !aceite.checked || !verdade.checked;
 }
 document.getElementById('tiposNovo').addEventListener('click', e => { const b=e.target.closest('[data-tipo]'); if (b) { tipoNovo=b.dataset.tipo; desenharTipos(); } });
 document.getElementById('novoFoto').addEventListener('change', async e => {
@@ -1904,18 +1977,20 @@ async function comprimir(file){
   return url;
 }
 formNovo.addEventListener('submit', async e => {
-  e.preventDefault(); if (!tipoNovo || !ponto || !aceite.checked) return;
+  e.preventDefault(); if (!tipoNovo || !ponto || !aceite.checked || !verdade.checked) return;
   guardar('rdo-aceite', true);
   const foto = fotoNovo;
   const r = {tipo:tipoNovo, lat:+ponto.lat.toFixed(6), lon:+ponto.lng.toFixed(6), rua:ponto.rua, perto:ponto.perto||'',
     texto:document.getElementById('novoTexto').value.trim().slice(0,160), temFoto:!!foto};
   document.getElementById('btnEnviar').disabled = true;
   fecharNovo();
+  const frase = r.texto;
   const id = await criar(r);
   if (!id) return;
+  if (frase && Loja.modo!=='db') { const m = guardado('rdo-meus-textos', {}); m[id] = frase; guardar('rdo-meus-textos', m); }
   seguir(id, true);
   if (foto) { try { await Fotos.enviar(id, id, 'antes', foto); } catch(err) { console.error(err); avisar('A placa entrou, mas a foto não. Tente mandar de novo.'); return; } }
-  avisar(foto ? 'Pronto! A placa está no mapa. A foto aparece depois de conferida.' : 'Pronto! Sua placa está no mapa.');
+  avisar(foto || (frase && Loja.modo!=='db') ? 'Pronto! A placa está no mapa. '+(foto && frase ? 'A foto e a frase aparecem depois de conferidas.' : foto ? 'A foto aparece depois de conferida.' : 'A frase aparece depois de conferida.') : 'Pronto! Sua placa está no mapa.', 4000);
 });
 
 /* ---------- Procurar rua ---------- */
@@ -2327,7 +2402,25 @@ async function carregarPainel(){
 }
 
 /* fotos */
-let denunciasCache = {lista:[], escondidos:{}};
+let denunciasCache = {lista:[], escondidos:{}}, frasesCache = [];
+async function carregarFrases(){
+  try { frasesCache = (await Frases.pendentes()).filter(f => Loja.recs.has(f.reclamacao)); } catch(e) { console.error(e); return; }
+  desenharFrases();
+}
+function desenharFrases(){
+  document.getElementById('frasesBox').hidden = !frasesCache.length;
+  atualizarContagemConferir();
+  document.getElementById('frasesPainel').innerHTML = frasesCache.map((f,i) => { const r = Loja.recs.get(f.reclamacao);
+    return '<div class="carta"><div class="corpo"><span><b>'+esc(r ? TIPOS[r.tipo].nome : 'Placa')+'</b> · '+esc(r ? r.rua||'' : '')+'</span><p>"'+esc(f.texto)+'"</p>'+
+      '<div class="acoes"><button class="btn zap" type="button" data-frase="'+i+'" data-v="1">Aprovar</button><button class="btn perigo" type="button" data-frase="'+i+'" data-v="0">Recusar</button></div></div></div>'; }).join('');
+}
+document.getElementById('frasesPainel').addEventListener('click', async e => {
+  const b = e.target.closest('[data-frase]'); if (!b) return;
+  const item = frasesCache[+b.dataset.frase]; if (!item) return;
+  b.disabled = true;
+  try { await Frases.decidir(item, b.dataset.v==='1'); frasesCache = frasesCache.filter(x => x!==item); desenharFrases(); avisar(b.dataset.v==='1' ? 'Frase publicada' : 'Frase recusada e apagada'); }
+  catch(err) { console.error(err); b.disabled = false; avisar('Não deu pra salvar. Rode o arquivo supabase-frases.sql no Supabase.'); }
+});
 async function carregarDenuncias(){
   if (!Denuncias.pode()) return;
   try { denunciasCache = await Denuncias.ler(); } catch(e) { console.error(e); return; }
@@ -2336,7 +2429,7 @@ async function carregarDenuncias(){
 /* fotos esperando + placas denunciadas: o número do painel e a bolinha vermelha do menu */
 function atualizarContagemConferir(){
   const placas = new Set(denunciasCache.lista.filter(d => Loja.recs.has(d.reclamacao)).map(d => d.reclamacao)).size;
-  const total = pendentesCache.length + placas;
+  const total = pendentesCache.length + placas + frasesCache.length;
   document.getElementById('pFotos').textContent = total;
   document.getElementById('bolinha').hidden = !total;
   document.getElementById('bolinhaFotos').hidden = !total;
@@ -2391,7 +2484,7 @@ document.getElementById('denunciasPainel').addEventListener('click', async e => 
 });
 
 async function carregarFotosPainel(silencioso){
-  carregarDenuncias();
+  carregarDenuncias(); carregarFrases();
   const box = document.getElementById('pendentes');
   if (!silencioso) box.innerHTML = '<p class="miudo">Procurando fotos novas…</p>';
   try { pendentesCache = await Fotos.pendentes(); } catch(e) { console.error(e); box.innerHTML = '<p class="vazio">Não deu pra carregar as fotos agora.</p>'; return; }
@@ -2598,7 +2691,10 @@ function abrirDoLink(){
 }
 addEventListener('hashchange', abrirDoLink);
 const fundoPriv = document.getElementById('fundoPriv');
-document.getElementById('privContato').textContent = CFG.contato || 'pelos canais de divulgação do projeto.';
+document.querySelectorAll('#privContato, .contato-projeto').forEach(e => e.textContent = CFG.contato || 'pelos canais de divulgação do projeto.');
+const fundoTermos = document.getElementById('fundoTermos');
+document.addEventListener('click', e => { if (e.target.closest('[data-termos]')) { e.preventDefault(); fundoTermos.hidden = false; } });
+fundoTermos.addEventListener('click', e => { if (e.target===fundoTermos || e.target.closest('[data-fecha]')) fundoTermos.hidden = true; });
 document.addEventListener('click', e => { if (e.target.closest('[data-privacidade]')) { e.preventDefault(); fundoPriv.hidden = false; } });
 fundoPriv.addEventListener('click', e => { if (e.target===fundoPriv || e.target.closest('[data-fecha]')) fundoPriv.hidden = true; });
 
@@ -2614,7 +2710,7 @@ function copiar(txt, ok){
 document.getElementById('btnCopiaOficio').addEventListener('click', () => copiar(document.getElementById('oficio').value, 'Pedido copiado'));
 document.addEventListener('keydown', e => {
   if (e.key!=='Escape') return;
-  if (!fundoPriv.hidden) fundoPriv.hidden=true; else if (!boas.hidden) fecharIntro(); else if (!fundoVitrine.hidden) fundoVitrine.hidden=true; else if (!fundoVer.hidden) fecharVer(); else if (!fundoNovo.hidden) fecharNovo(); else if (marcando) sairMira();
+  if (!fundoPriv.hidden) fundoPriv.hidden=true; else if (!fundoTermos.hidden) fundoTermos.hidden=true; else if (!boas.hidden) fecharIntro(); else if (!fundoVitrine.hidden) fundoVitrine.hidden=true; else if (!fundoVer.hidden) fecharVer(); else if (!fundoNovo.hidden) fecharNovo(); else if (marcando) sairMira();
 });
 
 lerLocal();

@@ -10,7 +10,7 @@ No ar em **https://bruhenriquee.github.io/rinopolis-de-olho/**
 
 - As marcações ficam num banco de dados no **Supabase**. Os moradores só gravam pelas funções do banco, que conferem tudo (limite de 5 marcações por hora, aparelho bloqueado, foto só de quem marcou).
 - Ninguém precisa de cadastro pra marcar. Cada aparelho tem um código secreto; o banco guarda só a versão embaralhada.
-- As fotos só aparecem pra todos depois de aprovadas no **Painel**.
+- As fotos e as frases só aparecem pra todos depois de aprovadas no **Painel** (aba Conferir).
 - A equipe (dono e moderadores) entra com e-mail e senha pelo endereço do site com `#painel` no fim: https://bruhenriquee.github.io/rinopolis-de-olho/#painel. Não há link público pro login.
 
 ## Arquivos
@@ -18,7 +18,7 @@ No ar em **https://bruhenriquee.github.io/rinopolis-de-olho/**
 - `index.html`: o site.
 - `ruas.js`: as ruas da cidade, tiradas do OpenStreetMap.
 - `config.js`: endereço e chave pública do Supabase, e-mail de contato e endereço do site.
-- `supabase.sql`, `supabase-painel.sql` e `supabase-denuncias.sql`: o banco. Rodar uma vez, nessa ordem, no SQL Editor do Supabase.
+- `supabase.sql`, `supabase-painel.sql`, `supabase-denuncias.sql` e `supabase-frases.sql`: o banco. Rodar uma vez, nessa ordem, no SQL Editor do Supabase.
 - `gerar_site.py`: monta a pasta `docs/`, que é o que o GitHub Pages publica.
 - `gerar_previa.py`: gera `previa.png`, a imagem que aparece quando o link é mandado no WhatsApp.
 - `manifest.webmanifest` e `sw.js`: deixam instalar o site na tela do celular, como um aplicativo.
