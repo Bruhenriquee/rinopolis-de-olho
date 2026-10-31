@@ -247,6 +247,8 @@ p{margin:0}
 .grana .pergunta{font-size:13px;border-top:1px solid var(--linha);padding-top:7px;margin-top:auto}
 .grana .pergunta b{color:var(--placa)}
 .grana a.fonte{font-size:12px;color:var(--apagado)}
+.grana .link.fonte{font-size:12.5px;align-self:flex-start;text-align:left}
+.passos-fonte{margin:0;padding-left:22px;display:flex;flex-direction:column;gap:6px;color:var(--tinta-2);font-size:14.5px}
 .contatos{display:flex;flex-direction:column;gap:8px}
 .contato{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;background:var(--asfalto-3);border-radius:8px;padding:10px 12px}
 .contato b{display:block}
@@ -599,7 +601,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <div class="chefe" id="chefes"></div>
         <h3>Os 9 vereadores</h3>
         <div class="vereadores" id="vereadores"></div>
-        <p class="miudo">Nome usado na urna, partido e votos em 2024. Fonte: <a href="https://resultados.tse.jus.br/oficial/ele2024/619/dados/sp/sp69779-c0013-e000619-u.json" target="_blank" rel="noopener">TSE</a>.</p>
+        <p class="miudo">Nome usado na urna, partido e votos em 2024. Fonte: <button class="link" type="button" data-fonte="tse">resultado oficial do TSE</button>.</p>
         <h3>Plano de governo 2025–2028</h3>
         <p class="leve">O plano que a chapa eleita registrou no TSE em 2024, com todos os itens na ordem do documento e a página onde cada um está. Toque numa área para abrir.</p>
         <div id="promessas"></div>
@@ -776,6 +778,12 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
   <div class="folha" id="folhaVer" role="dialog" aria-modal="true"></div>
 </div>
 
+<div class="fundo" id="fundoFonte" hidden>
+  <div class="folha" role="dialog" aria-modal="true" aria-labelledby="tFonte">
+    <div class="dentro" id="fonteConteudo"></div>
+  </div>
+</div>
+
 <div class="fundo" id="fundoPriv" hidden>
   <div class="folha" role="dialog" aria-modal="true" aria-labelledby="tPriv">
     <div class="dentro">
@@ -859,10 +867,10 @@ const SICONFI26 = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_ex
 const EMENDAS = 'https://api.transferegov.gestao.gov.br/transferenciasespeciais/plano_acao_especial?cnpj_beneficiario_plano_acao=eq.46478053000113';
 const PEDIDO_ESIC = 'Pedido de informação (Lei 12.527/2011, Lei de Acesso à Informação)\n\nSolicito, sobre as emendas impositivas dos vereadores de Rinópolis (art. 309-A da Lei Orgânica):\n1. O valor total das emendas individuais e das emendas de bancada, e o valor por vereador e por bancada, na LOA de 2025 e na LOA de 2026.\n2. A lista de cada emenda: autor, o que vai ser feito, quem recebe, valor e se é da saúde.\n3. Quanto de cada emenda já foi empenhado, liquidado e pago, e se alguma teve impedimento.\n4. O endereço da página de emendas no portal da transparência (Resolução TCE-SP nº 17/2025).\n\nPeço resposta em formato digital.';
 const VERBAS = [
-  {valor:'R$ 61,6 mi', titulo:'Orçamento da prefeitura em 2026', txt:'Começou o ano em R$ 57 milhões e, com os ajustes, chegou a R$ 61,6 milhões até agosto.', pergunta:'Quanto vai pra conserto de rua?', fonte:SICONFI26},
-  {valor:'R$ 808,5 mil', titulo:'Contribuição de iluminação (CIP), 2025', txt:'Pela Constituição (art. 149-A), só pode ir pra iluminação pública e câmeras de monitoramento das ruas.', pergunta:'Por que esse poste está apagado?', fonte:SICONFI25},
-  {valor:'R$ 500 mil', titulo:'LED nos postes (2024)', txt:'Emenda federal do deputado Marcos Pereira. Consta como concluída.', pergunta:'Quais ruas receberam?', fonte:EMENDAS},
-  {valor:'R$ 495 mil', titulo:'Quadras de padel (2025)', txt:'Emenda federal para o Jardim Boa Vista, prazo até 2028.', pergunta:'A obra começou?', fonte:EMENDAS},
+  {valor:'R$ 61,6 mi', titulo:'Orçamento da prefeitura em 2026', txt:'Começou o ano em R$ 57 milhões e, com os ajustes, chegou a R$ 61,6 milhões até agosto.', pergunta:'Quanto vai pra conserto de rua?', fonte:'contas26'},
+  {valor:'R$ 808,5 mil', titulo:'Contribuição de iluminação (CIP), 2025', txt:'Pela Constituição (art. 149-A), só pode ir pra iluminação pública e câmeras de monitoramento das ruas.', pergunta:'Por que esse poste está apagado?', fonte:'contas25'},
+  {valor:'R$ 500 mil', titulo:'LED nos postes (2024)', txt:'Emenda federal do deputado Marcos Pereira. Consta como concluída.', pergunta:'Quais ruas receberam?', fonte:'emendas'},
+  {valor:'R$ 495 mil', titulo:'Quadras de padel (2025)', txt:'Emenda federal para o Jardim Boa Vista, prazo até 2028.', pergunta:'A obra começou?', fonte:'emendas'},
   {largo:true, valor:'Impositivas', titulo:'A verba que cada vereador indica', txt:'Estão na Lei Orgânica de Rinópolis (art. 309-A): as emendas individuais podem chegar a 2% da receita corrente líquida do ano anterior, com pelo menos metade pra saúde, e há mais 1% para as bancadas, dividido conforme o número de vereadores de cada uma. O portal da transparência da prefeitura tem uma seção de emendas impositivas: vale conferir se está preenchida.', pergunta:'Quanto cada um tem e pra onde mandou?', fonte:'https://www.camararinopolis.sp.gov.br/?pag=T0dRPU9EZz1PR009T1RnPQ==&idtipolei=24&ano=2023', copiar:PEDIDO_ESIC},
   {largo:true, valor:'Associação', titulo:'Como o bairro pode receber verba', txt:'Pessoa sozinha não recebe. Uma associação de moradores pode receber emenda por termo de fomento (Lei 13.019/2014), se tiver experiência, estrutura e CNPJ com tempo mínimo: 1 ano pra parceria com a prefeitura, 3 anos com o Estado ou a União.', pergunta:'O bairro tem associação?', fonte:'https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l13019.htm'}
 ];
@@ -1727,7 +1735,7 @@ document.getElementById('vereadores').innerHTML = VEREADORES.map(([u,p,v,tag]) =
 document.getElementById('verbas').innerHTML = VERBAS.map(v =>
   '<div class="grana'+(v.largo?' largo':'')+'"><span class="valor">'+v.valor+'</span><span class="titulo">'+v.titulo+'</span><p class="txt">'+v.txt+'</p><p class="pergunta"><b>Pergunte:</b> '+v.pergunta+'</p>'+
   (v.copiar ? '<div class="acoes"><button class="btn" type="button" data-copia="'+esc(v.copiar)+'">Copiar pedido pro e-SIC</button><a class="btn cinza" href="https://www.rinopolis.sp.gov.br/esic/" target="_blank" rel="noopener">Abrir o e-SIC</a></div>' : '')+
-  '<a class="fonte" href="'+v.fonte+'" target="_blank" rel="noopener">Fonte oficial</a></div>').join('');
+  (v.fonte.startsWith('http') ? '<a class="fonte" href="'+v.fonte+'" target="_blank" rel="noopener">Fonte oficial</a>' : '<button class="link fonte" type="button" data-fonte="'+v.fonte+'">De onde vem esse número?</button>')+'</div>').join('');
 document.getElementById('quemResolve').innerHTML = QUEM.map(([k,t]) => '<div>'+svg(k)+'<span>'+t+'</span></div>').join('');
 document.getElementById('contatos').innerHTML = CONTATOS.map(c =>
   '<div class="contato"><span><b>'+c.rotulo+'</b>'+(c.valor?'<span class="valor">'+c.valor+'</span>':'')+'<span class="miudo" style="display:block">'+c.det+'</span></span>'+
@@ -1770,11 +1778,46 @@ barras(document.getElementById('destino'), DESTINO25, 'Serviços urbanos');
 document.getElementById('impostosCidade').innerHTML = IMPOSTOS25.map(([n,v]) => '<li>'+n+': <b>'+reais(v)+'</b></li>').join('');
 document.getElementById('linksContas').innerHTML = [
   ['Portal da Transparência de Rinópolis','O site oficial da prefeitura com as contas em detalhe','https://transparencia.rinopolis.sp.gov.br'],
-  ['Receitas de 2025 no Tesouro Nacional','Os números de "de onde vem"',DCA25],
-  ['Gastos de 2025 no Tesouro Nacional','Os números de "pra onde vai"',DCA25F],
-  ['Relatório de 2026 até agosto','O que foi recebido este ano',RREO26],
+  ['Dinheiro federal em Rinópolis','Portal da Transparência do governo federal: tudo o que foi mandado pra cidade','https://portaldatransparencia.gov.br/localidades/3543808-rinopolis'],
+  ['Receitas e gastos de 2025','De onde vêm e pra onde vão os números desta página','#contas25'],
+  ['Relatório de 2026 até agosto','O que a prefeitura recebeu e gastou este ano','#contas26'],
   ['Impostômetro','Quanto o Brasil inteiro paga de imposto (Associação Comercial de SP)','https://impostometro.com.br/']
-].map(([t,d,u]) => '<div class="contato"><span><b>'+t+'</b><span class="miudo" style="display:block">'+d+'</span></span><a class="btn cinza" href="'+u+'" target="_blank" rel="noopener">Abrir</a></div>').join('');
+].map(([t,d,u]) => '<div class="contato"><span><b>'+t+'</b><span class="miudo" style="display:block">'+d+'</span></span>'+
+  (u.startsWith('#') ? '<button class="btn cinza" type="button" data-fonte="'+u.slice(1)+'">Ver</button>' : '<a class="btn cinza" href="'+u+'" target="_blank" rel="noopener">Abrir</a>')+'</div>').join('');
+/* ---------- De onde vem esse número ----------
+   Os sites do governo não abrem direto numa página legível: explicamos a fonte em português,
+   damos o caminho pra conferir e deixamos o dado técnico pra quem quiser. */
+const FONTES = {
+  tse: {titulo:'Resultado da eleição de 2024', orgao:'Tribunal Superior Eleitoral (TSE)',
+    texto:'Nomes de urna, partidos e votos da prefeita, do vice e dos 9 vereadores eleitos em 6 de outubro de 2024.',
+    passos:['Abra o site de resultados do TSE (botão abaixo).','No alto, escolha a eleição de 2024 com data de 06/10/2024 (1º turno).','Escolha São Paulo e depois Rinópolis.','Escolha o cargo: Prefeito ou Vereador.'],
+    link:'https://resultados.tse.jus.br/', tecnico:['https://resultados.tse.jus.br/oficial/ele2024/619/dados/sp/sp69779-c0011-e000619-u.json','https://resultados.tse.jus.br/oficial/ele2024/619/dados/sp/sp69779-c0013-e000619-u.json']},
+  contas25: {titulo:'Contas da prefeitura em 2025', orgao:'Tesouro Nacional (Siconfi)',
+    texto:'Todo ano a prefeitura entrega ao Tesouro Nacional o balanço do ano, chamado Declaração de Contas Anuais. Dali vêm as receitas (R$ 58,4 milhões, já sem a parte do Fundeb), os impostos, a contribuição de iluminação (R$ 808.503,57) e os gastos por área (R$ 55,1 milhões).',
+    passos:['Abra a consulta de contas anuais do Siconfi (botão abaixo).','Em "Exercício", escolha 2025. Em "Escopo", escolha "Municípios do Estado" e depois São Paulo.','Em "Tabela", escolha a do Anexo I-C (receitas) ou a do Anexo I-E (despesas por função) e toque em Consultar.','O site baixa uma planilha com todas as cidades de SP: procure a linha de Rinópolis.'],
+    link:'https://siconfi.tesouro.gov.br/siconfi/pages/public/consulta_finbra/finbra_list.jsf', tecnico:[DCA25, DCA25F]},
+  contas26: {titulo:'Contas da prefeitura em 2026', orgao:'Tesouro Nacional (Siconfi)',
+    texto:'A cada dois meses a prefeitura entrega um relatório do orçamento. O mais novo vai até agosto de 2026: R$ 42,7 milhões recebidos, R$ 40,5 milhões gastos e orçamento atualizado de R$ 61,6 milhões. O Arrecadômetro é uma estimativa feita a partir desse ritmo.',
+    passos:['Abra a consulta de relatórios bimestrais do Siconfi (botão abaixo).','Escolha o exercício 2026, periodicidade "Bimestral" e o 4º período.','Em "Escopo", escolha "Municípios do Estado" e depois São Paulo.','Em "Anexo", o 01 mostra o que entrou e o 02, os gastos por área. Toque em Consultar e procure Rinópolis na planilha.'],
+    link:'https://siconfi.tesouro.gov.br/siconfi/pages/public/consulta_finbra_rreo/finbra_rreo_list.jsf', tecnico:[RREO26]},
+  emendas: {titulo:'Emendas de deputados federais', orgao:'Governo federal (Transferegov e Portal da Transparência)',
+    texto:'Duas emendas do deputado federal Marcos Pereira foram mandadas direto pra prefeitura: R$ 500 mil em 2024, pra trocar as lâmpadas dos postes por LED (concluída), e R$ 495 mil em 2025, pra duas quadras de padel no Jardim Boa Vista (prazo até setembro de 2028).',
+    passos:['Abra a página de Rinópolis no Portal da Transparência (botão abaixo).','Toque em "Detalhar recursos" pra ver o que o governo federal mandou.','Pra ver só emendas, use a busca de emendas do portal e filtre por Rinópolis.'],
+    link:'https://portaldatransparencia.gov.br/localidades/3543808-rinopolis', tecnico:[EMENDAS]}
+};
+const fundoFonte = document.getElementById('fundoFonte');
+function abrirFonte(k){
+  const f = FONTES[k]; if (!f) return;
+  document.getElementById('fonteConteudo').innerHTML =
+    '<header><div><span class="boas-eti">De onde vem esse número</span><h2 id="tFonte">'+f.titulo+'</h2><div class="onde">'+f.orgao+'</div></div><button class="btn-leve" type="button" data-fecha>Fechar</button></header>'+
+    '<p>'+f.texto+'</p><h3>Como conferir</h3><ol class="passos-fonte">'+f.passos.map(x => '<li>'+x+'</li>').join('')+'</ol>'+
+    '<div class="acoes"><a class="btn" href="'+f.link+'" target="_blank" rel="noopener">Abrir o site oficial</a></div>'+
+    '<p class="miudo">Pra quem entende de dados: '+f.tecnico.map((u,i) => '<a href="'+u+'" target="_blank" rel="noopener">dado técnico'+(f.tecnico.length>1 ? ' '+(i+1) : '')+'</a>').join(' · ')+' (formato pra computador, não pra leitura).</p>';
+  fundoFonte.hidden = false;
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-fonte]'); if (b) { e.preventDefault(); abrirFonte(b.dataset.fonte); } });
+fundoFonte.addEventListener('click', e => { if (e.target===fundoFonte || e.target.closest('[data-fecha]')) fundoFonte.hidden = true; });
+
 const ritmo = RECEBIDO26/(FIM_AGO26-INICIO26);
 const arrecadado = document.getElementById('arrecadado');
 function tique(){ arrecadado.textContent = (RECEBIDO26 + ritmo*Math.max(0, Math.min(Date.now(), Date.UTC(2027,0,1,3))-FIM_AGO26)).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}); }
