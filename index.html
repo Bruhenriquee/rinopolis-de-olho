@@ -527,18 +527,19 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
   /* as outras abas continuam como página inteira */
   .app.pagina .painel{position:absolute;inset:0;height:auto;transform:none;border-radius:0;box-shadow:none;border-top:0}
   .app.pagina .conteudo{visibility:visible}
-  /* primeira tela ocupando o celular todo, sem rolagem */
-  .boas{padding:0;place-items:stretch}
-  .boas-card{max-width:none;height:100%;border-radius:0;border:0;border-top:6px solid var(--placa);justify-content:center;padding:22px 20px calc(22px + env(safe-area-inset-bottom,0px));gap:16px}
-  .boas-card h2{font-size:34px}
+  /* cartão por cima do mapa escurecido, sem ocupar a tela inteira */
+  .boas{padding:max(12px,env(safe-area-inset-top,0px)) 12px max(12px,env(safe-area-inset-bottom,0px));background:rgba(14,15,17,.72)}
+  .boas-card{max-width:560px;padding:18px 16px 14px;gap:14px}
+  .boas-card h2{font-size:30px}
+  .boas-num-linha b{font-size:52px}
+  .boas-topo .boas-eti{font-size:12px;letter-spacing:.08em}
   .boas-num-linha{padding:10px 14px}
-  .boas-num-linha b{font-size:60px}
   .passos{gap:8px}
   .passos li{grid-template-columns:30px minmax(0,1fr)}
   .passos li::before{width:28px;height:28px;font-size:15px}
   .passos li .leve{display:none}
   .boas-card .acoes{flex-direction:column;align-items:stretch;gap:10px;margin-top:4px}
-  .boas-card .acoes .btn{width:100%;font-size:18px;padding:15px}
+  .boas-card .acoes .btn{width:100%;font-size:18px;padding:13px}
   .boas-pe{flex-direction:column;justify-content:center;text-align:center;gap:10px;padding-top:12px}
   .boas-meio{grid-template-columns:minmax(0,1fr)}
   /* no celular as placas viram uma fileira acima do título */
