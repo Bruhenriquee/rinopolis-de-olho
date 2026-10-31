@@ -293,6 +293,40 @@ textarea{width:100%;min-height:240px;resize:vertical;background:var(--placa-escu
 .carta img{display:block;width:100%;max-height:300px;object-fit:cover}
 .carta .corpo{padding:12px;display:flex;flex-direction:column;gap:10px}
 .resumo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+/* painel completo */
+.resumo4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.resumo4 span{font-size:11.5px}
+.subabas{display:flex;gap:4px;border-bottom:1px solid var(--linha);overflow-x:auto;margin-top:4px}
+.subabas button{flex:none;background:none;border:0;border-bottom:3px solid transparent;padding:9px 12px;font-family:var(--f-placa);font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.04em;color:var(--tinta-2);position:relative;white-space:nowrap}
+.subabas button[aria-pressed="true"]{color:var(--placa);border-bottom-color:var(--placa)}
+.bolinha2{position:absolute;top:6px;right:2px;width:8px;height:8px;border-radius:4px;background:var(--alerta)}
+#painelDono [data-secao]{display:flex;flex-direction:column;gap:12px;margin-top:12px}
+#painelDono [data-secao][hidden]{display:none}
+.linhas{display:flex;flex-direction:column;gap:6px}
+.linha-placa{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:var(--asfalto-3);border:1px solid var(--linha);border-left:4px solid var(--placa);border-radius:8px;padding:9px 12px}
+.linha-placa.velho{border-left-color:var(--alerta)}
+.linha-placa.feito{border-left-color:var(--ok)}
+.linha-placa.sem{border-left-color:var(--cinza-placa)}
+.lp-info{min-width:0;flex:1 1 220px;font-size:14px}
+.linha-placa .acoes{gap:6px}
+.linha-placa .btn-leve{padding:5px 10px;font-size:13px}
+.btn-leve.perigo-leve{color:var(--alerta);border-color:rgba(239,90,60,.45)}
+.linha-hist{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:10px;align-items:baseline;background:var(--asfalto-3);border-radius:6px;padding:8px 10px;font-size:13.5px}
+.semanas{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;height:150px;align-items:end;background:var(--asfalto-3);border-radius:8px;padding:10px 10px 6px}
+.semana{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;min-width:0}
+.semana .colunas{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;gap:3px}
+.semana .colunas i{display:block;width:40%;min-height:2px;border-radius:3px 3px 0 0}
+.semana span{font-size:10.5px;color:var(--apagado)}
+.leg-novo{background:var(--placa)}
+.leg-feito{background:var(--ok)}
+i.leg{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;margin:0 3px 0 6px}
+.nbarra{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr) 34px;gap:10px;align-items:center;font-size:13.5px;margin-bottom:6px}
+.nbarra span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ntrilho{height:10px;background:var(--asfalto-3);border-radius:5px;overflow:hidden}
+.ntrilho i{display:block;height:100%;background:var(--tinta-2);border-radius:5px}
+.ntrilho i.leg-novo{background:var(--placa)}
+.nbarra b{text-align:right;font-variant-numeric:tabular-nums}
+@media (max-width:600px){.resumo4{grid-template-columns:repeat(2,minmax(0,1fr))}.linha-hist{grid-template-columns:minmax(0,1fr)}.nbarra{grid-template-columns:minmax(0,110px) minmax(0,1fr) 30px}}
 .resumo div{background:var(--asfalto-3);border-radius:8px;padding:10px 12px}
 .resumo b{display:block;font-family:var(--f-placa);font-weight:800;font-size:30px;line-height:1}
 .resumo span{font-size:12.5px;color:var(--tinta-2)}
@@ -637,16 +671,68 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
           <div class="acoes"><button class="btn" type="submit" id="btnEntrar">Entrar</button></div>
         </form>
         <div id="painelDono">
-          <p class="leve">Só você vê esta aba. As placas aparecem na hora; as fotos só depois que você aprova.</p>
-          <div class="resumo">
-            <div><b id="pFotos">0</b><span>fotos esperando você</span></div>
-            <div><b id="pSem">0</b><span>placas sem notícia</span></div>
+          <p class="leve" id="painelQuem">Só a equipe vê esta aba. As placas aparecem na hora; as fotos só depois de aprovadas.</p>
+          <div class="resumo resumo4">
+            <div><b id="pFotos">0</b><span>fotos esperando</span></div>
+            <div><b id="pAbertos">0</b><span>placas abertas</span></div>
+            <div><b id="pSem">0</b><span>sem notícia</span></div>
+            <div><b id="pMedia">–</b><span>dias, em média, até consertar</span></div>
           </div>
-          <h3>Fotos para conferir</h3>
-          <p class="miudo">Recuse se tiver rosto de pessoa, placa de carro, ofensa ou propaganda.</p>
-          <div class="cartas" id="pendentes"></div>
-          <h3>Sem notícia há mais de 90 dias</h3>
-          <div id="semNoticia"></div>
+          <nav class="subabas" id="subabas">
+            <button type="button" data-sub="fotos" aria-pressed="true">Fotos<i class="bolinha2" id="bolinhaFotos" hidden></i></button>
+            <button type="button" data-sub="placas" aria-pressed="false">Placas</button>
+            <button type="button" data-sub="numeros" aria-pressed="false">Números</button>
+            <button type="button" data-sub="equipe" aria-pressed="false" id="subEquipe" hidden>Equipe</button>
+            <button type="button" data-sub="historico" aria-pressed="false" id="subHistorico" hidden>Histórico</button>
+          </nav>
+
+          <div data-secao="fotos">
+            <p class="miudo">Recuse se tiver rosto de pessoa, placa de carro, ofensa ou propaganda.</p>
+            <div class="cartas" id="pendentes"></div>
+            <h3>Sem notícia há mais de 90 dias</h3>
+            <div id="semNoticia"></div>
+          </div>
+
+          <div data-secao="placas" hidden>
+            <div class="filtro" id="filtroPainel"></div>
+            <input type="text" id="buscaPainel" placeholder="Filtrar por rua ou tipo" aria-label="Filtrar placas por rua ou tipo">
+            <div id="listaPainel"></div>
+            <div class="bloco">
+              <b>Baixar planilha</b>
+              <p class="leve">Todas as marcações, com rua, situação, dias e confirmações. Abre no Excel ou no Google Planilhas, pra mandar pra prefeitura ou pra Câmara.</p>
+              <div class="acoes"><button class="btn" type="button" id="btnPlanilha">Baixar planilha</button></div>
+            </div>
+          </div>
+
+          <div data-secao="numeros" hidden>
+            <h3>Marcações por semana</h3>
+            <div class="semanas" id="graficoSemanas"></div>
+            <p class="miudo"><i class="leg leg-novo"></i> marcadas <i class="leg leg-feito"></i> consertadas · últimas 8 semanas</p>
+            <h3>Ruas com mais problemas abertos</h3>
+            <div id="ruasTop"></div>
+            <h3>Por tipo de problema</h3>
+            <div id="porTipo"></div>
+          </div>
+
+          <div data-secao="equipe" hidden>
+            <h3>Quem cuida do mapa</h3>
+            <div id="equipe"></div>
+            <form class="bloco" id="formModerador" hidden>
+              <b>Adicionar moderador</b>
+              <p class="leve">Moderadores aprovam fotos, respondem e apagam placas. Só você, como dono, adiciona ou remove. Depois de adicionar aqui, crie o login da pessoa no Supabase: Authentication → Users → Add user, com o mesmo e-mail e "Auto Confirm User".</p>
+              <div><label for="novoModerador">E-mail</label><input type="email" id="novoModerador" required placeholder="pessoa@email.com"></div>
+              <div class="acoes"><button class="btn" type="submit">Adicionar</button></div>
+            </form>
+            <h3>Aparelhos bloqueados</h3>
+            <p class="miudo">Um aparelho bloqueado não consegue mais marcar, confirmar nem mandar foto. Bloqueie pela aba Placas.</p>
+            <div id="bloqueados"></div>
+          </div>
+
+          <div data-secao="historico" hidden>
+            <p class="miudo">Tudo o que a equipe fez: aprovar e recusar fotos, consertar, responder, apagar, bloquear. Anotado pelo próprio banco.</p>
+            <div id="historico"></div>
+          </div>
+
           <div class="acoes" id="sairPainel" hidden style="margin-top:18px"><button class="btn-leve" type="button" id="btnSair">Sair do painel</button></div>
         </div>
       </section>
@@ -1053,6 +1139,7 @@ const Nuvem = {
   erro(e){
     console.error(e);
     const m = String(e && e.message || '');
+    if (m.includes('bloqueado')) return avisar('Este aparelho foi bloqueado por quem cuida do mapa.');
     avisar(m.includes('limite') ? 'Você já marcou 5 problemas nesta hora. Tente mais tarde.' : 'Não deu pra salvar. Confira a internet e tente de novo.');
   },
   async criar(r){
@@ -1113,11 +1200,21 @@ const Nuvem = {
     await this.carregar().catch(e => console.error(e));
   },
   async checarAdmin(){
-    const {data} = await this.sb.rpc('sou_admin');
+    let {data, error} = await this.sb.rpc('meu_papel');
+    if (error) { const r = await this.sb.rpc('sou_admin'); data = r.data ? 'dono' : null; }  /* antes de rodar o supabase-painel.sql */
+    Loja.papel = data || '';
     Loja.dono = Loja.editor = !!data;
+    const s = await this.sb.auth.getUser(); Loja.email = (s.data && s.data.user && s.data.user.email) || '';
     document.getElementById('abaPainel').hidden = !Loja.dono;
     return Loja.dono;
   },
+  async equipe(){ const {data,error} = await this.sb.from('admins').select('email,papel,criado').order('criado'); if (error) throw error; return data||[]; },
+  async adicionarModerador(email){ const {error} = await this.sb.from('admins').insert({email:email.toLowerCase(), papel:'moderador'}); if (error) throw error; },
+  async removerModerador(email){ const {error} = await this.sb.from('admins').delete().eq('email', email); if (error) throw error; },
+  async bloquear(autor, motivo){ const {error} = await this.sb.from('bloqueios').upsert({autor, motivo:(motivo||'').slice(0,200)}); if (error) throw error; },
+  async desbloquear(autor){ const {error} = await this.sb.from('bloqueios').delete().eq('autor', autor); if (error) throw error; },
+  async bloqueados(){ const {data,error} = await this.sb.from('bloqueios').select('autor,motivo,criado').order('criado',{ascending:false}); if (error) throw error; return data||[]; },
+  async historico(){ const {data,error} = await this.sb.from('historico').select('quando,quem,acao,detalhe').order('quando',{ascending:false}).limit(150); if (error) throw error; return data||[]; },
   async entrar(email, senha){
     const {error} = await this.sb.auth.signInWithPassword({email, password:senha});
     if (error) { avisar('E-mail ou senha errados.'); return false; }
@@ -1779,23 +1876,59 @@ async function desenharBoletim(n){
   return await new Promise((ok, erro) => c.toBlob(bl => bl ? ok(bl) : erro(new Error('sem imagem')), 'image/png'));
 }
 
-/* ---------- Painel de quem cuida ---------- */
-let pendentesCache = [];
+/* ---------- Painel de quem cuida ----------
+   Abas: fotos pra conferir, todas as placas, números, equipe e histórico (os dois últimos só com o banco público). */
+let pendentesCache = [], subAtual = 'fotos', filtroPainel = 'abertos', armadoPainel = '';
+const dataHora = t => new Date(t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+const dataCurta = t => t ? new Date(t).toLocaleDateString('pt-BR') : '';
+
 function atualizarPainelResumo(n){
   document.getElementById('pSem').textContent = n.sem.length;
+  document.getElementById('pAbertos').textContent = n.abertos.length;
+  const comData = n.feitos.filter(r => r.resolvido);
+  document.getElementById('pMedia').textContent = comData.length ? Math.round(comData.reduce((t,r) => t+(r.resolvido-r.criado), 0)/comData.length/DIA) : '–';
   document.getElementById('semNoticia').innerHTML = n.sem.length ? listaHtml(n.sem, n.sit) : '<p class="vazio">Nenhuma placa parada.</p>';
+  if (subAtual==='placas') desenharPlacasPainel();
+  if (subAtual==='numeros') desenharNumeros();
 }
 document.getElementById('semNoticia').addEventListener('click', e => { const b=e.target.closest('[data-id]'); if (b) abrir(b.dataset.id); });
+
+function irSub(s){
+  subAtual = s;
+  document.querySelectorAll('#subabas [data-sub]').forEach(b => b.setAttribute('aria-pressed', b.dataset.sub===s));
+  document.querySelectorAll('#painelDono [data-secao]').forEach(d => d.hidden = d.dataset.secao!==s);
+  if (s==='fotos') carregarFotosPainel();
+  else if (s==='placas') desenharPlacasPainel();
+  else if (s==='numeros') desenharNumeros();
+  else if (s==='equipe') carregarEquipe();
+  else if (s==='historico') carregarHistorico();
+}
+document.getElementById('subabas').addEventListener('click', e => { const b = e.target.closest('[data-sub]'); if (b) irSub(b.dataset.sub); });
+
 async function carregarPainel(){
+  const nuvem = Loja.modo==='nuvem';
+  document.getElementById('subEquipe').hidden = !nuvem;
+  document.getElementById('subHistorico').hidden = !nuvem;
+  document.getElementById('painelQuem').textContent = nuvem && Loja.email
+    ? 'Você entrou como '+Loja.email+(Loja.papel==='dono' ? ' (dono do mapa).' : ' (moderador).')
+    : 'Só a equipe vê esta aba. As placas aparecem na hora; as fotos só depois de aprovadas.';
+  if (!nuvem && (subAtual==='equipe' || subAtual==='historico')) subAtual = 'fotos';
+  irSub(subAtual);
+  if (subAtual!=='fotos') carregarFotosPainel(true);
+}
+
+/* fotos */
+async function carregarFotosPainel(silencioso){
   const box = document.getElementById('pendentes');
-  box.innerHTML = '<p class="miudo">Procurando fotos novas…</p>';
+  if (!silencioso) box.innerHTML = '<p class="miudo">Procurando fotos novas…</p>';
   try { pendentesCache = await Fotos.pendentes(); } catch(e) { console.error(e); box.innerHTML = '<p class="vazio">Não deu pra carregar as fotos agora.</p>'; return; }
   desenharPendentes();
 }
 function desenharPendentes(){
   const box = document.getElementById('pendentes');
   document.getElementById('pFotos').textContent = pendentesCache.length;
-  const bol = document.getElementById('bolinha'); bol.hidden = !pendentesCache.length; bol.textContent = pendentesCache.length;
+  const bol = document.getElementById('bolinha'); bol.hidden = !pendentesCache.length;
+  document.getElementById('bolinhaFotos').hidden = !pendentesCache.length;
   if (!pendentesCache.length) { box.innerHTML = '<p class="vazio">Nenhuma foto esperando. Tudo em dia.</p>'; return; }
   box.innerHTML = pendentesCache.map((p,i) => { const r = Loja.recs.get(p.reclamacao);
     const ok = typeof p.foto==='string' && p.foto.startsWith('data:image/jpeg;base64,');
@@ -1809,6 +1942,138 @@ document.getElementById('pendentes').addEventListener('click', async e => {
   try { await Fotos.decidir(item, b.dataset.v==='1'); pendentesCache = pendentesCache.filter(x => x!==item); desenharPendentes(); avisar(b.dataset.v==='1' ? 'Foto publicada' : 'Foto recusada e apagada'); }
   catch(err) { console.error(err); b.disabled=false; avisar('Não deu pra salvar. Tente de novo.'); }
 });
+
+/* todas as placas */
+function desenharPlacasPainel(){
+  const n = numeros(), grupos = {abertos:n.abertos, velhos:n.abertos.filter(r => n.sit.get(r.id).velho), sem:n.sem, feitos:n.feitos, todos:n.reais};
+  const nomes = [['abertos','Abertas'],['velhos','+30 dias'],['sem','Sem notícia'],['feitos','Consertadas'],['todos','Todas']];
+  document.getElementById('filtroPainel').innerHTML = nomes.map(([k,t]) => '<button class="chip" type="button" data-fp="'+k+'" aria-pressed="'+(filtroPainel===k)+'">'+t+' '+grupos[k].length+'</button>').join('');
+  const q = semAcento(document.getElementById('buscaPainel').value || '');
+  const lista = grupos[filtroPainel].filter(r => !q || semAcento((r.rua||'')+' '+(r.perto||'')+' '+TIPOS[r.tipo].nome).includes(q))
+    .sort((a,b) => n.sit.get(b.id).dias - n.sit.get(a.id).dias);
+  const box = document.getElementById('listaPainel');
+  if (!lista.length) { box.innerHTML = '<p class="vazio">Nenhuma placa aqui.</p>'; return; }
+  box.innerHTML = '<div class="linhas">'+lista.map(r => { const s = n.sit.get(r.id), armado = k => armadoPainel===k+r.id;
+    return '<div class="linha-placa '+estadoClasse(s)+'"><div class="lp-info"><b>'+esc(TIPOS[r.tipo].nome)+'</b> · '+esc(r.rua||'')+
+      '<span class="miudo" style="display:block">'+(s.feito ? 'Consertada · levou '+diasTxt(s.dias) : s.sem ? 'Sem notícia · marcada há '+diasTxt(s.dias) : 'Aberta há '+diasTxt(s.dias))+' · '+s.ve+(s.ve===1?' pessoa':' pessoas')+(r.resposta && RESPOSTAS[r.resposta.status] ? ' · '+RESPOSTAS[r.resposta.status] : '')+'</span></div>'+
+      '<div class="acoes">'+
+        '<button class="btn-leve" type="button" data-lp="abrir" data-id="'+esc(r.id)+'">Abrir</button>'+
+        '<button class="btn-leve" type="button" data-lp="feito" data-id="'+esc(r.id)+'">'+(r.resolvido ? 'Reabrir' : 'Consertado')+'</button>'+
+        '<button class="btn-leve perigo-leve" type="button" data-lp="apagar" data-id="'+esc(r.id)+'">'+(armado('apagar') ? 'Confirmar apagar' : 'Apagar')+'</button>'+
+        (Loja.modo==='nuvem' ? '<button class="btn-leve perigo-leve" type="button" data-lp="bloquear" data-id="'+esc(r.id)+'">'+(armado('bloquear') ? 'Confirmar bloqueio' : 'Bloquear aparelho')+'</button>' : '')+
+      '</div></div>';
+  }).join('')+'</div>';
+}
+document.getElementById('filtroPainel').addEventListener('click', e => { const b = e.target.closest('[data-fp]'); if (b) { filtroPainel = b.dataset.fp; desenharPlacasPainel(); } });
+document.getElementById('buscaPainel').addEventListener('input', () => desenharPlacasPainel());
+document.getElementById('listaPainel').addEventListener('click', async e => {
+  const b = e.target.closest('[data-lp]'); if (!b) return;
+  const r = Loja.recs.get(b.dataset.id); if (!r) return;
+  const a = b.dataset.lp;
+  if (a==='abrir') { abrir(r.id); return; }
+  if (a==='feito') { await atualizar(r.id, {resolvido: r.resolvido ? 0 : Date.now()}); avisar(r.resolvido ? 'Placa reaberta' : 'Marcada como consertada'); return; }
+  if (a==='apagar' || a==='bloquear') {
+    if (armadoPainel!==a+r.id) { armadoPainel = a+r.id; desenharPlacasPainel(); return; }
+    armadoPainel = '';
+    if (a==='apagar') { await apagar(r.id); avisar('Placa apagada'); }
+    else {
+      try { await Nuvem.bloquear(r.autor, TIPOS[r.tipo].nome+' na '+(r.rua||'')+', '+dataCurta(r.criado)); avisar('Aparelho bloqueado. Apague as placas dele, se precisar.'); }
+      catch(err) { console.error(err); avisar('Não deu pra bloquear. Rode o arquivo supabase-painel.sql no Supabase.'); }
+      desenharPlacasPainel();
+    }
+  }
+});
+
+/* planilha */
+function linhasPlanilha(){
+  const n = numeros();
+  const cab = ['Tipo','Rua','Perto de','Observação','Situação','Dias','Pessoas que viram','Marcado em','Consertado em','Resposta da prefeitura','Latitude','Longitude','Link'];
+  const linhas = n.reais.slice().sort((a,b) => a.criado-b.criado).map(r => { const s = n.sit.get(r.id);
+    return [TIPOS[r.tipo].nome, r.rua||'', r.perto||'', r.texto||'', s.feito ? 'Consertado' : s.sem ? 'Sem notícia' : 'Aberto', s.dias, s.ve,
+      dataCurta(r.criado), dataCurta(r.resolvido), r.resposta && RESPOSTAS[r.resposta.status] ? RESPOSTAS[r.resposta.status]+(r.resposta.texto ? ': '+r.resposta.texto : '') : '',
+      String(r.lat).replace('.',','), String(r.lon).replace('.',','), linkPlaca(r)]; });
+  const celula = v => { const t = String(v==null?'':v); return /[;"\n]/.test(t) ? '"'+t.replace(/"/g,'""')+'"' : t; };
+  return '﻿'+[cab].concat(linhas).map(l => l.map(celula).join(';')).join('\r\n');
+}
+document.getElementById('btnPlanilha').addEventListener('click', async () => {
+  const nome = 'rinopolis-de-olho-'+new Date().toISOString().slice(0,10)+'.csv';
+  const blob = new Blob([linhasPlanilha()], {type:'text/csv;charset=utf-8'});
+  const dl = window.claude && window.claude.use ? await window.claude.use('downloads') : null;
+  if (dl) { try { await dl.save({filename:nome, data:blob}); avisar('Planilha salva'); } catch(e) { if (e && e.code!=='declined') avisar('Não deu pra salvar a planilha.'); } return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  avisar('Planilha baixada');
+});
+
+/* números */
+function barra(rotulo, valor, max, cls){
+  return '<div class="nbarra"><span>'+esc(rotulo)+'</span><div class="ntrilho"><i class="'+(cls||'')+'" style="width:'+(max ? Math.max(2, valor/max*100) : 0).toFixed(1)+'%"></i></div><b>'+valor+'</b></div>';
+}
+function desenharNumeros(){
+  const n = numeros(), SEM = 7*DIA, hoje = new Date(); hoje.setHours(0,0,0,0);
+  const inicio = hoje.getTime() - ((hoje.getDay()+6)%7)*DIA;  /* segunda-feira desta semana */
+  const semanas = [];
+  for (let i=7;i>=0;i--) { const de = inicio - i*SEM, ate = de+SEM;
+    semanas.push({rot:new Date(de).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}),
+      novos:n.reais.filter(r => r.criado>=de && r.criado<ate).length,
+      feitos:n.reais.filter(r => r.resolvido && r.resolvido>=de && r.resolvido<ate).length}); }
+  const max = Math.max(1, ...semanas.map(s => Math.max(s.novos, s.feitos)));
+  document.getElementById('graficoSemanas').innerHTML = semanas.map(s =>
+    '<div class="semana" title="Semana de '+s.rot+': '+s.novos+' marcadas, '+s.feitos+' consertadas"><div class="colunas"><i class="leg-novo" style="height:'+(s.novos/max*100)+'%"></i><i class="leg-feito" style="height:'+(s.feitos/max*100)+'%"></i></div><span>'+s.rot+'</span></div>').join('');
+  const porRua = {}; n.abertos.forEach(r => { const k = r.rua||'Sem rua'; porRua[k] = (porRua[k]||0)+1; });
+  const ruas = Object.entries(porRua).sort((a,b) => b[1]-a[1]).slice(0,6);
+  document.getElementById('ruasTop').innerHTML = ruas.length ? ruas.map(([k,v]) => barra(k, v, ruas[0][1], 'leg-novo')).join('') : '<p class="vazio">Nenhum problema aberto.</p>';
+  const porTipo = Object.keys(TIPOS).map(k => [TIPOS[k].nome, n.reais.filter(r => r.tipo===k).length]).filter(x => x[1]).sort((a,b) => b[1]-a[1]);
+  document.getElementById('porTipo').innerHTML = porTipo.length ? porTipo.map(([k,v]) => barra(k, v, porTipo[0][1])).join('') : '<p class="vazio">Nenhuma marcação ainda.</p>';
+}
+
+/* equipe e aparelhos bloqueados */
+async function carregarEquipe(){
+  const box = document.getElementById('equipe'), bl = document.getElementById('bloqueados');
+  document.getElementById('formModerador').hidden = Loja.papel!=='dono';
+  try {
+    const eq = await Nuvem.equipe();
+    box.innerHTML = '<div class="linhas">'+eq.map(p => '<div class="linha-placa"><div class="lp-info"><b>'+esc(p.email)+'</b><span class="miudo" style="display:block">'+(p.papel==='dono' ? 'Dono do mapa' : 'Moderador')+(p.email.toLowerCase()===Loja.email.toLowerCase() ? ' · você' : '')+'</span></div>'+
+      (Loja.papel==='dono' && p.papel!=='dono' ? '<div class="acoes"><button class="btn-leve perigo-leve" type="button" data-remove="'+esc(p.email)+'">'+(armadoPainel==='rm'+p.email ? 'Confirmar remover' : 'Remover')+'</button></div>' : '')+'</div>').join('')+'</div>';
+  } catch(e) { console.error(e); box.innerHTML = '<p class="vazio">Não deu pra carregar a equipe. Rode o arquivo supabase-painel.sql no Supabase.</p>'; }
+  try {
+    const bs = await Nuvem.bloqueados();
+    bl.innerHTML = bs.length ? '<div class="linhas">'+bs.map(b => '<div class="linha-placa"><div class="lp-info"><b>Aparelho '+esc(b.autor.slice(0,8))+'</b><span class="miudo" style="display:block">'+esc(b.motivo||'')+' · bloqueado em '+dataCurta(b.criado)+'</span></div><div class="acoes"><button class="btn-leve" type="button" data-desbloq="'+esc(b.autor)+'">Desbloquear</button></div></div>').join('')+'</div>'
+      : '<p class="vazio">Nenhum aparelho bloqueado.</p>';
+  } catch(e) { console.error(e); bl.innerHTML = '<p class="vazio">Não deu pra carregar.</p>'; }
+}
+document.getElementById('equipe').addEventListener('click', async e => {
+  const b = e.target.closest('[data-remove]'); if (!b) return;
+  const email = b.dataset.remove;
+  if (armadoPainel!=='rm'+email) { armadoPainel = 'rm'+email; carregarEquipe(); return; }
+  armadoPainel = '';
+  try { await Nuvem.removerModerador(email); avisar('Moderador removido'); } catch(err) { console.error(err); avisar('Não deu pra remover.'); }
+  carregarEquipe();
+});
+document.getElementById('formModerador').addEventListener('submit', async e => {
+  e.preventDefault();
+  const campo = document.getElementById('novoModerador'), email = campo.value.trim();
+  if (!email) return;
+  try { await Nuvem.adicionarModerador(email); campo.value = ''; avisar('Moderador adicionado. Agora crie o login dele no Supabase.'); }
+  catch(err) { console.error(err); avisar(String(err && err.message || '').includes('duplicate') ? 'Esse e-mail já está na equipe.' : 'Não deu pra adicionar.'); }
+  carregarEquipe();
+});
+document.getElementById('bloqueados').addEventListener('click', async e => {
+  const b = e.target.closest('[data-desbloq]'); if (!b) return;
+  try { await Nuvem.desbloquear(b.dataset.desbloq); avisar('Aparelho desbloqueado'); } catch(err) { console.error(err); avisar('Não deu pra desbloquear.'); }
+  carregarEquipe();
+});
+
+/* histórico */
+async function carregarHistorico(){
+  const box = document.getElementById('historico');
+  box.innerHTML = '<p class="miudo">Carregando…</p>';
+  try {
+    const h = await Nuvem.historico();
+    box.innerHTML = h.length ? '<div class="linhas">'+h.map(x => '<div class="linha-hist"><span class="miudo">'+dataHora(x.quando)+'</span><span><b>'+esc(x.acao)+'</b>'+(x.detalhe ? ' · '+esc(x.detalhe) : '')+'</span><span class="miudo">'+esc(x.quem)+'</span></div>').join('')+'</div>'
+      : '<p class="vazio">Nada anotado ainda.</p>';
+  } catch(e) { console.error(e); box.innerHTML = '<p class="vazio">Não deu pra carregar o histórico. Rode o arquivo supabase-painel.sql no Supabase.</p>'; }
+}
 
 /* ---------- Boas-vindas e privacidade ---------- */
 const boas = document.getElementById('boas');
