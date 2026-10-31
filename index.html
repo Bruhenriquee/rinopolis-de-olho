@@ -97,7 +97,14 @@ body{display:flex;flex-direction:column}
 .marcar[disabled]{opacity:.5;cursor:not-allowed}
 .mira{position:absolute;z-index:600;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom,0px));background:var(--placa-escuro);border:2px solid var(--placa);color:var(--tinta);border-radius:12px;padding:10px 12px 10px 16px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px 12px;align-items:center;box-shadow:0 10px 26px rgba(0,0,0,.55);width:max-content;max-width:calc(100% - 32px)}
 .mira b{font-family:var(--f-placa);font-size:19px;text-transform:uppercase;letter-spacing:.02em}
+/* um só botão grande (Marcar aqui); levar o mapa até a pessoa e cancelar ficam como links, embaixo */
 .mira .btn{padding:8px 14px}
+.mira{min-width:min(360px,calc(100% - 32px))}
+.mira #btnAqui{flex-basis:100%;padding:13px;font-size:18px}
+.mira-extra{flex-basis:100%;display:flex;justify-content:space-between;gap:16px;padding:0 4px}
+.mira-extra .link{font-size:14px;color:var(--tinta-2);padding-block:6px}
+.mira-extra #btnGps{color:var(--placa)}
+.mira-extra #btnGps::before{content:"";display:inline-block;width:9px;height:9px;border:2px solid currentColor;border-radius:50%;margin-right:7px;vertical-align:1px}
 .btn-leve{background:transparent;border:1px solid var(--linha);border-radius:8px;padding:6px 12px;color:var(--tinta-2)}
 .btn-leve:hover{border-color:var(--tinta-2);color:var(--tinta)}
 .palco.marcando #mapa{cursor:grab}
@@ -669,7 +676,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
       Marcar problema
     </button>
     <div class="alfinete" id="alfinete" hidden aria-hidden="true"><svg viewBox="0 0 48 56"><path d="M24 2C13 2 5 10.5 5 21c0 13.5 19 33 19 33s19-19.5 19-33C43 10.5 35 2 24 2z" fill="var(--placa)" stroke="var(--placa-escuro)" stroke-width="3"/><circle cx="24" cy="21" r="7" fill="var(--placa-escuro)"/></svg></div>
-    <div class="mira" id="mira" hidden><span class="mira-txt"><b>Arraste o mapa até o alfinete</b><span class="mira-rua" id="miraRua"></span></span><button class="btn" id="btnAqui" type="button">Marcar aqui</button><button class="btn cinza" id="btnGps" type="button">Estou aqui</button><button class="btn-leve" id="btnCancelaMira" type="button">Cancelar</button></div>
+    <div class="mira" id="mira" hidden><span class="mira-txt"><b>Arraste o mapa até o alfinete</b><span class="mira-rua" id="miraRua"></span></span><button class="btn" id="btnAqui" type="button">Marcar aqui</button><span class="mira-extra"><button class="link" id="btnGps" type="button">Ir até onde estou</button><button class="link" id="btnCancelaMira" type="button">Cancelar</button></span></div>
     <div class="pergunta-card" id="perguntaCard" hidden></div>
     <div class="toast" id="toast" hidden></div>
   </section>
@@ -1899,7 +1906,7 @@ const btnGps = document.getElementById('btnGps');
 if (!navigator.geolocation) btnGps.hidden = true;
 btnGps.addEventListener('click', () => {
   btnGps.disabled = true; btnGps.textContent = 'Procurando…';
-  const volta = () => { btnGps.disabled = false; btnGps.textContent = 'Estou aqui'; };
+  const volta = () => { btnGps.disabled = false; btnGps.textContent = 'Ir até onde estou'; };
   navigator.geolocation.getCurrentPosition(p => {
     volta();
     const aqui = L.latLng(p.coords.latitude, p.coords.longitude);
