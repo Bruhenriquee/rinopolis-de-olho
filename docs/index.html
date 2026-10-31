@@ -639,7 +639,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
           <div><b>R$ 40,5 mi</b><span>gastos no mesmo período</span></div>
         </div>
         <h3>De onde vem o dinheiro</h3>
-        <p class="leve">Em 2025 a prefeitura recebeu R$ 58,4 milhões. De cada R$ 100, R$ 14 vieram dos impostos e taxas dela própria. A maior parte veio do governo federal e do estado, e também sai do bolso de quem mora aqui: do ICMS das compras, do IPVA do carro e do imposto de renda.</p>
+        <p class="leve">Em 2025 a prefeitura recebeu R$ 58,4 milhões, já descontada a parte que vai para o Fundeb. De cada R$ 100, R$ 14 vieram dos impostos e taxas dela própria. A maior parte veio do governo federal e do estado, e também sai do bolso de quem mora aqui: do ICMS das compras, do IPVA do carro e do imposto de renda.</p>
         <div class="barras" id="origem"></div>
         <details>
           <summary>Os impostos cobrados aqui, em 2025</summary>
@@ -653,7 +653,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <div class="grana-lista" id="verbas"></div>
         <h3>Confira você mesmo</h3>
         <div class="links" id="linksContas"></div>
-        <p class="miudo">Fonte dos números: relatórios que a própria prefeitura entrega ao Tesouro Nacional (Siconfi): balanço anual de 2025 e relatório do 4º bimestre de 2026. Valores de gasto são despesas liquidadas.</p>
+        <p class="miudo">Fonte dos números: relatórios que a própria prefeitura entrega ao Tesouro Nacional (Siconfi): balanço anual de 2025 e relatório do 4º bimestre de 2026. Valores de gasto são despesas liquidadas. Os valores por morador usam a população do Censo 2022 (9.259 pessoas).</p>
       </section>
 
       <section id="aba-cobrar" hidden>
@@ -807,7 +807,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p><b>Pra que serve.</b> Mostrar os problemas da cidade e cobrar quem pode resolver. Você concorda ao marcar a caixinha antes de enviar (LGPD, art. 7º, I).</p>
         <p><b>Seus direitos.</b> Você pode pedir pra apagar uma marcação sua quando quiser (LGPD, art. 18). Fale com quem cuida do mapa: <b id="privContato"></b></p>
         <p><b>Prefeita e vereadores.</b> Nomes, partidos e votos são dados públicos do TSE, usados aqui pra acompanhar o trabalho de quem foi eleito (LGPD, art. 7º, §§ 3º e 4º).</p>
-        <p><b>Onde fica.</b> As marcações do site público ficam no Supabase, com servidor em São Paulo; a versão dentro do Claude guarda no claude.ai, da empresa Anthropic. As letras (Google Fonts) e o programa do mapa (Cloudflare) recebem o endereço de internet do aparelho, como em qualquer site. Não usamos propaganda nem rastreadores.</p>
+        <p><b>Onde fica.</b> As marcações do site público ficam no Supabase, com servidor em São Paulo; a versão dentro do Claude guarda no claude.ai, da empresa Anthropic. As letras (Google Fonts), o programa do mapa (Cloudflare) e a ligação com o banco (jsDelivr) recebem o endereço de internet do aparelho, como em qualquer site. Não usamos propaganda nem rastreadores.</p>
         <p><b>Sem partido.</b> O mapa mostra fatos. Não apoia nem ataca nenhum político.</p>
         <p class="miudo">Resumo em linguagem simples. Não substitui orientação de advogado.</p>
       </div>
@@ -856,18 +856,18 @@ const CHEFES = [
 ];
 const VEREADORES = [
   ['Patrícia','PODE',405],['Rafael T. Picolo','PSD',397],['Nenê','NOVO',384],
-  ['Magal','REPUBLICANOS',278],['Daniel','UNIÃO',255,'Presidente'],['Evandro Dias','PSD',228],
+  ['Magal','REPUBLICANOS',278],['Daniel','UNIÃO',255,'Presidente da Câmara (2025–2026)'],['Evandro Dias','PSD',228],
   ['Leninha da Saúde','PSD',214],['Fubá','NOVO',212],['Lucas Santiago','UNIÃO',208]
 ];
 const QUEM = [
-  ['buraco','<b>Buraco, lixo, entulho:</b> Prefeitura.'],
+  ['buraco','<b>Buraco e lixo na rua:</b> Prefeitura. <b>Entulho de obra:</b> quem fez a obra recolhe; a Prefeitura fiscaliza.'],
   ['luz','<b>Luz apagada:</b> Prefeitura, que recebe a contribuição de iluminação (CIP) pra isso.'],
   ['mato','<b>Mato alto em terreno:</b> o dono limpa; a Prefeitura fiscaliza.'],
   ['agua','<b>Esgoto ou vazamento:</b> Prefeitura (Rinópolis não é atendida pela SABESP).']
 ];
 const CONTATOS = [
   {rotulo:'Prefeitura', valor:'(18) 3583-1321 · prefeitura@rinopolis.sp.gov.br', det:'Rua São Luís, 242 · seg a sex, 8h às 16h15'},
-  {rotulo:'Câmara Municipal', valor:'(18) 3583-1196 · camara@camararinopolis.sp.gov.br', det:'Avenida Rinópolis, 403, Centro'},
+  {rotulo:'Câmara Municipal', valor:'(18) 3583-1196 · ouvidoria@camararinopolis.sp.gov.br', det:'Avenida Rinópolis, 403, Centro · seg a sex, 7h30 às 16h30'},
   {rotulo:'Ouvidoria da Prefeitura', link:'https://www.rinopolis.sp.gov.br/ouvidoria/', det:'Reclamação oficial, com número de protocolo'},
   {rotulo:'e-SIC (Lei de Acesso)', link:'https://www.rinopolis.sp.gov.br/esic/', det:'Pergunte onde o dinheiro foi gasto. Resposta em até 20 dias, prorrogáveis por mais 10'}
 ];
@@ -877,11 +877,11 @@ const EMENDAS = 'https://api.transferegov.gestao.gov.br/transferenciasespeciais/
 const PEDIDO_ESIC = 'Pedido de informação (Lei 12.527/2011, Lei de Acesso à Informação)\n\nSolicito, sobre as emendas impositivas dos vereadores de Rinópolis (art. 309-A da Lei Orgânica):\n1. O valor total das emendas individuais e das emendas de bancada, e o valor por vereador e por bancada, na LOA de 2025 e na LOA de 2026.\n2. A lista de cada emenda: autor, o que vai ser feito, quem recebe, valor e se é da saúde.\n3. Quanto de cada emenda já foi empenhado, liquidado e pago, e se alguma teve impedimento.\n4. O endereço da página de emendas no portal da transparência (Resolução TCE-SP nº 17/2025).\n\nPeço resposta em formato digital.';
 const VERBAS = [
   {valor:'R$ 61,6 mi', titulo:'Orçamento da prefeitura em 2026', txt:'Começou o ano em R$ 57 milhões e, com os ajustes, chegou a R$ 61,6 milhões até agosto.', pergunta:'Quanto vai pra conserto de rua?', fonte:SICONFI26},
-  {valor:'R$ 808 mil', titulo:'Contribuição de iluminação (CIP), 2025', txt:'Por lei, só pode ir pra iluminação pública e câmeras de segurança das ruas.', pergunta:'Por que esse poste está apagado?', fonte:SICONFI25},
+  {valor:'R$ 808,5 mil', titulo:'Contribuição de iluminação (CIP), 2025', txt:'Pela Constituição (art. 149-A), só pode ir pra iluminação pública e câmeras de monitoramento das ruas.', pergunta:'Por que esse poste está apagado?', fonte:SICONFI25},
   {valor:'R$ 500 mil', titulo:'LED nos postes (2024)', txt:'Emenda federal do deputado Marcos Pereira. Consta como concluída.', pergunta:'Quais ruas receberam?', fonte:EMENDAS},
   {valor:'R$ 495 mil', titulo:'Quadras de padel (2025)', txt:'Emenda federal para o Jardim Boa Vista, prazo até 2028.', pergunta:'A obra começou?', fonte:EMENDAS},
-  {largo:true, valor:'Impositivas', titulo:'A verba que cada vereador indica', txt:'Estão na Lei Orgânica de Rinópolis (art. 309-A): as emendas individuais podem chegar a 2% da receita, com pelo menos metade pra saúde, e há mais 1% dividido entre as bancadas, conforme o tamanho de cada partido. Valores e destinos ainda não estão publicados de forma fácil de achar.', pergunta:'Quanto cada um tem e pra onde mandou?', fonte:'https://www.camararinopolis.sp.gov.br/?pag=T0dRPU9EZz1PR009T1RnPQ==&idtipolei=24&ano=2023', copiar:PEDIDO_ESIC},
-  {largo:true, valor:'Associação', titulo:'Como o bairro pode receber verba', txt:'Pessoa sozinha não recebe. Uma associação de moradores pode receber emenda por termo de fomento (Lei 13.019/2014), se tiver experiência, estrutura e CNPJ de pelo menos 1 ano (emenda de vereador) ou 3 anos (emenda de deputado).', pergunta:'O bairro tem associação?', fonte:'https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l13019.htm'}
+  {largo:true, valor:'Impositivas', titulo:'A verba que cada vereador indica', txt:'Estão na Lei Orgânica de Rinópolis (art. 309-A): as emendas individuais podem chegar a 2% da receita corrente líquida do ano anterior, com pelo menos metade pra saúde, e há mais 1% para as bancadas, dividido conforme o número de vereadores de cada uma. O portal da transparência da prefeitura tem uma seção de emendas impositivas: vale conferir se está preenchida.', pergunta:'Quanto cada um tem e pra onde mandou?', fonte:'https://www.camararinopolis.sp.gov.br/?pag=T0dRPU9EZz1PR009T1RnPQ==&idtipolei=24&ano=2023', copiar:PEDIDO_ESIC},
+  {largo:true, valor:'Associação', titulo:'Como o bairro pode receber verba', txt:'Pessoa sozinha não recebe. Uma associação de moradores pode receber emenda por termo de fomento (Lei 13.019/2014), se tiver experiência, estrutura e CNPJ com tempo mínimo: 1 ano pra parceria com a prefeitura, 3 anos com o Estado ou a União.', pergunta:'O bairro tem associação?', fonte:'https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l13019.htm'}
 ];
 
 /* ---------- Mapa ---------- */
@@ -1740,7 +1740,7 @@ document.getElementById('promessas').innerHTML = PROMESSAS.map(([area,l]) =>
 /* ---------- Quem decide ---------- */
 document.getElementById('chefes').innerHTML = CHEFES.map(c => '<div class="cartao"><div class="cargo">'+c.cargo+'</div><div class="nome">'+c.nome+'</div><div class="det">'+c.det+'</div></div>').join('');
 document.getElementById('vereadores').innerHTML = VEREADORES.map(([u,p,v,tag]) =>
-  '<div class="ver"><b>'+u+'</b><span>'+p+' · '+v+' votos</span>'+(tag?'<span class="tag">'+tag+' da Câmara</span>':'')+'</div>').join('');
+  '<div class="ver"><b>'+u+'</b><span>'+p+' · '+v+' votos</span>'+(tag?'<span class="tag">'+tag+'</span>':'')+'</div>').join('');
 document.getElementById('verbas').innerHTML = VERBAS.map(v =>
   '<div class="grana'+(v.largo?' largo':'')+'"><span class="valor">'+v.valor+'</span><span class="titulo">'+v.titulo+'</span><p class="txt">'+v.txt+'</p><p class="pergunta"><b>Pergunte:</b> '+v.pergunta+'</p>'+
   (v.copiar ? '<div class="acoes"><button class="btn" type="button" data-copia="'+esc(v.copiar)+'">Copiar pedido pro e-SIC</button><a class="btn cinza" href="https://www.rinopolis.sp.gov.br/esic/" target="_blank" rel="noopener">Abrir o e-SIC</a></div>' : '')+
@@ -1769,9 +1769,9 @@ const IMPOSTOS25 = [['ISS (imposto sobre serviços)',1892782],['Imposto de renda
 const DESTINO25 = [
   ['Saúde',17755708],['Educação',11532843],['Serviços urbanos',7217840],['Administração',5250132],['Assistência social',3385215],
   ['Água e esgoto',2542892],['Cultura',1523070],['Câmara Municipal',1212898],['Previdência dos servidores',1212063],['Trabalho',1113518],
-  ['Outras áreas',2397223,'Agricultura, meio ambiente, esporte, estradas e juros da dívida']
+  ['Outras áreas',2397223,'Agricultura, meio ambiente, esporte, estradas e pagamento da dívida']
 ];
-const reais = v => v>=1e6 ? 'R$ '+(v/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mi' : 'R$ '+Math.round(v/1e3).toLocaleString('pt-BR')+' mil';
+const reais = v => v>=1e6 ? 'R$ '+(v/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mi' : 'R$ '+(v/1e3).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mil';
 function barras(el, itens, destaque){
   const total = itens.reduce((t,i) => t+i[1], 0), max = Math.max(...itens.map(i => i[1]));
   el.innerHTML = itens.map(([nome,v,det]) => {
@@ -1794,7 +1794,7 @@ document.getElementById('linksContas').innerHTML = [
 ].map(([t,d,u]) => '<div class="contato"><span><b>'+t+'</b><span class="miudo" style="display:block">'+d+'</span></span><a class="btn cinza" href="'+u+'" target="_blank" rel="noopener">Abrir</a></div>').join('');
 const ritmo = RECEBIDO26/(FIM_AGO26-INICIO26);
 const arrecadado = document.getElementById('arrecadado');
-function tique(){ arrecadado.textContent = (RECEBIDO26 + ritmo*Math.max(0, Date.now()-FIM_AGO26)).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}); }
+function tique(){ arrecadado.textContent = (RECEBIDO26 + ritmo*Math.max(0, Math.min(Date.now(), Date.UTC(2027,0,1,3))-FIM_AGO26)).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}); }
 tique(); setInterval(tique, 1000);
 const dica = document.createElement('div'); dica.className='dica'; dica.hidden=true; document.body.appendChild(dica);
 document.getElementById('aba-contas').addEventListener('pointermove', e => {
