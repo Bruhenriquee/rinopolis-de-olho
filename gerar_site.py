@@ -14,6 +14,7 @@ PASTA = pathlib.Path(__file__).parent
 DOCS = PASTA / 'docs'
 
 TITULO = 'Rinópolis de Olho'
+ENDERECO = 'https://bruhenriquee.github.io/rinopolis-de-olho/'
 DESCRICAO = 'O mapa dos moradores de Rinópolis-SP: marque buracos, luz apagada, lixo e esgoto, e acompanhe os dias até o conserto.'
 ICONE = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E"
          "%3Crect x='8.5' y='8.5' width='31' height='31' rx='4' transform='rotate(45 24 24)' fill='%23f6c21a'/%3E"
@@ -36,6 +37,11 @@ cabeca = f'''<!doctype html>
 <meta property="og:title" content="{TITULO}">
 <meta property="og:description" content="{DESCRICAO}">
 <meta property="og:type" content="website">
+<meta property="og:url" content="{ENDERECO}">
+<meta property="og:image" content="{ENDERECO}previa.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#1b1d20">
 <link rel="icon" href="{ICONE}">
 <style>:root{{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:dark}}body{{margin:0;font:14px system-ui,sans-serif}}img{{max-width:100%}}[hidden]{{display:none!important}}</style>
@@ -45,7 +51,7 @@ cabeca = f'''<!doctype html>
 
 DOCS.mkdir(exist_ok=True)
 (DOCS / 'index.html').write_text(cabeca + corpo + '\n</body>\n</html>\n', encoding='utf-8')
-for arquivo in ('ruas.js', 'config.js'):
+for arquivo in ('ruas.js', 'config.js', 'previa.png'):
     shutil.copy2(PASTA / arquivo, DOCS / arquivo)
 (DOCS / '.nojekyll').write_text('', encoding='utf-8')
 print('Site gerado em', DOCS)

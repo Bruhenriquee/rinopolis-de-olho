@@ -4,22 +4,35 @@ O mapa dos moradores de Rinópolis-SP. A pessoa marca buraco, poste apagado, lix
 
 O site também mostra quem decide na cidade (prefeita, vice e os 9 vereadores), o plano de governo registrado no TSE, as contas da prefeitura e um pedido oficial pronto pra enviar.
 
-## Como está organizado
+No ar em **https://bruhenriquee.github.io/rinopolis-de-olho/**
+
+## Como funciona
+
+- As marcações ficam num banco de dados no **Supabase**. Os moradores só gravam pelas funções do banco, que conferem tudo (limite de 5 marcações por hora, aparelho bloqueado, foto só de quem marcou).
+- Ninguém precisa de cadastro pra marcar. Cada aparelho tem um código secreto; o banco guarda só a versão embaralhada.
+- As fotos só aparecem pra todos depois de aprovadas no **Painel**.
+- A equipe (dono e moderadores) entra com e-mail e senha pelo link "Entrar (quem cuida do mapa)", no rodapé.
+
+## Arquivos
 
 - `index.html`: o site.
 - `ruas.js`: as ruas da cidade, tiradas do OpenStreetMap.
-- `config.js`: e-mail de contato e endereço do site.
+- `config.js`: endereço e chave pública do Supabase, e-mail de contato e endereço do site.
+- `supabase.sql` e `supabase-painel.sql`: o banco. Rodar uma vez, nessa ordem, no SQL Editor do Supabase.
 - `gerar_site.py`: monta a pasta `docs/`, que é o que o GitHub Pages publica.
+- `gerar_previa.py`: gera `previa.png`, a imagem que aparece quando o link é mandado no WhatsApp.
 
-Depois de mudar qualquer coisa, rode:
+Depois de mudar qualquer coisa:
 
 ```
 python gerar_site.py
+git add -A && git commit -m "o que mudou" && git push
 ```
 
-## Situação
+## Moderadores
 
-Por enquanto as marcações ficam guardadas só no aparelho de quem marcou. O próximo passo é ligar um banco de dados, pra elas aparecerem pra cidade toda.
+1. No Painel, aba **Equipe**, adicione o e-mail da pessoa (só o dono faz isso).
+2. No Supabase, em **Authentication → Users → Add user**, crie o login com o mesmo e-mail e marque **Auto Confirm User**.
 
 ## Fontes
 
