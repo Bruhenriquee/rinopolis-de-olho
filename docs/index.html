@@ -773,13 +773,13 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <div id="painelDono">
           <p class="leve" id="painelQuem">Só a equipe vê esta aba. As placas aparecem na hora; as fotos só depois de aprovadas.</p>
           <div class="resumo resumo4">
-            <div><b id="pFotos">0</b><span>fotos esperando</span></div>
+            <div><b id="pFotos">0</b><span>para conferir</span></div>
             <div><b id="pAbertos">0</b><span>placas abertas</span></div>
             <div><b id="pSem">0</b><span>sem notícia</span></div>
             <div><b id="pMedia">–</b><span>dias até consertar (média)</span></div>
           </div>
           <nav class="subabas" id="subabas">
-            <button type="button" data-sub="fotos" aria-pressed="true">Fotos<i class="bolinha2" id="bolinhaFotos" hidden></i></button>
+            <button type="button" data-sub="fotos" aria-pressed="true">Conferir<i class="bolinha2" id="bolinhaFotos" hidden></i></button>
             <button type="button" data-sub="placas" aria-pressed="false">Placas</button>
             <button type="button" data-sub="numeros" aria-pressed="false">Números</button>
             <button type="button" data-sub="equipe" aria-pressed="false" id="subEquipe" hidden>Equipe</button>
@@ -787,6 +787,11 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
           </nav>
 
           <div data-secao="fotos">
+            <div id="denunciasBox" hidden>
+              <h3 style="margin-top:0">Denúncias dos moradores</h3>
+              <div class="cartas" id="denunciasPainel"></div>
+            </div>
+            <h3 style="margin-top:0">Fotos</h3>
             <p class="miudo">Recuse se tiver rosto de pessoa, placa de carro, ofensa ou propaganda.</p>
             <div class="cartas" id="pendentes"></div>
             <h3>Sem notícia há mais de 90 dias</h3>
@@ -896,6 +901,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <h3>2. Dados que tratamos</h3>
         <p><b>Ao marcar um problema:</b> tipo do problema, localização no mapa, rua e ponto de referência, data e hora e, se você quiser, uma descrição curta e uma foto.</p>
         <p><b>Ao confirmar um problema:</b> o registro de que um aparelho confirmou ("eu também vi" ou "já consertaram") e a data.</p>
+        <p><b>Ao denunciar uma placa:</b> o motivo escolhido, a frase que você escrever (se escrever) e a data. Só a equipe vê as denúncias, e elas são apagadas quando a equipe decide manter ou apagar a placa. Se 3 pessoas apontarem a frase de uma placa como ofensiva, ela sai do ar na hora até a equipe conferir.</p>
         <p><b>Código do aparelho:</b> um código aleatório gerado no seu navegador. O banco de dados guarda apenas uma versão cifrada (hash) desse código, que não permite identificar a pessoa. Ele serve para limitar cada confirmação a uma por aparelho, permitir que você acompanhe o que marcou e evitar abusos.</p>
         <p><b>Não coletamos</b> nome, CPF, telefone, e-mail, endereço residencial nem localização do aparelho em segundo plano. A localização só é usada quando você toca em "Estou aqui", e apenas para posicionar a marcação.</p>
         <p><b>Equipe:</b> as pessoas que moderam o mapa entram com e-mail e senha. Suas ações (aprovar ou recusar fotos, responder, apagar, bloquear) ficam registradas com e-mail, data e hora.</p>
@@ -913,7 +919,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p>Não vendemos nem cedemos dados a terceiros. O site depende dos serviços abaixo, alguns com servidores fora do Brasil (LGPD, art. 33):</p>
         <ul>
           <li><b>Hospedagem do site: GitHub Pages</b> (GitHub, Inc.), no endereço bruhenriquee.github.io/rinopolis-de-olho. Guarda só as páginas e o mapa das ruas; registra o endereço IP de quem acessa, como qualquer hospedagem.</li>
-          <li><b>Marcações, confirmações, fotos, equipe e histórico: Supabase</b> (Supabase, Inc.), banco de dados PostgreSQL. Ali ficam as marcações e confirmações (com o código cifrado do aparelho), as fotos em conferência e as publicadas, a lista da equipe, os aparelhos bloqueados e o registro das ações da equipe.</li>
+          <li><b>Marcações, confirmações, fotos, equipe e histórico: Supabase</b> (Supabase, Inc.), banco de dados PostgreSQL. Ali ficam as marcações e confirmações (com o código cifrado do aparelho), as fotos em conferência e as publicadas, as denúncias de placas, a lista da equipe, os aparelhos bloqueados e o registro das ações da equipe.</li>
           <li><b>Login da equipe: Supabase Auth</b>, o mesmo serviço. Guarda o e-mail e a senha cifrada de quem modera. Moradores não têm login.</li>
           <li><b>Letras do site: Google Fonts</b> (Google LLC). <b>Programa do mapa: cdnjs</b> (Cloudflare, Inc.). <b>Ligação com o banco: jsDelivr.</b> Esses três só entregam arquivos ao abrir a página e recebem o endereço IP; não recebem marcações nem fotos.</li>
           <li><b>Mapa das ruas: OpenStreetMap.</b> Os dados das ruas já vêm dentro do site; usar o mapa não envia nada ao OpenStreetMap.</li>
@@ -1236,6 +1242,24 @@ const Fotos = {
   }
 };
 
+/* denúncias de placas: no site público vão pro banco; no modo de teste ficam neste aparelho */
+const MOTIVOS = {falsa:'Informação falsa', ofensiva:'Ofensiva', repetida:'Repetida', outro:'Outro motivo'};
+const Denuncias = {
+  pode: () => Loja.modo==='nuvem' || Loja.modo==='local',
+  async enviar(id, motivo, detalhe){
+    if (Loja.modo==='nuvem') return Nuvem.denunciar(id, motivo, detalhe);
+    const l = guardado('rdo-denuncias', []); l.push({reclamacao:id, motivo, detalhe, criado:Date.now()}); guardar('rdo-denuncias', l);
+  },
+  async ler(){
+    if (Loja.modo==='nuvem') return Nuvem.denuncias();
+    return {lista:guardado('rdo-denuncias', []), escondidos:{}};
+  },
+  async manter(id){
+    if (Loja.modo==='nuvem') return Nuvem.manter(id);
+    guardar('rdo-denuncias', guardado('rdo-denuncias', []).filter(x => x.reclamacao!==id));
+  }
+};
+
 /* ---------- Banco público (Supabase) ----------
    Usado no site aberto (GitHub Pages) quando o config.js tem as chaves. Os moradores só escrevem
    pelas funções do banco (criar_reclamacao, apoiar...), que conferem tudo; quem cuida do mapa entra com e-mail e senha.
@@ -1360,6 +1384,13 @@ const Nuvem = {
   async removerModerador(email){ const {error} = await this.sb.from('admins').delete().eq('email', email); if (error) throw error; },
   async bloquear(autor, motivo){ const {error} = await this.sb.from('bloqueios').upsert({autor, motivo:(motivo||'').slice(0,200)}); if (error) throw error; },
   async desbloquear(autor){ const {error} = await this.sb.from('bloqueios').delete().eq('autor', autor); if (error) throw error; },
+  async denunciar(id, motivo, detalhe){ const {error} = await this.sb.rpc('denunciar', {p_id:id, p_motivo:motivo, p_detalhe:detalhe||'', p_segredo:this.segredo}); if (error) throw error; },
+  async denuncias(){
+    const [d,t] = await Promise.all([this.sb.from('denuncias').select('reclamacao,motivo,detalhe,criado').order('criado',{ascending:false}), this.sb.from('textos_escondidos').select('reclamacao,texto')]);
+    if (d.error) throw d.error;
+    return {lista:(d.data||[]).map(x => Object.assign({}, x, {criado:Date.parse(x.criado)})), escondidos:Object.fromEntries((t.data||[]).map(x => [x.reclamacao, x.texto]))};
+  },
+  async manter(id){ const {error} = await this.sb.rpc('manter_placa', {p_id:id}); if (error) throw error; await this.carregar(); },
   async bloqueados(){ const {data,error} = await this.sb.from('bloqueios').select('autor,motivo,criado').order('criado',{ascending:false}); if (error) throw error; return data||[]; },
   async historico(){ const {data,error} = await this.sb.from('historico').select('quando,quem,acao,detalhe').order('quando',{ascending:false}).limit(150); if (error) throw error; return data||[]; },
   async entrar(email, senha){
@@ -1535,8 +1566,9 @@ document.getElementById('rankingRuas').addEventListener('click', e => {
 
 /* ---------- Detalhe ---------- */
 let abertoId = null, armadoApagar = false, consertoAberto = null, consertoFoto = '', respostaRascunho = null;
+let denunciaAberta = null, denunciaMotivo = '', denunciaTexto = '';
 const fundoVer = document.getElementById('fundoVer'), folhaVer = document.getElementById('folhaVer');
-function abrir(id){ abertoId=id; armadoApagar=false; redesAbertas=null; consertoAberto=null; consertoFoto=''; respostaRascunho=null; desenharDetalhe(id); fundoVer.hidden=false; }
+function abrir(id){ abertoId=id; armadoApagar=false; redesAbertas=null; denunciaAberta=null; consertoAberto=null; consertoFoto=''; respostaRascunho=null; desenharDetalhe(id); fundoVer.hidden=false; }
 function fecharVer(){ fundoVer.hidden=true; abertoId=null; consertoAberto=null; }
 fundoVer.addEventListener('click', e => { if (e.target===fundoVer) fecharVer(); });
 const linkPlaca = r => r.exemplo ? LINK : LINK+'#p-'+r.id;
@@ -1604,6 +1636,15 @@ function fotoBloco(r){
   }
   return partes.length ? '<div class="fotos">'+partes.join('')+'</div>' : '';
 }
+function denunciaHtml(r){
+  if (guardado('rdo-denunciei', {})[r.id]) return '<p class="miudo">Você denunciou esta placa. A equipe vai conferir.</p>';
+  if (denunciaAberta!==r.id) return '<button class="link denunciar" type="button" data-acao="denunciar">Denunciar: informação falsa, ofensiva ou repetida</button>';
+  return '<div class="bloco"><b>O que tem de errado nesta placa?</b><div class="opcoes">'+
+    Object.entries(MOTIVOS).map(([k,t]) => '<button class="chip" type="button" data-motivo="'+k+'" aria-pressed="'+(denunciaMotivo===k)+'">'+t+'</button>').join('')+'</div>'+
+    '<input type="text" id="denunciaTexto" maxlength="200" placeholder="Conte em uma frase (se quiser)" value="'+esc(denunciaTexto)+'">'+
+    '<div class="acoes"><button class="btn perigo" type="button" data-acao="enviaDenuncia">Enviar denúncia</button><button class="btn-leve" type="button" data-acao="cancelaDenuncia">Cancelar</button></div>'+
+    '<p class="miudo">Só a equipe vê as denúncias, e ninguém fica sabendo quem denunciou.</p></div>';
+}
 function desenharDetalhe(id){
   const r = todos().mostrados.find(x => x.id===id);
   if (!r) { fecharVer(); return; }
@@ -1630,6 +1671,7 @@ function desenharDetalhe(id){
     (redesAbertas===id ? redesHtml(textoSemLink(textoZap(r,s)), linkPlaca(r)) : '')+
     '<button class="btn-leve" type="button" data-acao="seguir">'+(sigo(id) ? 'Você acompanha esta placa · parar' : 'Acompanhar esta placa')+'</button>'+
     (sigo(id) ? '' : '<p class="miudo">Quando consertarem ou a prefeitura responder, você fica sabendo ao abrir o site.</p>');
+  if (!r.exemplo && !souAutor && Loja.podeEscrever && Denuncias.pode()) h += denunciaHtml(r);
   if (Loja.editor && !r.exemplo && !s.feito) {
     const atual = respostaRascunho ? respostaRascunho.status : (r.resposta ? r.resposta.status : '');
     h += '<h3>Resposta da prefeitura</h3><p class="miudo">Só a equipe vê isto. Anote o que a prefeitura respondeu: a resposta aparece na placa pra todo mundo.</p><div class="opcoes">'+
@@ -1646,6 +1688,7 @@ folhaVer.addEventListener('change', async e => {
   try { consertoFoto = await comprimir(f); desenharDetalhe(abertoId); } catch(err) { avisar('Não consegui abrir essa foto. Tente outra.'); }
 });
 folhaVer.addEventListener('input', e => {
+  if (e.target.id==='denunciaTexto') denunciaTexto = e.target.value;
   if (e.target.id==='respostaTexto') respostaRascunho = Object.assign({status:(respostaRascunho||{}).status || ((Loja.recs.get(abertoId)||{}).resposta||{}).status || ''}, {texto:e.target.value});
 });
 folhaVer.addEventListener('click', async e => {
@@ -1653,6 +1696,8 @@ folhaVer.addEventListener('click', async e => {
   const r = todos().mostrados.find(x => x.id===abertoId); if (!r) return;
   const rb = e.target.closest('[data-resposta]');
   if (rb) { respostaRascunho = {status:rb.dataset.resposta, texto:(document.getElementById('respostaTexto')||{}).value||''}; desenharDetalhe(r.id); return; }
+  const mb = e.target.closest('[data-motivo]');
+  if (mb) { denunciaMotivo = mb.dataset.motivo; desenharDetalhe(r.id); return; }
   const b = e.target.closest('[data-acao]'); if (!b) return;
   const a = b.dataset.acao, souAutor = r.autor===Loja.uid;
   if (a==='ve' || a==='ok') { if (a==='ve' && meuVoto(r.id)!=='ve') seguir(r.id, true); apoiar(r.id, a); }
@@ -1671,6 +1716,20 @@ folhaVer.addEventListener('click', async e => {
     } catch(err) { console.error(err); b.disabled=false; avisar('Não deu pra salvar. Tente de novo.'); }
   }
   else if (a==='aindaEsta') { const perg = guardado('rdo-perguntei', {}); perg[r.id]=Date.now(); guardar('rdo-perguntei', perg); atualizar(r.id, {visto:Date.now()}); avisar('Anotado. A placa continua contando.'); }
+  else if (a==='denunciar') { denunciaAberta=r.id; denunciaMotivo=''; denunciaTexto=''; desenharDetalhe(r.id); }
+  else if (a==='cancelaDenuncia') { denunciaAberta=null; desenharDetalhe(r.id); }
+  else if (a==='enviaDenuncia') {
+    if (!denunciaMotivo) { avisar('Escolha o motivo primeiro.'); return; }
+    b.disabled = true;
+    try {
+      await Denuncias.enviar(r.id, denunciaMotivo, denunciaTexto.trim());
+      const d = guardado('rdo-denunciei', {}); d[r.id] = Date.now(); guardar('rdo-denunciei', d);
+      denunciaAberta = null; desenharDetalhe(r.id); avisar('Denúncia enviada. A equipe vai conferir.');
+    } catch(err) {
+      console.error(err); b.disabled = false; const m = String((err && err.message) || '');
+      avisar(m.includes('limite') ? 'Você mandou muitas denúncias agora. Tente mais tarde.' : m.includes('bloqueado') ? 'Este aparelho foi bloqueado por quem cuida do mapa.' : 'Não deu pra enviar. Tente de novo.');
+    }
+  }
   else if (a==='copiar') copiar(textoZap(r, situacao(r)), 'Texto copiado');
   else if (a==='link') copiar(linkPlaca(r), 'Link copiado. Quem abrir cai direto nesta placa.');
   else if (a==='salvaResposta') {
@@ -2215,7 +2274,71 @@ async function carregarPainel(){
 }
 
 /* fotos */
+let denunciasCache = {lista:[], escondidos:{}};
+async function carregarDenuncias(){
+  if (!Denuncias.pode()) return;
+  try { denunciasCache = await Denuncias.ler(); } catch(e) { console.error(e); return; }
+  desenharDenuncias();
+}
+/* fotos esperando + placas denunciadas: o número do painel e a bolinha vermelha do menu */
+function atualizarContagemConferir(){
+  const placas = new Set(denunciasCache.lista.filter(d => Loja.recs.has(d.reclamacao)).map(d => d.reclamacao)).size;
+  const total = pendentesCache.length + placas;
+  document.getElementById('pFotos').textContent = total;
+  document.getElementById('bolinha').hidden = !total;
+  document.getElementById('bolinhaFotos').hidden = !total;
+}
+function desenharDenuncias(){
+  const grupos = new Map();
+  for (const d of denunciasCache.lista) {
+    if (!Loja.recs.has(d.reclamacao)) continue;
+    if (!grupos.has(d.reclamacao)) grupos.set(d.reclamacao, []);
+    grupos.get(d.reclamacao).push(d);
+  }
+  document.getElementById('denunciasBox').hidden = !grupos.size;
+  atualizarContagemConferir();
+  document.getElementById('denunciasPainel').innerHTML = [...grupos].sort((a,b) => b[1].length-a[1].length).map(([id,l]) => {
+    const r = Loja.recs.get(id), conta = {};
+    l.forEach(d => conta[d.motivo] = (conta[d.motivo]||0)+1);
+    const escondida = denunciasCache.escondidos[id];
+    const frase = escondida ? '<p><span class="selo">frase tirada do ar</span> "'+esc(escondida)+'"</p>' : r.texto ? '<p>"'+esc(r.texto)+'"</p>' : '';
+    const detalhes = l.filter(d => d.detalhe).map(d => '<li>'+esc(d.detalhe)+'</li>').join('');
+    return '<div class="carta"><div class="corpo"><span><b>'+esc(TIPOS[r.tipo].nome)+'</b> · '+esc(r.rua||'')+'</span>'+frase+
+      '<p class="miudo">'+l.length+(l.length===1 ? ' denúncia: ' : ' denúncias: ')+Object.entries(conta).map(([k,n]) => MOTIVOS[k]+(n>1 ? ' ('+n+')' : '')).join(', ')+'</p>'+
+      (detalhes ? '<ul class="miudo" style="margin:0;padding-left:18px">'+detalhes+'</ul>' : '')+
+      '<div class="acoes"><button class="btn cinza" type="button" data-den="abrir" data-id="'+esc(id)+'">Ver placa</button>'+
+      '<button class="btn zap" type="button" data-den="manter" data-id="'+esc(id)+'">Manter</button>'+
+      '<button class="btn perigo" type="button" data-den="apagar" data-id="'+esc(id)+'">'+(armadoPainel==='den'+id ? 'Confirmar apagar' : 'Apagar placa')+'</button></div>'+
+      (Loja.modo==='nuvem' ? '<button class="btn-leve perigo-leve" type="button" data-den="bloquear" data-id="'+esc(id)+'">'+(armadoPainel==='denb'+id ? 'Confirmar bloqueio' : 'Bloquear aparelho de quem marcou')+'</button>' : '')+
+      '</div></div>';
+  }).join('');
+}
+document.getElementById('denunciasPainel').addEventListener('click', async e => {
+  const b = e.target.closest('[data-den]'); if (!b) return;
+  const id = b.dataset.id, r = Loja.recs.get(id), a = b.dataset.den;
+  const tirar = () => { denunciasCache.lista = denunciasCache.lista.filter(d => d.reclamacao!==id); delete denunciasCache.escondidos[id]; desenharDenuncias(); };
+  if (a==='abrir') { abrir(id); return; }
+  if (a==='manter') {
+    b.disabled = true;
+    try { await Denuncias.manter(id); tirar(); avisar('Placa mantida. As denúncias foram arquivadas.'); }
+    catch(err) { console.error(err); b.disabled = false; avisar('Não deu pra salvar. Rode o arquivo supabase-denuncias.sql no Supabase.'); }
+    return;
+  }
+  if (a==='apagar') {
+    if (armadoPainel!=='den'+id) { armadoPainel = 'den'+id; desenharDenuncias(); return; }
+    armadoPainel = ''; await apagar(id); tirar(); avisar('Placa apagada'); return;
+  }
+  if (a==='bloquear' && r) {
+    if (armadoPainel!=='denb'+id) { armadoPainel = 'denb'+id; desenharDenuncias(); return; }
+    armadoPainel = '';
+    try { await Nuvem.bloquear(r.autor, 'Denunciada: '+TIPOS[r.tipo].nome+' na '+(r.rua||'')); avisar('Aparelho bloqueado. Agora decida se mantém ou apaga a placa.'); }
+    catch(err) { console.error(err); avisar('Não deu pra bloquear.'); }
+    desenharDenuncias();
+  }
+});
+
 async function carregarFotosPainel(silencioso){
+  carregarDenuncias();
   const box = document.getElementById('pendentes');
   if (!silencioso) box.innerHTML = '<p class="miudo">Procurando fotos novas…</p>';
   try { pendentesCache = await Fotos.pendentes(); } catch(e) { console.error(e); box.innerHTML = '<p class="vazio">Não deu pra carregar as fotos agora.</p>'; return; }
@@ -2223,9 +2346,7 @@ async function carregarFotosPainel(silencioso){
 }
 function desenharPendentes(){
   const box = document.getElementById('pendentes');
-  document.getElementById('pFotos').textContent = pendentesCache.length;
-  const bol = document.getElementById('bolinha'); bol.hidden = !pendentesCache.length;
-  document.getElementById('bolinhaFotos').hidden = !pendentesCache.length;
+  atualizarContagemConferir();
   if (!pendentesCache.length) { box.innerHTML = '<p class="vazio">Nenhuma foto esperando. Tudo em dia.</p>'; return; }
   box.innerHTML = pendentesCache.map((p,i) => { const r = Loja.recs.get(p.reclamacao);
     const ok = typeof p.foto==='string' && p.foto.startsWith('data:image/jpeg;base64,');
