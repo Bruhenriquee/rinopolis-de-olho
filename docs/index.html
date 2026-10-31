@@ -183,6 +183,26 @@ p{margin:0}
 .campea{background:var(--placa-escuro);border:1px solid var(--linha);border-radius:8px;padding:12px 14px;display:flex;gap:12px;align-items:center}
 .campea .medalha{font-family:var(--f-placa);font-weight:800;font-size:34px;color:var(--alerta);line-height:1;font-variant-numeric:tabular-nums}
 .campea b{display:block;font-size:16px}
+button.campea{width:100%;text-align:left}
+button.campea:hover{border-color:var(--placa)}
+.campea .miudo{display:block}
+#rankingRuas{display:contents}
+.ranking{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;background:var(--linha);border-radius:8px;overflow:hidden}
+.ranking button{display:grid;grid-template-columns:24px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;background:var(--asfalto-2);border:0;padding:10px 12px;text-align:left}
+.ranking button:hover{background:var(--asfalto-3)}
+.ranking .pos{font-family:var(--f-placa);font-weight:800;font-size:20px;color:var(--apagado)}
+.ranking .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700}
+.ranking small{display:block;font-weight:400;font-size:12px;color:var(--tinta-2)}
+.ranking b{font-family:var(--f-placa);font-weight:800;font-size:22px;color:var(--alerta);font-variant-numeric:tabular-nums}
+.ranking.verde b{color:var(--ok)}
+.redes{display:flex;gap:8px;flex-wrap:wrap}
+.redes .chip{text-decoration:none;padding:7px 14px}
+.perto{background:var(--asfalto-3);border-left:4px solid var(--placa);border-radius:0 8px 8px 0;padding:12px;display:flex;flex-direction:column;gap:8px}
+.perto .item{border-radius:6px}
+.perto .quanto b{font-size:15px;color:var(--placa);white-space:nowrap}
+.boas-antigo{background:none;border:0;padding:0;text-align:left;font-size:15px;color:var(--tinta-2)}
+.boas-antigo b{color:var(--tinta)}
+.boas-antigo span{color:var(--placa);text-decoration:underline;white-space:nowrap}
 .filtro{display:flex;gap:8px;flex-wrap:wrap}
 .chip{background:var(--asfalto-3);border:1px solid var(--linha);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--tinta-2)}
 .chip[aria-pressed="true"]{background:var(--tinta);color:var(--placa-escuro);border-color:var(--tinta);font-weight:700}
@@ -526,6 +546,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
   <div class="boas-card" role="dialog" aria-modal="true" aria-labelledby="tBoas">
     <span class="boas-eti">Rinópolis · SP · o mapa dos moradores</span>
     <div class="boas-num" id="boasNum" hidden><b id="boasDias">0</b><span>dias de espera, somando os problemas que ainda estão abertos na cidade</span></div>
+    <button class="boas-antigo" id="boasAntigo" type="button" hidden></button>
     <h2 id="tBoas">Buraco, poste apagado, lixo, esgoto. <em>Se ninguém marca, ninguém conserta.</em></h2>
     <ol class="passos">
       <li><span><b>Marque o problema</b> <span class="leve">no lugar exato do mapa.</span></span></li>
@@ -541,7 +562,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
   <div class="folha larga" role="dialog" aria-modal="true" aria-labelledby="tVitrine">
     <header><div><span class="boas-eti">Reclamar funciona</span><h2 id="tVitrine">Já consertamos</h2></div><button class="btn-leve" type="button" data-fecha>Fechar</button></header>
     <div id="vitrine"></div>
-    <div class="acoes"><a class="btn zap" id="zapVitrine" href="#" target="_blank" rel="noopener">Mandar no WhatsApp</a></div>
+    <div class="acoes"><a class="btn zap" id="zapVitrine" href="#" target="_blank" rel="noopener">Mandar no WhatsApp</a><button class="btn cinza" type="button" id="compVitrine">Compartilhar</button></div>
   </div>
 </div>
 
@@ -611,6 +632,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <div id="lista"></div>
         <h3>A cidade em números</h3>
         <div class="numeros" id="numerosCidade"></div>
+        <div id="rankingRuas"></div>
       </section>
 
       <section id="aba-quem" hidden>
@@ -773,6 +795,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <div><h2 id="tNovo">Qual é o problema?</h2><div class="onde" id="novoOnde"></div></div>
         <button class="btn-leve" type="button" data-fecha>Fechar</button>
       </header>
+      <div id="novoPerto"></div>
       <div class="tipos" id="tiposNovo"></div>
       <div>
         <label for="novoTexto">Conte em uma frase (se quiser)</label>
@@ -1050,7 +1073,7 @@ async function conectar(){
   document.getElementById('abaPainel').hidden = !Loja.dono;
   db.collection('reclamacoes').limit(1000).onSnapshot(s => {
     Loja.recs = new Map(s.docs.map(d => [d.id, Object.assign({id:d.id}, d.data())]));
-    const primeira = !Loja.carregou; Loja.carregou = true; render(); if (primeira && !abrirDoLink()) perguntarAutor();
+    const primeira = !Loja.carregou; Loja.carregou = true; render(); if (primeira && !abrirDoLink() && !novidades()) perguntarAutor();
   }, e => console.error(e));
   db.collection('apoios').limit(1000).onSnapshot(s => { Loja.apoios = new Map(s.docs.map(d => [d.id, d.data()])); render(); }, e => console.error(e));
   db.doc('moderacao/estado').onSnapshot(s => { Loja.estadoExiste = s.exists; Loja.estado = Object.assign({fotos:{}}, s.exists ? s.data() : {}); render(); }, e => console.error(e));
@@ -1189,7 +1212,7 @@ const Nuvem = {
     Loja.estado = {fotos:Object.fromEntries((f.data||[]).map(x => [x.chave,'ok']))};
     this.meus = Object.fromEntries((v.data||[]).map(x => [x.reclamacao, x.tipo]));
     const primeira = !Loja.carregou; Loja.carregou = true;
-    render(); if (primeira && !abrirDoLink()) perguntarAutor();
+    render(); if (primeira && !abrirDoLink() && !novidades()) perguntarAutor();
   },
   erro(e){
     console.error(e);
@@ -1368,20 +1391,38 @@ function render(){
       .on('click', () => abrir(r.id)).addTo(camada);
   }
 
-  const porRua = new Map();
-  for (const r of n.abertos) porRua.set(r.rua, (porRua.get(r.rua)||0)+1);
-  const top = [...porRua].filter(([nm]) => nm && nm!=='Área rural').sort((a,b) => b[1]-a[1])[0];
-  document.getElementById('campea').innerHTML = top && top[1]>1 ? '<div class="campea"><span class="medalha">'+top[1]+'</span><div><span class="miudo">Rua mais esquecida agora</span><b>'+esc(top[0])+'</b></div></div>' : '';
+  /* o problema aberto mais antigo, em destaque na lista e na tela de entrada */
+  const antigo = n.abertos.slice().sort((a,b) => a.criado-b.criado)[0];
+  const dAntigo = antigo ? n.sit.get(antigo.id).dias : 0;
+  document.getElementById('campea').innerHTML = antigo && dAntigo>=1 ? '<button class="campea" type="button" data-id="'+esc(antigo.id)+'"><span class="medalha">'+dAntigo+'</span><div><span class="miudo">'+(dAntigo===1?'dia':'dias')+' esperando: o problema mais antigo sem conserto</span><b>'+esc(TIPOS[antigo.tipo].nome)+' · '+esc(antigo.rua||'')+'</b></div></button>' : '';
+  const boasAntigo = document.getElementById('boasAntigo');
+  boasAntigo.hidden = !(antigo && dAntigo>=1);
+  if (!boasAntigo.hidden) { boasAntigo.dataset.id = antigo.id; boasAntigo.innerHTML = 'O mais antigo: <b>'+esc(TIPOS[antigo.tipo].nome.toLowerCase())+' na '+esc(antigo.rua||'cidade')+'</b>, esperando há '+diasTxt(dAntigo)+'. <span>Ver no mapa</span>'; }
 
-  const conta = {abertos:0, feitos:0, sem:0};
+  /* ranking de ruas (só marcações reais) */
+  const ruas = new Map();
+  for (const r of n.reais) {
+    if (!r.rua || r.rua==='Área rural') continue;
+    const x = ruas.get(r.rua) || {abertos:0, dias:0, feitos:0}, st = n.sit.get(r.id);
+    if (st.feito) x.feitos++; else if (!st.sem) { x.abertos++; x.dias += st.dias; }
+    ruas.set(r.rua, x);
+  }
+  const linhaRua = (nm,i,num,sub) => '<li><button type="button" data-rua="'+esc(nm)+'"><span class="pos">'+(i+1)+'</span><span class="nm">'+esc(nm)+'<small>'+sub+'</small></span><b>'+num+'</b></button></li>';
+  const piores = [...ruas].filter(([,x]) => x.abertos).sort((a,b) => b[1].abertos-a[1].abertos || b[1].dias-a[1].dias).slice(0,5);
+  const melhores = [...ruas].filter(([,x]) => x.feitos).sort((a,b) => b[1].feitos-a[1].feitos).slice(0,3);
+  document.getElementById('rankingRuas').innerHTML =
+    (piores.length ? '<h3>Ruas com mais problemas abertos</h3><ol class="ranking">'+piores.map(([nm,x],i) => linhaRua(nm,i,x.abertos,(x.abertos===1?'1 problema':x.abertos+' problemas')+' · '+x.dias+' dias de espera somados')).join('')+'</ol>' : '')+
+    (melhores.length ? '<h3>Ruas com mais consertos</h3><ol class="ranking verde">'+melhores.map(([nm,x],i) => linhaRua(nm,i,x.feitos,x.feitos===1?'1 conserto':x.feitos+' consertos')).join('')+'</ol>' : '');
+
+  const conta = {abertos:0, feitos:0, sem:0, sigo:0};
   const base = reais.length ? reais : mostrados;
   const grupo = r => { const s=sit.get(r.id); return s.feito ? 'feitos' : s.sem ? 'sem' : 'abertos'; };
-  base.forEach(r => conta[grupo(r)]++);
-  if (filtro==='sem' && !conta.sem) filtro='abertos';
+  base.forEach(r => { conta[grupo(r)]++; if (sigo(r.id)) conta.sigo++; });
+  if ((filtro==='sem' && !conta.sem) || (filtro==='sigo' && !conta.sigo)) filtro='abertos';
   document.getElementById('filtro').innerHTML =
-    [['abertos','Abertos'],['feitos','Consertados'],['sem','Sem notícia']].filter(([k]) => k!=='sem' || conta.sem)
+    [['abertos','Abertos'],['feitos','Consertados'],['sem','Sem notícia'],['sigo','Acompanho']].filter(([k]) => (k!=='sem' && k!=='sigo') || conta[k])
     .map(([k,t]) => '<button class="chip" type="button" data-filtro="'+k+'" aria-pressed="'+(filtro===k)+'">'+t+' '+conta[k]+'</button>').join('');
-  const vis = base.filter(r => grupo(r)===filtro).sort((a,b) => { const x=sit.get(a.id), y=sit.get(b.id); return (y.ve*4+y.dias) - (x.ve*4+x.dias); });
+  const vis = base.filter(r => filtro==='sigo' ? sigo(r.id) : grupo(r)===filtro).sort((a,b) => { const x=sit.get(a.id), y=sit.get(b.id); return (y.ve*4+y.dias) - (x.ve*4+x.dias); });
   document.getElementById('tituloLista').textContent = reais.length ? 'Esperando conserto agora' : 'Assim vai ficar o mapa';
   document.getElementById('nVitoria').textContent = n.feitos.length;
   resumoGaveta = reais.length ? (n.abertos.length===1 ? '1 problema esperando conserto' : n.abertos.length+' problemas esperando conserto') : 'Ver a lista (3 exemplos)';
@@ -1401,7 +1442,7 @@ function render(){
 }
 function listaHtml(v, sit){
   return '<div class="lista">' + v.map(r => { const s=sit.get(r.id);
-    const selos = (r.exemplo?'<span class="selo exemplo">exemplo</span>':'')+(r.resposta&&!s.feito?'<span class="selo oficial">'+esc(RESPOSTAS[r.resposta.status]||'')+'</span>':'');
+    const selos = (r.exemplo?'<span class="selo exemplo">exemplo</span>':'')+(sigo(r.id)?'<span class="selo exemplo">acompanho</span>':'')+(r.resposta&&!s.feito?'<span class="selo oficial">'+esc(RESPOSTAS[r.resposta.status]||'')+'</span>':'');
     const numero = s.feito ? '<b>OK</b><small>consertado</small>' : s.sem ? '<b>?</b><small>sem notícia</small>' : '<b>'+s.dias+'</b><small>'+(s.dias===1?'dia':'dias')+'</small>';
     return '<button class="item '+estadoClasse(s)+(r.exemplo?' ex':'')+'" type="button" data-id="'+esc(r.id)+'">'+pinoHtml(r,s,false)+
       '<span class="info"><b>'+esc(TIPOS[r.tipo].nome)+'</b><span class="onde">'+esc(r.rua||'')+(r.perto?' · perto de '+esc(r.perto):'')+'</span>'+
@@ -1410,18 +1451,23 @@ function listaHtml(v, sit){
   }).join('') + '</div>';
 }
 document.getElementById('filtro').addEventListener('click', e => { const b=e.target.closest('[data-filtro]'); if (b) { filtro=b.dataset.filtro; render(); } });
-document.getElementById('lista').addEventListener('click', e => {
-  const b = e.target.closest('[data-id]'); if (!b) return;
-  const r = todos().mostrados.find(x => x.id===b.dataset.id); if (!r) return;
+function irPlaca(id){
+  const r = todos().mostrados.find(x => x.id===id); if (!r) return;
   if (innerWidth < 820) gaveta(false);
   map.flyTo([r.lat,r.lon], Math.max(map.getZoom(),17), {duration:.6});
   abrir(r.id);
+}
+for (const id of ['lista','campea']) document.getElementById(id).addEventListener('click', e => { const b = e.target.closest('[data-id]'); if (b) irPlaca(b.dataset.id); });
+document.getElementById('rankingRuas').addEventListener('click', e => {
+  const b = e.target.closest('[data-rua]'); if (!b) return;
+  if (innerWidth < 820) gaveta(false);
+  irParaRua(b.dataset.rua);
 });
 
 /* ---------- Detalhe ---------- */
 let abertoId = null, armadoApagar = false, consertoAberto = null, consertoFoto = '', respostaRascunho = null;
 const fundoVer = document.getElementById('fundoVer'), folhaVer = document.getElementById('folhaVer');
-function abrir(id){ abertoId=id; armadoApagar=false; consertoAberto=null; consertoFoto=''; respostaRascunho=null; desenharDetalhe(id); fundoVer.hidden=false; }
+function abrir(id){ abertoId=id; armadoApagar=false; redesAbertas=null; consertoAberto=null; consertoFoto=''; respostaRascunho=null; desenharDetalhe(id); fundoVer.hidden=false; }
 function fecharVer(){ fundoVer.hidden=true; abertoId=null; consertoAberto=null; }
 fundoVer.addEventListener('click', e => { if (e.target===fundoVer) fecharVer(); });
 const linkPlaca = r => r.exemplo ? LINK : LINK+'#p-'+r.id;
@@ -1431,6 +1477,51 @@ function textoZap(r,s){
   return diasTxt(s.dias).toUpperCase()+' SEM CONSERTO: '+t.nome.toLowerCase()+' na '+onde+'. '+s.ve+(s.ve===1?' morador já confirmou.':' moradores já confirmaram.')+
     (r.texto ? ' "'+r.texto+'"' : '')+' Quem resolve: Prefeitura de Rinópolis, (18) 3583-1321.'+(s.dias>=30?' Até quando?':'')+' Veja no mapa: '+linkPlaca(r);
 }
+/* compartilhar: no celular abre a lista do próprio aparelho (Instagram, Facebook...); no computador, os links */
+const textoSemLink = t => t.replace(/ Veja( no mapa| o antes e depois)?: \S+$/, '');
+function compartilhar(texto, link){
+  if (!navigator.share) return false;
+  navigator.share({title:'Rinópolis de Olho', text:texto, url:link}).catch(() => {});
+  return true;
+}
+const redesHtml = (texto, link) => '<div class="redes">'+[
+  ['Facebook','https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(link)],
+  ['X (Twitter)','https://twitter.com/intent/tweet?text='+encodeURIComponent(texto)+'&url='+encodeURIComponent(link)],
+  ['Telegram','https://t.me/share/url?url='+encodeURIComponent(link)+'&text='+encodeURIComponent(texto)]
+].map(([nm,u]) => '<a class="chip" href="'+u+'" target="_blank" rel="noopener">'+nm+'</a>').join('')+'<button class="chip" type="button" data-acao="copiar">Copiar texto</button></div>';
+let redesAbertas = null;
+
+/* acompanhar placa: fica guardado só neste aparelho */
+const seguidas = () => guardado('rdo-sigo', {});
+const sigo = id => !!seguidas()[id];
+function seguir(id, liga){
+  const t = seguidas();
+  if (liga) { const r = Loja.recs.get(id); t[id] = {feito: r ? situacao(r).feito : false, resp: (r && r.resposta && r.resposta.status) || ''}; }
+  else delete t[id];
+  guardar('rdo-sigo', t);
+}
+/* ao abrir o site, avisa o que mudou nas placas acompanhadas */
+let novidadeId = null;
+function novidades(){
+  const t = seguidas(), achados = [];
+  for (const id of Object.keys(t)) {
+    const r = Loja.recs.get(id);
+    if (!r) { delete t[id]; continue; }
+    const st = situacao(r), resp = (r.resposta && r.resposta.status) || '', onde = (r.rua||'cidade');
+    if (st.feito && !t[id].feito) achados.push({id, titulo:'Consertaram!', txt:TIPOS[r.tipo].nome+' na '+onde+', que você acompanha, foi consertado em '+diasTxt(st.dias)+'.'});
+    else if (!st.feito && resp && resp!==t[id].resp) achados.push({id, titulo:'A prefeitura respondeu', txt:TIPOS[r.tipo].nome+' na '+onde+': '+(RESPOSTAS[resp]||'')+'.'});
+    t[id] = {feito:st.feito, resp};
+  }
+  guardar('rdo-sigo', t);
+  if (!achados.length) return false;
+  achados.sort((x,y) => (y.titulo==='Consertaram!') - (x.titulo==='Consertaram!'));
+  const a = achados[0]; novidadeId = a.id;
+  perguntaCard.innerHTML = '<b>'+esc(a.titulo)+'</b><p>'+esc(a.txt)+(achados.length>1 ? ' E mais '+(achados.length-1)+(achados.length===2?' novidade':' novidades')+' no filtro Acompanho.' : '')+'</p>'+
+    '<div class="acoes"><button class="btn" type="button" data-n="ver">Ver a placa</button><button class="btn-leve" type="button" data-n="fecha">Fechar</button></div>';
+  perguntaCard.hidden = false;
+  return true;
+}
+
 function fotoBloco(r){
   const partes = [];
   for (const [chave,rot,cls,tem] of [[r.id,'Antes','',r.temFoto],[r.id+'_d','Depois','depois',r.temFotoDepois]]) {
@@ -1466,7 +1557,10 @@ function desenharDetalhe(id){
     if (s.ok===1 && meu!=='ok') h += '<p class="miudo">1 pessoa disse que já consertaram. Com mais uma, a placa fica verde.</p>';
   }
   h += r.exemplo ? '<p class="miudo">Esta placa é só um exemplo de como fica. Quando alguém marcar um problema de verdade, aparecem aqui os botões pra confirmar e cobrar no WhatsApp.</p>' :
-    '<div class="acoes"><a class="btn zap" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(textoZap(r,s))+'">Cobrar no WhatsApp</a><button class="btn cinza" type="button" data-acao="copiar">Copiar texto</button><button class="btn cinza" type="button" data-acao="link">Copiar link da placa</button></div>';
+    '<div class="acoes"><a class="btn zap" target="_blank" rel="noopener" href="https://wa.me/?text='+encodeURIComponent(textoZap(r,s))+'">Cobrar no WhatsApp</a><button class="btn cinza" type="button" data-acao="compartilhar">Compartilhar</button><button class="btn cinza" type="button" data-acao="link">Copiar link</button></div>'+
+    (redesAbertas===id ? redesHtml(textoSemLink(textoZap(r,s)), linkPlaca(r)) : '')+
+    '<button class="btn-leve" type="button" data-acao="seguir">'+(sigo(id) ? 'Você acompanha esta placa · parar' : 'Acompanhar esta placa')+'</button>'+
+    (sigo(id) ? '' : '<p class="miudo">Quando consertarem ou a prefeitura responder, você fica sabendo ao abrir o site.</p>');
   if (Loja.editor && !r.exemplo && !s.feito) {
     const atual = respostaRascunho ? respostaRascunho.status : (r.resposta ? r.resposta.status : '');
     h += '<h3>Resposta da prefeitura</h3><p class="miudo">Só quem cuida do mapa vê isto. Compartilhe o mapa como Editor com alguém da prefeitura pra ela mesma responder.</p><div class="opcoes">'+
@@ -1492,7 +1586,9 @@ folhaVer.addEventListener('click', async e => {
   if (rb) { respostaRascunho = {status:rb.dataset.resposta, texto:(document.getElementById('respostaTexto')||{}).value||''}; desenharDetalhe(r.id); return; }
   const b = e.target.closest('[data-acao]'); if (!b) return;
   const a = b.dataset.acao, souAutor = r.autor===Loja.uid;
-  if (a==='ve' || a==='ok') apoiar(r.id, a);
+  if (a==='ve' || a==='ok') { if (a==='ve' && meuVoto(r.id)!=='ve') seguir(r.id, true); apoiar(r.id, a); }
+  else if (a==='compartilhar') { if (!compartilhar(textoSemLink(textoZap(r, situacao(r))), linkPlaca(r))) { redesAbertas = redesAbertas===r.id ? null : r.id; desenharDetalhe(r.id); } }
+  else if (a==='seguir') { const liga = !sigo(r.id); seguir(r.id, liga); render(); desenharDetalhe(r.id); avisar(liga ? 'Pronto. Você vai saber quando consertarem.' : 'Você não acompanha mais esta placa.'); }
   else if (a==='conserto') { consertoAberto=r.id; consertoFoto=''; desenharDetalhe(r.id); }
   else if (a==='cancelaConserto') { consertoAberto=null; desenharDetalhe(r.id); }
   else if (a==='confirmaConserto') {
@@ -1536,6 +1632,8 @@ function perguntarAutor(){
   perguntaCard.hidden = false;
 }
 perguntaCard.addEventListener('click', e => {
+  const n = e.target.closest('[data-n]');
+  if (n) { perguntaCard.hidden = true; if (n.dataset.n==='ver' && novidadeId) irPlaca(novidadeId); return; }
   const b = e.target.closest('[data-p]'); if (!b || !perguntaId) return;
   const perg = guardado('rdo-perguntei', {}); perg[perguntaId] = Date.now(); guardar('rdo-perguntei', perg);
   perguntaCard.hidden = true;
@@ -1572,11 +1670,17 @@ function escolherPonto(latlng){
   marcaTemp = L.marker(ponto,{interactive:false,icon:L.divIcon({className:'pino-wrap',iconSize:[40,40],iconAnchor:[20,20],html:'<div class="pino exemplo">'+svg('outro',2.4)+'</div>'})}).addTo(map);
   const o = ruaPerto(ponto.lat, ponto.lng); ponto.rua=o.rua; ponto.perto=o.perto;
   document.getElementById('novoOnde').textContent = o.rua + (o.perto ? ' · perto de '+o.perto : '');
+  /* já tem placa aberta a até 60 m? sugere confirmar a que existe em vez de repetir */
+  const vizinhas = todos().reais.filter(r => !situacao(r).feito).map(r => ({r, d:map.distance(ponto, [r.lat,r.lon])}))
+    .filter(x => x.d<=60).sort((a,b) => a.d-b.d).slice(0,3);
+  document.getElementById('novoPerto').innerHTML = vizinhas.length ? '<div class="perto"><b>Já tem problema marcado aqui perto</b><p class="miudo">Se for o mesmo, abra a placa e toque em "Eu também vi isso". Uma placa com muitas confirmações tem mais força que várias repetidas.</p>'+
+    vizinhas.map(({r,d}) => '<button class="item" type="button" data-perto="'+esc(r.id)+'">'+pinoHtml(r,situacao(r),false)+'<span class="info"><b>'+esc(TIPOS[r.tipo].nome)+'</b><span class="onde">'+esc(r.rua||'')+' · a '+Math.max(5,Math.round(d/5)*5)+' m daqui</span></span><span class="quanto"><b>É este</b></span></button>').join('')+'</div>' : '';
   tipoNovo=null; fotoNovo=''; formNovo.reset(); document.getElementById('novoPrevia').hidden=true;
   aceite.checked = !!guardado('rdo-aceite', false);
   desenharTipos(); fundoNovo.hidden=false;
 }
 aceite.addEventListener('change', () => desenharTipos());
+document.getElementById('novoPerto').addEventListener('click', e => { const b = e.target.closest('[data-perto]'); if (b) { fecharNovo(); abrir(b.dataset.perto); } });
 function fecharNovo(){ fundoNovo.hidden=true; if (marcaTemp) { marcaTemp.remove(); marcaTemp=null; } }
 fundoNovo.addEventListener('click', e => { if (e.target===fundoNovo || e.target.closest('[data-fecha]')) fecharNovo(); });
 function desenharTipos(){
@@ -1610,6 +1714,7 @@ formNovo.addEventListener('submit', async e => {
   fecharNovo();
   const id = await criar(r);
   if (!id) return;
+  seguir(id, true);
   if (foto) { try { await Fotos.enviar(id, id, 'antes', foto); } catch(err) { console.error(err); avisar('A placa entrou, mas a foto não. Tente mandar de novo.'); return; } }
   avisar(foto ? 'Pronto! A placa está no mapa. A foto aparece depois de conferida.' : 'Pronto! Sua placa está no mapa.');
 });
@@ -2170,6 +2275,7 @@ const boas = document.getElementById('boas');
 if (!guardado('rdo-visto', false)) boas.hidden = false;
 function fecharIntro(){ boas.hidden = true; guardar('rdo-visto', true); }
 document.getElementById('btnComecar').addEventListener('click', fecharIntro);
+document.getElementById('boasAntigo').addEventListener('click', e => { fecharIntro(); irPlaca(e.currentTarget.dataset.id); });
 document.getElementById('btnMarcarJa').addEventListener('click', () => { fecharIntro(); if (Loja.podeEscrever) entrarMira(); else avisar('Pra marcar, entre com sua conta pelo link que te mandaram.'); });
 
 /* ---------- Já consertamos ---------- */
@@ -2180,6 +2286,7 @@ function desenharVitrine(){
   const zap = feitos.length ? 'Rinópolis de Olho: '+feitos.length+(feitos.length===1?' problema já foi consertado':' problemas já foram consertados')+' depois que os moradores marcaram no mapa. Reclamar funciona. Veja o antes e depois: '+LINK+'#consertados'
     : 'Conheça o Rinópolis de Olho, o mapa onde a gente marca os problemas da cidade: '+LINK;
   document.getElementById('zapVitrine').href = 'https://wa.me/?text='+encodeURIComponent(zap);
+  textoVitrine = textoSemLink(zap);
   const box = document.getElementById('vitrine');
   if (!feitos.length) { box.innerHTML = '<p class="vazio">Nenhum conserto confirmado ainda. Quando a prefeitura consertar algo que foi marcado aqui, o antes e depois aparece nesta página.</p>'; return; }
   box.innerHTML = '<div class="vitrine">'+feitos.map(r => {
@@ -2193,6 +2300,8 @@ function desenharVitrine(){
       '<div class="corpo"><span><b>'+esc(TIPOS[r.tipo].nome)+'</b><span class="onde" style="display:block">'+esc(r.rua||'')+(r.perto?' · perto de '+esc(r.perto):'')+'</span></span><span class="tempo">'+diasTxt(s.dias)+'<small class="miudo" style="display:block;font-family:var(--f-texto);font-weight:400">até o conserto</small></span></div></div>';
   }).join('')+'</div>';
 }
+let textoVitrine = '';
+document.getElementById('compVitrine').addEventListener('click', () => { const l = LINK+'#consertados'; if (!compartilhar(textoVitrine, l)) copiar(textoVitrine+' '+l, 'Texto e link copiados. Cole onde quiser.'); });
 function abrirVitrine(){ fecharIntro(); desenharVitrine(); fundoVitrine.hidden = false; }
 document.getElementById('btnVitrine').addEventListener('click', abrirVitrine);
 fundoVitrine.addEventListener('click', e => { if (e.target===fundoVitrine || e.target.closest('[data-fecha]')) fundoVitrine.hidden = true; });
@@ -2240,7 +2349,7 @@ else if (siteAberto) mostrarAviso('Versão de demonstração: por enquanto, o qu
 else if (!window.claude) mostrarAviso('Modo de teste: o que você marcar fica guardado só neste aparelho.');
 render();
 if (usarNuvem) Nuvem.iniciar().catch(e => { console.error(e); mostrarAviso('Não deu pra carregar o mapa agora. Confira a internet e abra de novo.'); });
-else { if (!abrirDoLink()) perguntarAutor(); conectar().catch(e => console.error(e)); }
+else { if (!abrirDoLink() && !novidades()) perguntarAutor(); conectar().catch(e => console.error(e)); }
 })();
 </script>
 
