@@ -985,14 +985,14 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <h3>6. Onde o site fica e onde cada dado é guardado</h3>
         <p>Não vendemos nem cedemos dados a terceiros. O site depende dos serviços abaixo, alguns com servidores fora do Brasil (LGPD, art. 33):</p>
         <ul>
-          <li><b>Hospedagem do site: GitHub Pages</b> (GitHub, Inc.), no endereço bruhenriquee.github.io/rinopolis-de-olho. Guarda só as páginas e o mapa das ruas; registra o endereço IP de quem acessa, como qualquer hospedagem.</li>
+          <li><b>Hospedagem do site:</b> um serviço de hospedagem de páginas, com servidores fora do Brasil. Guarda só as páginas e o mapa das ruas; registra o endereço IP de quem acessa, como qualquer hospedagem.</li>
           <li><b>Marcações, confirmações, fotos, equipe e histórico: Supabase</b> (Supabase, Inc.), banco de dados PostgreSQL. Ali ficam as marcações e confirmações (com o código cifrado do aparelho), as fotos e frases em conferência e as publicadas, as denúncias de placas, a lista da equipe, os aparelhos bloqueados e o registro das ações da equipe.</li>
           <li><b>Login da equipe: Supabase Auth</b>, o mesmo serviço. Guarda o e-mail e a senha cifrada de quem modera. Moradores não têm login.</li>
           <li><b>Letras do site: Google Fonts</b> (Google LLC). <b>Programa do mapa: cdnjs</b> (Cloudflare, Inc.). <b>Ligação com o banco: jsDelivr.</b> Esses três só entregam arquivos ao abrir a página e recebem o endereço IP; não recebem marcações nem fotos.</li>
           <li><b>Mapa das ruas: OpenStreetMap.</b> Os dados das ruas já vêm dentro do site; usar o mapa não envia nada ao OpenStreetMap.</li>
           <li><b>Redes sociais:</b> WhatsApp, Facebook, X e Telegram só recebem alguma coisa quando você mesmo toca em compartilhar, e recebem apenas o texto e o link da placa.</li>
         </ul>
-        <p>Existe também uma cópia privada do mapa no claude.ai (Anthropic), usada só pela equipe para testes. Ela tem dados próprios e não recebe nada do site público. Não usamos publicidade, cookies de rastreamento nem ferramentas de análise de audiência.</p>
+        <p>Não usamos publicidade, cookies de rastreamento nem ferramentas de análise de audiência.</p>
 
         <h3>7. Armazenamento no seu aparelho</h3>
         <p>O navegador guarda localmente o código do aparelho, as marcações que você fez e preferências como "não mostrar mais a tela inicial". Se você instalar o site no celular, ele também guarda uma cópia das páginas (sem marcações nem fotos de outras pessoas) pra abrir mais rápido. Você pode apagar esses dados a qualquer momento limpando os dados do site no navegador.</p>
@@ -1025,8 +1025,8 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
 'use strict';
 
 const CFG = window.CONFIG || {};
-/* link usado no WhatsApp: o endereço do próprio site quando está no GitHub Pages; senão, o do Claude */
-const LINK = CFG.link || (/\.github\.io$/.test(location.hostname) ? location.origin + location.pathname : 'https://claude.ai/artifact/GezTW9SnH42sZmY2vk3kw4');
+/* link usado no WhatsApp: o endereço do site (config.js); sem ele, o endereço da própria página */
+const LINK = CFG.link || location.origin + location.pathname;
 const DIA = 864e5;
 const SEM_NOTICIA = 90*DIA, PERGUNTAR = 14*DIA;
 
@@ -1178,7 +1178,7 @@ function meioDaRua(nome){
 }
 
 /* ---------- Guarda ----------
-   'db': dentro do Claude, para quem foi convidado. 'local': teste, só neste aparelho.
+   'db': versão de testes da equipe. 'local': teste, só neste aparelho.
    Fotos ficam separadas das placas: quem marcou e o dono do mapa veem; o público só depois da aprovação. */
 const Loja = {modo:'local', db:null, uid:null, podeEscrever:true, dono:false, editor:false, carregou:false,
   recs:new Map(), apoios:new Map(), estado:{fotos:{}}, estadoExiste:false};
@@ -1344,7 +1344,7 @@ const Denuncias = {
 };
 
 /* ---------- Banco público (Supabase) ----------
-   Usado no site aberto (GitHub Pages) quando o config.js tem as chaves. Os moradores só escrevem
+   Usado no site público quando o config.js tem as chaves. Os moradores só escrevem
    pelas funções do banco (criar_reclamacao, apoiar...), que conferem tudo; quem cuida do mapa entra com e-mail e senha.
    Cada aparelho tem um código secreto guardado no navegador; o banco guarda só a versão embaralhada (sha-256). */
 const NUVEM = !!(CFG.supabaseUrl && CFG.supabaseChave && window.supabase);
@@ -2714,7 +2714,7 @@ document.addEventListener('keydown', e => {
 });
 
 lerLocal();
-/* publicado num site comum (GitHub Pages, por exemplo) ainda não há banco de dados nem login:
+/* publicado num site comum, sem as chaves do banco no config.js, não há banco de dados nem login:
    cada visitante só vê o que marcou no próprio aparelho, e o painel de aprovação fica escondido */
 const siteAberto = !window.claude && location.protocol!=='file:' && !/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
 if (siteAberto) { Loja.dono = false; Loja.editor = false; }

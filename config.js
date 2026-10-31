@@ -4,6 +4,6 @@
 window.CONFIG = {
   supabaseUrl: 'https://ajrxqmnctrmdfvtrkejz.supabase.co',
   supabaseChave: 'sb_publishable_rDXNmvhgeIw8NK_CkiiQsw_MH__eGof', // chave pública: pode ficar no site
-  contato: '',       // e-mail para pedidos de remoção (LGPD)
+  contato: 'contato@rinopolisdeolho.com.br', // e-mail de contato (privacidade, contestação)
   link: 'https://bruhenriquee.github.io/rinopolis-de-olho/'
 };
