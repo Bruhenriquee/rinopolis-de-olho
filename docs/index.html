@@ -139,12 +139,6 @@ body{display:flex;flex-direction:column}
 .mira .mira-txt{display:flex;flex-direction:column;align-items:center;text-align:center;flex-basis:100%}
 .mira .mira-rua{font-size:13px;color:var(--placa);min-height:1.3em}
 .toast{position:absolute;z-index:700;left:50%;transform:translateX(-50%);top:110px;background:var(--tinta);color:var(--placa-escuro);padding:8px 14px;border-radius:6px;font-weight:700;box-shadow:0 8px 20px rgba(0,0,0,.4);max-width:calc(100% - 32px);text-align:center}
-/* filtro por tipo: fileira de placas logo abaixo do topo do mapa */
-.tipos-mapa{position:absolute;top:calc(100% + 8px);left:0;display:flex;gap:6px;max-width:100%;overflow-x:auto;scrollbar-width:none;padding:2px}
-.tipos-mapa button{flex:none;height:40px;min-width:40px;border-radius:999px;border:1px solid var(--linha);background:rgba(36,39,43,.95);color:var(--tinta);display:grid;place-items:center;padding:0 10px;font-size:13px;font-weight:700;box-shadow:0 4px 12px rgba(0,0,0,.4)}
-.tipos-mapa button svg{width:20px;height:20px}
-.tipos-mapa button[aria-pressed="true"]{background:var(--placa);color:var(--placa-escuro);border-color:var(--placa)}
-.palco.marcando .tipos-mapa{display:none}
 /* histórico da placa */
 .linha-tempo ol{list-style:none;margin:12px 0 2px 6px;padding:0 0 0 18px;border-left:2px solid var(--linha);display:flex;flex-direction:column;gap:12px}
 .linha-tempo li{position:relative;font-size:14px;color:var(--tinta)}
@@ -259,6 +253,7 @@ button.campea:hover{border-color:var(--placa)}
 .item.sem .quanto{color:var(--apagado)}
 /* lista do lado: um cartão por problema, com a cor da situação e os dias em destaque */
 .filtro{background:var(--asfalto-3);border:1px solid var(--linha);border-radius:999px;padding:3px;gap:2px;flex-wrap:nowrap}
+.filtro:empty{display:none}
 .filtro .chip{flex:1;border:0;background:transparent;padding:7px 10px;font-size:13px;font-weight:600}
 .filtro .chip[aria-pressed="true"]{background:var(--placa);color:var(--placa-escuro)}
 .lista{gap:8px;background:none;border-radius:0;overflow:visible}
@@ -688,7 +683,6 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
     <header class="faixa">
       <div class="marca"><svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><use href="#logo"/></svg><span><small>RINÓPOLIS</small><strong>DE OLHO</strong></span></div>
       <div class="placar" aria-live="polite">
-        <div class="num quente"><b id="nDias">0</b><span>dias de espera, somados</span></div>
         <div class="num"><b id="nAbertos">0</b><span>problemas abertos</span></div>
         <div class="num verde extra"><b id="nFeitos">0</b><span>já consertados</span></div>
         <div class="num extra"><b id="nMedia">–</b><span>dias, em média, até consertar</span></div>
@@ -698,7 +692,6 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <input id="busca" type="search" list="listaRuas" placeholder="Procurar rua" autocomplete="off" aria-label="Procurar rua">
       </label>
       <datalist id="listaRuas"></datalist>
-      <div class="tipos-mapa" id="tiposMapa" role="group" aria-label="Mostrar só um tipo de problema"></div>
     </header>
     <div class="legenda" aria-hidden="true">
       <div><i></i>Esperando conserto</div>
@@ -1383,6 +1376,7 @@ const Nuvem = {
     if (!seg || seg.length < 20) { seg = (crypto.randomUUID ? crypto.randomUUID()+crypto.randomUUID() : Math.random().toString(36).slice(2)+Date.now().toString(36)+Math.random().toString(36).slice(2)).replace(/-/g,''); guardar('rdo-segredo', seg); }
     this.segredo = seg;
     Loja.modo = 'nuvem'; Loja.uid = await sha256hex(seg); Loja.podeEscrever = true; Loja.dono = false; Loja.editor = false;
+    document.getElementById('abaPainel').hidden = true;
     Loja.recs = new Map(); Loja.apoios = new Map(); Loja.estado = {fotos:{}}; Loja.carregou = false; Fotos.cache.clear();
     const {data} = await this.sb.auth.getSession();
     if (data && data.session) await this.checarAdmin();
@@ -1537,18 +1531,13 @@ function todos(){
 
 /* ---------- Desenho ---------- */
 const camada = L.layerGroup().addTo(map);
-let filtro = 'abertos', filtroTipo = '';
-const passaTipo = r => !filtroTipo || r.tipo===filtroTipo;
-function desenharTiposMapa(){
-  document.getElementById('tiposMapa').innerHTML = '<button type="button" data-tipo-mapa="" aria-pressed="'+!filtroTipo+'">Todos</button>'+
-    Object.entries(TIPOS).map(([k,t]) => '<button type="button" data-tipo-mapa="'+k+'" aria-pressed="'+(filtroTipo===k)+'" title="'+t.nome+'" aria-label="Só '+t.nome.toLowerCase()+'">'+svg(k)+'</button>').join('');
-}
+let filtro = 'abertos';
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 const diasTxt = d => d===0 ? 'hoje' : d===1 ? '1 dia' : d+' dias';
 const mediaTxt = d => d===0 ? 'menos de 1 dia' : diasTxt(d);
 const estadoClasse = s => s.feito ? 'feito' : s.sem ? 'sem' : s.velho ? 'velho' : '';
 function pinoHtml(r,s,comDias){
-  const rotulo = s.feito ? 'OK' : s.sem ? '?' : s.dias+'d';
+  const rotulo = s.feito ? 'OK' : s.sem ? '?' : s.dias ? s.dias+'d' : 'hoje';
   return '<div class="pino '+estadoClasse(s)+(r.exemplo?' exemplo':'')+(r.resposta&&!s.feito?' oficial':'')+'">'+svg(r.tipo,2.4)+(comDias?'<span class="dias">'+rotulo+'</span>':'')+'</div>';
 }
 let animou = false;
@@ -1574,12 +1563,13 @@ function render(){
   const sit = new Map(mostrados.map(r => [r.id, situacao(r)]));
   const n = numeros();
   contar(document.getElementById('nAbertos'), n.abertos.length);
-  contar(document.getElementById('nDias'), n.dias);
   contar(document.getElementById('nFeitos'), n.feitos.length);
   /* tempo médio de conserto e outros números da cidade (só marcações reais) */
   const comData = n.feitos.filter(r => r.resolvido);
   const media = comData.length ? Math.round(comData.reduce((t,r) => t+(r.resolvido-r.criado), 0)/comData.length/DIA) : null;
   document.getElementById('nMedia').textContent = media===null ? '–' : media;
+  document.getElementById('nFeitos').parentElement.hidden = !n.feitos.length;
+  document.getElementById('nMedia').parentElement.hidden = media===null;
   const total = n.reais.length, porTipo = {};
   n.reais.forEach(r => porTipo[r.tipo] = (porTipo[r.tipo]||0)+1);
   const topTipo = Object.entries(porTipo).sort((a,b) => b[1]-a[1])[0];
@@ -1587,18 +1577,17 @@ function render(){
   const confirmacoes = n.reais.reduce((t,r) => t + n.sit.get(r.id).ve - 1, 0);
   document.getElementById('numerosCidade').innerHTML = !total
     ? '<p class="vazio" style="grid-column:1/-1">Os números aparecem quando os moradores começarem a marcar.</p>'
-    : [[media===null ? 'nenhum ainda' : mediaTxt(media), 'tempo médio até o conserto'+(comData.length ? ' ('+comData.length+(comData.length===1?' conserto)':' consertos)') : '')],
-       [Math.round(n.feitos.length/total*100)+'%', n.feitos.length+' de '+total+' problemas já consertados'],
-       [n.abertos.length ? diasTxt(maisAntigo) : 'nenhum', 'o problema aberto mais antigo'],
-       [topTipo ? TIPOS[topTipo[0]].nome : '–', 'o problema mais marcado'+(topTipo ? ' ('+topTipo[1]+')' : '')],
-       [confirmacoes, 'vezes que um vizinho confirmou um problema'],
-       [n.sem.length, 'placas sem notícia há mais de 90 dias']
-      ].map(([v,t]) => '<div><b>'+v+'</b><span>'+t+'</span></div>').join('');
+    : [media!==null && [mediaTxt(media), 'tempo médio até o conserto ('+comData.length+(comData.length===1?' conserto)':' consertos)')],
+       n.feitos.length && [Math.round(n.feitos.length/total*100)+'%', n.feitos.length+' de '+total+' problemas já consertados'],
+       n.abertos.length && [diasTxt(maisAntigo), 'o problema aberto mais antigo'],
+       [TIPOS[topTipo[0]].nome, 'o problema mais marcado ('+topTipo[1]+')'],
+       confirmacoes && [confirmacoes, 'vezes que um vizinho confirmou um problema'],
+       n.sem.length && [n.sem.length, 'placas sem notícia há mais de 90 dias']
+      ].filter(Boolean).map(([v,t]) => '<div><b>'+v+'</b><span>'+t+'</span></div>').join('');
   if (reais.length) animou = true;
 
   camada.clearLayers();
   for (const r of mostrados) {
-    if (!passaTipo(r)) continue;
     const s = sit.get(r.id), tam = Math.round(40 + Math.min(s.ve,12)*2.4);
     L.marker([r.lat,r.lon],{title:TIPOS[r.tipo].nome+' · '+(r.rua||''),zIndexOffset:(s.feito||s.sem)?-100:s.ve*10,
       icon:L.divIcon({className:'pino-wrap',iconSize:[tam,tam],iconAnchor:[tam/2,tam/2],html:pinoHtml(r,s,true)})})
@@ -1629,16 +1618,18 @@ function render(){
     (melhores.length ? '<h3>Ruas com mais consertos</h3><ol class="ranking verde">'+melhores.map(([nm,x],i) => linhaRua(nm,i,x.feitos,x.feitos===1?'1 conserto':x.feitos+' consertos')).join('')+'</ol>' : '');
 
   const conta = {abertos:0, feitos:0, sem:0, sigo:0};
-  const base = (reais.length ? reais : mostrados).filter(passaTipo);
+  const base = reais.length ? reais : mostrados;
   const grupo = r => { const s=sit.get(r.id); return s.feito ? 'feitos' : s.sem ? 'sem' : 'abertos'; };
   base.forEach(r => { conta[grupo(r)]++; if (sigo(r.id)) conta.sigo++; });
-  if ((filtro==='sem' && !conta.sem) || (filtro==='sigo' && !conta.sigo)) filtro='abertos';
-  document.getElementById('filtro').innerHTML =
-    [['abertos','Abertos'],['feitos','Consertados'],['sem','Sem notícia'],['sigo','Acompanho']].filter(([k]) => (k!=='sem' && k!=='sigo') || conta[k])
+  if (filtro!=='abertos' && !conta[filtro]) filtro='abertos';
+  /* só aparecem as opções que têm alguma placa; com uma opção só, o filtro nem aparece */
+  const opcoes = [['abertos','Abertos'],['feitos','Consertados'],['sem','Sem notícia'],['sigo','Acompanho']].filter(([k]) => k==='abertos' || conta[k]);
+  document.getElementById('filtro').innerHTML = opcoes.length < 2 ? '' : opcoes
     .map(([k,t]) => '<button class="chip" type="button" data-filtro="'+k+'" aria-pressed="'+(filtro===k)+'">'+t+' '+conta[k]+'</button>').join('');
   const vis = base.filter(r => filtro==='sigo' ? sigo(r.id) : grupo(r)===filtro).sort((a,b) => { const x=sit.get(a.id), y=sit.get(b.id); return (y.ve*4+y.dias) - (x.ve*4+x.dias); });
   document.getElementById('tituloLista').textContent = reais.length ? 'Esperando conserto agora' : 'Assim vai ficar o mapa';
   document.getElementById('nVitoria').textContent = n.feitos.length;
+  document.getElementById('btnVitrine').hidden = !n.feitos.length;
   resumoGaveta = reais.length ? (n.abertos.length===1 ? '1 problema esperando conserto' : n.abertos.length+' problemas esperando conserto') : 'Ver a lista (3 exemplos)';
   if (!app.classList.contains('expandido')) gaveta(false);
   document.getElementById('boasNum').hidden = !n.dias;
@@ -1646,7 +1637,7 @@ function render(){
   if (!fundoVitrine.hidden) desenharVitrine();
   const lista = document.getElementById('lista');
   if (!reais.length && filtro==='abertos') lista.innerHTML = '<p class="vazio" style="margin-bottom:10px">Ninguém marcou nada ainda. As 3 placas tracejadas são <b>exemplos</b>. Toque em <b>Marcar problema</b> e seja o primeiro.</p>' + listaHtml(vis, sit);
-  else if (!vis.length) lista.innerHTML = '<p class="vazio">'+(filtroTipo ? 'Nenhuma placa de '+TIPOS[filtroTipo].nome.toLowerCase()+' aqui.' : filtro==='feitos' ? 'Nenhum conserto confirmado ainda.' : 'Nenhum problema aberto. Que bom!')+'</p>';
+  else if (!vis.length) lista.innerHTML = '<p class="vazio">'+(filtro==='feitos' ? 'Nenhum conserto confirmado ainda.' : 'Nenhum problema aberto. Que bom!')+'</p>';
   else lista.innerHTML = listaHtml(vis, sit);
 
   montarOficio(n);
@@ -1657,20 +1648,13 @@ function render(){
 function listaHtml(v, sit){
   return '<div class="lista">' + v.map(r => { const s=sit.get(r.id);
     const selos = (r.exemplo?'<span class="selo exemplo">exemplo</span>':'')+(sigo(r.id)?'<span class="selo exemplo">acompanho</span>':'')+(r.resposta&&!s.feito?'<span class="selo oficial">'+esc(RESPOSTAS[r.resposta.status]||'')+'</span>':'');
-    const numero = s.feito ? '<b>OK</b><small>consertado</small>' : s.sem ? '<b>?</b><small>sem notícia</small>' : '<b>'+s.dias+'</b><small>'+(s.dias===1?'dia':'dias')+'</small>';
+    const numero = s.feito ? '<b>OK</b><small>consertado</small>' : s.sem ? '<b>?</b><small>sem notícia</small>' : (s.dias ? '<b>'+s.dias+'</b><small>'+(s.dias===1?'dia':'dias')+'</small>' : '<b>hoje</b><small>marcado</small>');
     return '<button class="item '+estadoClasse(s)+(r.exemplo?' ex':'')+'" type="button" data-id="'+esc(r.id)+'">'+pinoHtml(r,s,false)+
       '<span class="info"><b>'+esc(TIPOS[r.tipo].nome)+'</b><span class="onde">'+esc(r.rua||'')+(r.perto?' · perto de '+esc(r.perto):'')+'</span>'+
       '<span class="gente">'+(selos ? selos+' ' : '')+s.ve+(s.ve===1?' pessoa viu':' pessoas viram')+'</span></span>'+
       '<span class="quanto">'+numero+'</span></button>';
   }).join('') + '</div>';
 }
-desenharTiposMapa();
-document.getElementById('tiposMapa').addEventListener('click', e => {
-  const b = e.target.closest('[data-tipo-mapa]'); if (!b) return;
-  filtroTipo = b.dataset.tipoMapa===filtroTipo ? '' : b.dataset.tipoMapa;
-  desenharTiposMapa(); render();
-  avisar(filtroTipo ? 'Mostrando só: '+TIPOS[filtroTipo].nome.toLowerCase() : 'Mostrando todos os problemas');
-});
 document.getElementById('filtro').addEventListener('click', e => { const b=e.target.closest('[data-filtro]'); if (b) { filtro=b.dataset.filtro; render(); } });
 function irPlaca(id){
   const r = todos().mostrados.find(x => x.id===id); if (!r) return;
