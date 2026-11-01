@@ -438,6 +438,17 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
 .medidor b{font-family:var(--f-placa);font-weight:800;font-size:30px;line-height:1;display:block;font-variant-numeric:tabular-nums}
 .medidor span{font-size:12.5px;color:var(--tinta-2)}
 .opcoes{display:flex;gap:8px;flex-wrap:wrap}
+.barra-passos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:-4px}
+.barra-passos i{height:4px;border-radius:2px;background:var(--linha)}
+.barra-passos i.feito{background:var(--placa)}
+.passo{display:flex;flex-direction:column;gap:14px}
+.passo-pe{display:flex;gap:10px;align-items:stretch}
+.passo-pe .btn{flex:1}
+.passo-pe .btn-leve{padding:10px 16px}
+.resumo-novo{display:flex;align-items:center;gap:10px;background:var(--asfalto-3);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--tinta-2)}
+.resumo-novo svg{width:26px;height:26px;color:var(--placa);flex:none}
+.resumo-novo img{width:44px;height:44px;object-fit:cover;border-radius:6px;margin-left:auto}
+.resumo-novo b{color:var(--tinta);display:block}
 .consente{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;align-items:start;font-size:13.5px;font-weight:400;color:var(--tinta-2);margin:0}
 .consente input{width:20px;height:20px;margin:1px 0 0;accent-color:var(--placa)}
 .link{background:none;border:0;padding:0;color:var(--placa);text-decoration:underline;text-underline-offset:2px;font-size:inherit}
@@ -868,24 +879,32 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <div><h2 id="tNovo">Qual é o problema?</h2><div class="onde" id="novoOnde"></div></div>
         <button class="btn-leve" type="button" data-fecha>Fechar</button>
       </header>
-      <div id="novoPerto"></div>
-      <div class="tipos" id="tiposNovo"></div>
-      <div>
-        <label for="novoTexto">Conte em uma frase (se quiser)</label>
-        <input type="text" id="novoTexto" maxlength="160" placeholder="Ex.: buraco fundo na frente do número 120">
-        <p class="miudo" style="margin-top:6px">A frase aparece depois de conferida. Não escreva nomes, telefones nem acusações.</p>
+      <div class="barra-passos" id="novoPassos" aria-hidden="true"><i></i><i></i><i></i></div>
+      <div class="passo" data-passo="1">
+        <div id="novoPerto"></div>
+        <div class="tipos" id="tiposNovo"></div>
       </div>
-      <div>
-        <label for="novoFoto">Foto (ajuda muito)</label>
-        <div class="foto-campo">
-          <input type="file" id="novoFoto" accept="image/*" capture="environment">
-          <img id="novoPrevia" alt="Prévia da foto" hidden>
+      <div class="passo" data-passo="2" hidden>
+        <div>
+          <label for="novoFoto">Foto (ajuda muito)</label>
+          <div class="foto-campo">
+            <input type="file" id="novoFoto" accept="image/*" capture="environment">
+            <img id="novoPrevia" alt="Prévia da foto" hidden>
+          </div>
         </div>
-        <p class="miudo" style="margin-top:6px">A foto aparece depois de conferida. Não fotografe rosto de pessoas nem placa de carro. O site apaga sozinho os dados escondidos da foto, como a localização do celular.</p>
+        <div>
+          <label for="novoTexto">Conte em uma frase (se quiser)</label>
+          <input type="text" id="novoTexto" maxlength="160" placeholder="Ex.: buraco fundo na frente do número 120">
+        </div>
+        <p class="miudo">Foto e frase aparecem depois de conferidas. Não mostre rosto de pessoas nem placa de carro, e não escreva nomes, telefones nem acusações. O site apaga sozinho os dados escondidos da foto, como a localização do celular.</p>
+        <div class="passo-pe"><button class="btn-leve" type="button" data-volta>Voltar</button><button class="btn" type="button" id="btnSegue">Continuar</button></div>
       </div>
-      <label class="consente" for="novoAceite"><input type="checkbox" id="novoAceite"><span>Entendi que isto fica público no mapa, sem o meu nome. <button class="link" type="button" data-privacidade>Ler a privacidade</button></span></label>
-      <label class="consente" for="novoVerdade"><input type="checkbox" id="novoVerdade"><span>Declaro que as informações correspondem ao que observei e que não estou usando o mapa para divulgar informações falsas ou atacar outras pessoas. <button class="link" type="button" data-termos>Ler os termos de uso</button></span></label>
-      <button class="btn" type="submit" id="btnEnviar" disabled>Colocar no mapa</button>
+      <div class="passo" data-passo="3" hidden>
+        <div class="resumo-novo" id="novoResumo"></div>
+        <label class="consente" for="novoAceite"><input type="checkbox" id="novoAceite"><span>Entendi que isto fica público no mapa, sem o meu nome. <button class="link" type="button" data-privacidade>Ler a privacidade</button></span></label>
+        <label class="consente" for="novoVerdade"><input type="checkbox" id="novoVerdade"><span>Declaro que as informações correspondem ao que observei e que não estou usando o mapa para divulgar informações falsas ou atacar outras pessoas. <button class="link" type="button" data-termos>Ler os termos de uso</button></span></label>
+        <div class="passo-pe"><button class="btn-leve" type="button" data-volta>Voltar</button><button class="btn" type="submit" id="btnEnviar" disabled>Colocar no mapa</button></div>
+      </div>
     </div>
   </form>
 </div>
@@ -1933,8 +1952,25 @@ function escolherPonto(latlng){
     vizinhas.map(({r,d}) => '<button class="item" type="button" data-perto="'+esc(r.id)+'">'+pinoHtml(r,situacao(r),false)+'<span class="info"><b>'+esc(TIPOS[r.tipo].nome)+'</b><span class="onde">'+esc(r.rua||'')+' · a '+Math.max(5,Math.round(d/5)*5)+' m daqui</span></span><span class="quanto"><b>É este</b></span></button>').join('')+'</div>' : '';
   tipoNovo=null; fotoNovo=''; formNovo.reset(); document.getElementById('novoPrevia').hidden=true;
   aceite.checked = !!guardado('rdo-aceite', false);
-  desenharTipos(); fundoNovo.hidden=false;
+  desenharTipos(); irPasso(1); fundoNovo.hidden=false;
 }
+/* o formulário anda em 3 passos: tipo, foto e frase, confirmar */
+const TITULOS_PASSO = {1:'Qual é o problema?', 2:'Foto e frase', 3:'Quase lá'};
+function irPasso(n){
+  formNovo.querySelectorAll('.passo').forEach(p => p.hidden = +p.dataset.passo !== n);
+  document.querySelectorAll('#novoPassos i').forEach((i,k) => i.classList.toggle('feito', k < n));
+  document.getElementById('tNovo').textContent = TITULOS_PASSO[n];
+  if (n===2) document.getElementById('btnSegue').textContent = fotoNovo || document.getElementById('novoTexto').value.trim() ? 'Continuar' : 'Pular';
+  if (n===3) {
+    const txt = document.getElementById('novoTexto').value.trim();
+    document.getElementById('novoResumo').innerHTML = svg(tipoNovo)+'<span><b>'+esc(TIPOS[tipoNovo].nome)+'</b>'+(txt ? esc(txt) : fotoNovo ? 'Com foto' : 'Sem foto nem frase')+'</span>'+(fotoNovo ? '<img src="'+fotoNovo+'" alt="">' : '');
+  }
+  formNovo.scrollTop = 0;
+}
+document.getElementById('btnSegue').addEventListener('click', () => irPasso(3));
+formNovo.addEventListener('click', e => { if (e.target.closest('[data-volta]')) irPasso(+formNovo.querySelector('.passo:not([hidden])').dataset.passo - 1); });
+document.getElementById('novoTexto').addEventListener('input', () => { document.getElementById('btnSegue').textContent = fotoNovo || document.getElementById('novoTexto').value.trim() ? 'Continuar' : 'Pular'; });
+document.getElementById('novoTexto').addEventListener('keydown', e => { if (e.key==='Enter') { e.preventDefault(); irPasso(3); } });
 aceite.addEventListener('change', () => desenharTipos());
 verdade.addEventListener('change', () => desenharTipos());
 document.getElementById('novoPerto').addEventListener('click', e => { const b = e.target.closest('[data-perto]'); if (b) { fecharNovo(); abrir(b.dataset.perto); } });
@@ -1945,10 +1981,10 @@ function desenharTipos(){
     '<button class="tipo" type="button" data-tipo="'+k+'" aria-pressed="'+(tipoNovo===k)+'">'+svg(k)+t.nome+'</button>').join('');
   document.getElementById('btnEnviar').disabled = !tipoNovo || !aceite.checked || !verdade.checked;
 }
-document.getElementById('tiposNovo').addEventListener('click', e => { const b=e.target.closest('[data-tipo]'); if (b) { tipoNovo=b.dataset.tipo; desenharTipos(); } });
+document.getElementById('tiposNovo').addEventListener('click', e => { const b=e.target.closest('[data-tipo]'); if (b) { tipoNovo=b.dataset.tipo; desenharTipos(); setTimeout(() => irPasso(2), 180); } });
 document.getElementById('novoFoto').addEventListener('change', async e => {
   const f = e.target.files && e.target.files[0]; if (!f) return;
-  try { fotoNovo = await comprimir(f); const p=document.getElementById('novoPrevia'); p.src=fotoNovo; p.hidden=false; }
+  try { fotoNovo = await comprimir(f); const p=document.getElementById('novoPrevia'); p.src=fotoNovo; p.hidden=false; document.getElementById('btnSegue').textContent='Continuar'; }
   catch(err) { fotoNovo=''; avisar('Não consegui abrir essa foto. Tente outra.'); }
 });
 /* redesenhar no canvas reduz a foto e descarta os metadados (EXIF, GPS, modelo do celular) */
