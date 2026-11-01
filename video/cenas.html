@@ -1,0 +1,293 @@
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0}
+html,body{width:1080px;height:1920px;overflow:hidden;background:#17191c}
+body{font-family:"Atkinson Hyperlegible",sans-serif;color:#ece9df;position:relative}
+#mapa{position:absolute;left:0;top:0}
+.veu{position:absolute;inset:0;background:linear-gradient(180deg,rgba(23,25,28,.55) 0%,rgba(23,25,28,.25) 30%,rgba(23,25,28,.35) 60%,rgba(23,25,28,.92) 100%)}
+.cena{position:absolute;inset:0;opacity:0}
+.topo{position:absolute;left:70px;right:70px;top:120px;display:flex;align-items:center;gap:18px}
+.topo svg{width:64px;height:64px}
+.topo b{font-family:"Barlow Condensed";font-weight:700;font-size:34px;letter-spacing:.16em;text-transform:uppercase}
+.topo b span{color:#f6c21a}
+h1{font-family:"Barlow Condensed";font-weight:800;text-transform:uppercase;line-height:.95;letter-spacing:.005em}
+h1 em{font-style:normal;color:#f6c21a}
+.eti{font-family:"Barlow Condensed";font-weight:600;font-size:34px;letter-spacing:.22em;text-transform:uppercase;color:#f6c21a}
+.pino{position:absolute;display:grid;place-items:center}
+.pino::before{content:"";position:absolute;inset:15%;background:#f6c21a;border-radius:8%;transform:rotate(45deg);outline:5px solid #17150e;outline-offset:-12px;box-shadow:0 12px 28px rgba(0,0,0,.55)}
+.pino.velho::before{background:#ef5a3c}
+.pino.feito::before{background:#43b27e}
+.pino svg{position:relative;width:44%;height:44%;color:#17150e}
+/* pergunta */
+.linha-p{position:absolute;left:90px;right:70px;display:flex;align-items:center;gap:34px}
+.linha-p .pino{position:relative;width:170px;height:170px;flex:none}
+.linha-p h1{font-size:104px;white-space:nowrap}
+/* celular */
+.cel{position:absolute;left:265px;top:300px;width:550px;height:1060px;border-radius:64px;background:#0d0e10;padding:18px;box-shadow:0 40px 90px rgba(0,0,0,.6),0 0 0 3px #33373d}
+.tela{position:relative;width:100%;height:100%;border-radius:48px;overflow:hidden;background:#1b1d20}
+.tela canvas{position:absolute;left:0;top:0}
+.alf{position:absolute;left:50%;top:44%;width:64px;height:80px;margin:-80px 0 0 -32px}
+.mira{position:absolute;left:18px;right:18px;bottom:22px;background:#24272b;border:1px solid #3c4148;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.mira small{font-size:19px;color:#b9b6ab}
+.mira small b{display:block;color:#ece9df;font-size:21px}
+.bt{background:#f6c21a;color:#17150e;border-radius:14px;padding:18px;text-align:center;font-weight:700;font-size:25px}
+.folha{position:absolute;left:0;right:0;bottom:0;background:#24272b;border-top:1px solid #3c4148;border-radius:28px 28px 0 0;padding:26px 22px 28px;display:flex;flex-direction:column;gap:16px}
+.folha h2{font-family:"Barlow Condensed";font-weight:800;font-size:42px;text-transform:uppercase}
+.folha .onde{font-size:18px;color:#b9b6ab;margin-top:4px}
+.barra{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.barra i{height:6px;border-radius:3px;background:#3c4148}.barra i.on{background:#f6c21a}
+.tipos{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.tipo{background:#2e3237;border:3px solid transparent;border-radius:14px;padding:16px 4px 12px;display:flex;flex-direction:column;align-items:center;gap:8px;font-weight:700;font-size:18px;text-align:center}
+.tipo svg{width:40px;height:40px;color:#f6c21a}
+.tipo.on{border-color:#f6c21a;background:#17150e}
+.fotos{display:flex;gap:12px}
+.fotos>div{flex:1;min-height:120px;border:3px dashed #3c4148;border-radius:14px;background:#2e3237;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-weight:700;font-size:19px}
+.fotos svg{width:38px;height:38px;color:#f6c21a}
+.fotos .previa{flex:none;width:120px;border:3px solid #f6c21a;padding:0;overflow:hidden}
+.fotos .previa svg{width:100%;height:100%;display:block}
+.campo{background:#17150e;border:1px solid #3c4148;border-radius:12px;padding:16px;font-size:20px;color:#8f949b;min-height:58px}
+.campo.cheio{color:#ece9df}
+.dedo{position:absolute;width:90px;height:90px;margin:-45px 0 0 -45px;border-radius:50%;background:rgba(236,233,223,.35);border:4px solid rgba(236,233,223,.85)}
+.selo{position:absolute;left:120px;right:120px;top:190px;background:#17150e;border:3px solid #f6c21a;border-radius:22px;padding:24px 28px;display:flex;align-items:center;gap:22px;font-size:36px;font-weight:700}
+.selo svg{width:58px;height:58px;color:#f6c21a;flex:none}
+/* dias */
+.grande{position:absolute;left:340px;top:420px;width:400px;height:400px}
+.contador{position:absolute;left:0;right:0;top:880px;text-align:center}
+.contador b{font-family:"Barlow Condensed";font-weight:800;font-size:250px;line-height:.9;display:block;font-variant-numeric:tabular-nums}
+.contador span{font-size:44px;color:#b9b6ab}
+.viram{position:absolute;left:150px;right:150px;top:300px;display:flex;align-items:center;justify-content:center;gap:20px;background:#24272b;border:2px solid #3c4148;border-radius:20px;padding:20px;font-size:34px;font-weight:700}
+.viram b{font-family:"Barlow Condensed";font-weight:800;font-size:60px;color:#f6c21a;font-variant-numeric:tabular-nums}
+/* site */
+.cartao{position:absolute;left:90px;right:90px;height:250px;background:#24272b;border:2px solid #3c4148;border-left:10px solid #f6c21a;border-radius:0 22px 22px 0;padding:34px 40px;display:flex;align-items:center;gap:34px}
+.cartao svg{width:110px;height:110px;color:#f6c21a;flex:none}
+.cartao h1{font-size:84px}
+.cartao p{font-size:34px;color:#b9b6ab;margin-top:8px}
+/* neutro e fim */
+.frase-n{position:absolute;left:90px;right:90px}
+.frase-n h1{font-size:150px}
+.logo-g{position:absolute;left:390px;top:330px;width:300px;height:300px}
+.marca-g{position:absolute;left:0;right:0;top:680px;text-align:center}
+.marca-g .eti{font-size:46px}
+.marca-g h1{font-size:200px;margin-top:6px}
+.end{position:absolute;left:90px;right:90px;top:1000px;background:#f6c21a;color:#17150e;border-radius:22px;padding:30px 24px;text-align:center}
+.end small{display:block;font-family:"Barlow Condensed";font-weight:700;font-size:34px;letter-spacing:.18em;text-transform:uppercase}
+.end b{display:block;font-size:41px;margin-top:6px;word-break:break-all}
+.chips{position:absolute;left:90px;right:90px;top:1220px;display:flex;justify-content:center;gap:16px}
+.chips span{border:2px solid #3c4148;border-radius:999px;padding:14px 26px;font-size:30px;font-weight:700;color:#ece9df;background:#24272b}
+/* legenda e barra de progresso */
+#cap{position:absolute;left:70px;right:70px;top:1440px;display:flex;justify-content:center}
+#cap span{background:rgba(13,14,16,.86);border-radius:16px;padding:18px 28px;font-size:44px;line-height:1.3;font-weight:700;text-align:center;max-width:100%}
+#prog{position:absolute;left:70px;right:70px;top:1680px;height:8px;background:repeating-linear-gradient(90deg,#3c4148 0 36px,transparent 36px 52px)}
+#prog i{position:absolute;left:0;top:0;bottom:0;background:repeating-linear-gradient(90deg,#f6c21a 0 36px,transparent 36px 52px)}
+</style></head><body>
+<canvas id="mapa" width="1080" height="1920"></canvas>
+<div class="veu" id="veu"></div>
+
+<div class="cena" id="c-pergunta">
+  <div class="linha-p" id="p1" style="top:470px"><div class="pino" data-ic="buraco"></div><h1>Viu um <em>buraco</em>?</h1></div>
+  <div class="linha-p" id="p2" style="top:720px"><div class="pino velho" data-ic="luz"></div><h1>Poste <em>apagado</em>?</h1></div>
+  <div class="linha-p" id="p3" style="top:970px"><div class="pino" data-ic="lixo"></div><h1><em>Lixo</em> na rua?</h1></div>
+</div>
+
+<div class="cena" id="c-mapa">
+  <div id="pinosMapa"></div>
+  <div class="logo-g" id="m-logo" style="top:380px"></div>
+  <div class="marca-g" id="m-marca" style="top:720px"><div class="eti">O mapa dos moradores</div><h1>Rinópolis<br><em>de Olho</em></h1></div>
+</div>
+
+<div class="cena" id="c-tela">
+  <div class="cel" id="cel"><div class="tela">
+    <canvas id="mini" width="514" height="1024"></canvas>
+    <div id="pinoNovo" class="pino" data-ic="buraco" style="width:90px;height:90px;left:212px;top:356px;opacity:0"></div>
+    <svg class="alf" id="alf" viewBox="0 0 64 80"><path d="M32 78 L32 44" stroke="#ece9df" stroke-width="5" stroke-linecap="round"/><circle cx="32" cy="26" r="22" fill="#f6c21a" stroke="#17150e" stroke-width="5"/><circle cx="32" cy="26" r="7" fill="#17150e"/></svg>
+    <div class="mira" id="mira"><small>Arraste o mapa até o alfinete<b id="miraRua">Rua Sete de Setembro</b></small><div class="bt" id="btAqui">Marcar aqui</div></div>
+    <div class="folha" id="f1">
+      <div><h2>Qual é o problema?</h2><div class="onde">Rua Sete de Setembro</div></div>
+      <div class="barra"><i class="on"></i><i></i><i></i></div>
+      <div class="tipos" id="tiposCel"></div>
+    </div>
+    <div class="folha" id="f2">
+      <div><h2>Foto e frase</h2><div class="onde">Rua Sete de Setembro</div></div>
+      <div class="barra"><i class="on"></i><i class="on"></i><i></i></div>
+      <div class="fotos"><div class="previa" id="previa"></div><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Tirar foto</div><div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>Da galeria</div></div>
+      <div class="campo" id="campo">Conte em uma frase (se quiser)</div>
+      <div class="bt">Continuar</div>
+    </div>
+    <div class="dedo" id="dedo"></div>
+  </div></div>
+  <div class="selo" id="selo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 8.5 4 9.5 6-.5 1-1.6 2.6-3.2 3.9M6.6 7.6C4.6 8.9 3.1 10.8 2.5 12c1 2 4.5 6 9.5 6 1.6 0 3-.4 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>Seu nome não aparece</div>
+</div>
+
+<div class="cena" id="c-dias">
+  <div class="viram" id="viram"><span>Eu também vi isso</span><b id="nViram">1</b></div>
+  <div class="pino grande velho" id="pinoDias" data-ic="buraco"></div>
+  <div class="contador"><b id="nDias">1</b><span id="txtDias">dias esperando</span></div>
+</div>
+
+<div class="cena" id="c-site">
+  <div class="eti" style="position:absolute;left:90px;top:300px">Também no site</div>
+  <div class="cartao" id="k1" style="top:380px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-6 6.5-6s5.9 2.4 6.5 6"/><circle cx="17" cy="9" r="2.6"/><path d="M16.5 14.2c2.6.2 4.4 2.3 5 5.3"/></svg><div><h1>Quem decide</h1><p>Prefeita, vice e os 9 vereadores</p></div></div>
+  <div class="cartao" id="k2" style="top:670px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="6" rx="7.5" ry="3"/><path d="M4.5 6v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3V6"/><path d="M4.5 12v6c0 1.7 3.4 3 7.5 3s7.5-1.3 7.5-3v-6"/></svg><div><h1>As contas</h1><p>Para onde vai o dinheiro da prefeitura</p></div></div>
+  <div class="cartao" id="k3" style="top:960px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/></svg><div><h1>Cobrar</h1><p>Um pedido oficial pronto para enviar</p></div></div>
+</div>
+
+<div class="cena" id="c-neutro">
+  <div class="frase-n" id="n1" style="top:470px"><h1>Sem partido.</h1></div>
+  <div class="frase-n" id="n2" style="top:640px"><h1>Sem cadastro.</h1></div>
+  <div class="frase-n" id="n3" style="top:850px"><h1>Só a cidade,<br><em>de olho.</em></h1></div>
+</div>
+
+<div class="cena" id="c-fim">
+  <div class="logo-g" id="f-logo"></div>
+  <div class="marca-g"><h1 style="font-size:150px">Rinópolis<br><em>de Olho</em></h1></div>
+  <div class="end" id="end"><small>Acesse</small><b id="endereco"></b></div>
+  <div class="chips" id="chips"><span>Marque</span><span>Confirme</span><span>Cobre</span></div>
+</div>
+
+<div class="topo" id="topo"></div>
+<div id="cap"><span id="capTxt"></span></div>
+<div id="prog"><i id="progI"></i></div>
+
+<script src="../ruas.js"></script>
+<script src="tempos.js"></script>
+<script>
+const ICONE = {
+  buraco:'<ellipse cx="12" cy="14.5" rx="8.5" ry="4.5"/><path d="M7.5 13.5l2.5 1.6 2-2.2 2.2 2.1 2.3-1.4"/>',
+  luz:'<path d="M9 18h6M10 21h4"/><path d="M12 3a6 6 0 0 0-3.8 10.6c.6.6.8 1.4.8 2.4h6c0-1 .2-1.8.8-2.4A6 6 0 0 0 12 3z"/><path d="M3 3l18 18"/>',
+  lixo:'<path d="M4 7h16M10 7V4h4v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/>',
+  agua:'<path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>',
+  mato:'<path d="M3 20h18M7 20c0-5-2-8-3.5-9.5M12 20V5M17 20c0-5 2-8 3.5-9.5M9.5 20c0-4-.8-6-2.2-7.5M14.5 20c0-4 .8-6 2.2-7.5"/>',
+  outro:'<path d="M12 7v7M12 17.2v.3"/><circle cx="12" cy="12" r="9.5"/>'
+};
+const NOMES = {buraco:'Buraco', luz:'Luz apagada', lixo:'Lixo ou entulho', agua:'Esgoto', mato:'Mato alto', outro:'Outro'};
+const icone = (k,l=2.4) => '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="'+l+'" stroke-linecap="round" stroke-linejoin="round">'+ICONE[k]+'</svg>';
+const LOGO = '<svg viewBox="0 0 48 48" width="100%" height="100%"><rect x="8.5" y="8.5" width="31" height="31" rx="4" transform="rotate(45 24 24)" fill="#f6c21a"/><rect x="11.5" y="11.5" width="25" height="25" rx="2.5" transform="rotate(45 24 24)" fill="none" stroke="#17150e" stroke-width="2"/><path d="M13.5 24c3-4.6 6.5-6.9 10.5-6.9s7.5 2.3 10.5 6.9c-3 4.6-6.5 6.9-10.5 6.9s-7.5-2.3-10.5-6.9z" fill="#ece9df" stroke="#17150e" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="24" r="4.4" fill="#17150e"/><circle id="brilho" cx="25.6" cy="22.5" r="1.3" fill="#ece9df"/></svg>';
+document.querySelectorAll('[data-ic]').forEach(e => e.innerHTML = icone(e.dataset.ic));
+document.getElementById('tiposCel').innerHTML = Object.keys(NOMES).map(k => '<div class="tipo" data-t="'+k+'">'+icone(k,2.2)+NOMES[k]+'</div>').join('');
+document.getElementById('topo').innerHTML = LOGO.replace('width="100%" height="100%"','')+'<b>Rinópolis <span>de Olho</span></b>';
+document.getElementById('m-logo').innerHTML = LOGO; document.getElementById('f-logo').innerHTML = LOGO;
+document.getElementById('endereco').textContent = window.ENDERECO;
+document.getElementById('previa').innerHTML = '<svg viewBox="0 0 120 120" width="100%" height="100%"><rect width="120" height="120" fill="#6d6a62"/><path d="M0 70 L120 58 L120 120 L0 120z" fill="#57554f"/><ellipse cx="62" cy="84" rx="34" ry="15" fill="#1d1c1a"/><ellipse cx="62" cy="81" rx="28" ry="10" fill="#2b2a27"/></svg>';
+
+/* ---------- o mapa de verdade (ruas.js), desenhado uma vez numa imagem grande ---------- */
+const M = window.MAPA, KX = Math.cos(M.lat0*Math.PI/180);
+let minx=1e9,maxx=-1e9,miny=1e9,maxy=-1e9; const ruas=[];
+for (const [ni,k,f] of M.ruas) { const l=[]; for (let j=0;j<f.length;j+=2) { const x=f[j+1]*KX, y=-f[j]; l.push([x,y]);
+  if (k===2) { minx=Math.min(minx,x);maxx=Math.max(maxx,x);miny=Math.min(miny,y);maxy=Math.max(maxy,y); } } ruas.push([k,l,M.nomes[ni]]); }
+const CX=(minx+maxx)/2, CY=(miny+maxy)/2;
+function desenharMapa(w,h,esc,larg){
+  const c=document.createElement('canvas'); c.width=w; c.height=h; const g=c.getContext('2d');
+  g.fillStyle='#1b1d20'; g.fillRect(0,0,w,h); g.lineCap='round'; g.lineJoin='round';
+  for (const [k,l] of ruas) { g.beginPath(); l.forEach(([x,y],i) => { const X=w/2+(x-CX)*esc, Y=h/2+(y-CY)*esc; i?g.lineTo(X,Y):g.moveTo(X,Y); });
+    g.strokeStyle = k<=1 ? '#565a61' : '#3a3e45'; g.lineWidth = (k<=1 ? 1.6 : 1)*larg; g.stroke(); }
+  return c;
+}
+const ESC_G = 2600/(maxx-minx);
+const GRANDE = desenharMapa(3000, 4200, ESC_G, 9);
+const ESC_M = 5200/(maxx-minx);
+const MINI = desenharMapa(2400, 2800, ESC_M, 13);
+/* pontos em cima das ruas para os pinos da cena do mapa (sempre os mesmos) */
+let semente = 7; const rnd = () => (semente = (semente*16807) % 2147483647) / 2147483647;
+const PINOS = []; const TIPOS_K = Object.keys(ICONE);
+while (PINOS.length < 22) { const [k,l] = ruas[Math.floor(rnd()*ruas.length)]; if (k<2) continue; const [x,y] = l[Math.floor(rnd()*l.length)];
+  const X = 1500+(x-CX)*ESC_G, Y = 2100+(y-CY)*ESC_G; if (Math.abs(X-1500)>480 || Math.abs(Y-2100)>560) continue;
+  if (PINOS.some(p => Math.hypot(p.X-X,p.Y-Y)<110)) continue;
+  PINOS.push({X, Y, k:TIPOS_K[Math.floor(rnd()*5)], e: rnd()<.3 ? 'velho' : rnd()<.25 ? 'feito' : ''}); }
+document.getElementById('pinosMapa').innerHTML = PINOS.map((p,i) => '<div class="pino '+p.e+'" id="pm'+i+'" style="width:96px;height:96px">'+icone(p.k)+'</div>').join('');
+
+/* ---------- tempo ---------- */
+const T = window.TEMPOS, DUR = T[T.length-1].fim;
+const cl = (v,a=0,b=1) => Math.min(b,Math.max(a,v));
+const eo = x => 1-Math.pow(1-cl(x),3);
+const eio = x => { x=cl(x); return x<.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2; };
+const pr = (t,a,d=.45) => eo((t-a)/d);
+const cena = n => T.find(c => c.nome===n);
+/* momento em que a narração chega numa palavra (proporcional dentro da frase) */
+function kw(n, palavra){
+  for (const f of cena(n).frases) { const i = f.texto.toLowerCase().indexOf(palavra.toLowerCase()); if (i>=0) return f.inicio + (f.fim-f.inicio)*(i/f.texto.length); }
+  return cena(n).inicio;
+}
+const $ = id => document.getElementById(id);
+const sty = (id,o) => { const e = typeof id==='string' ? $(id) : id; for (const k in o) e.style[k]=o[k]; };
+/* câmera do mapa grande: posição (centro em px na imagem grande) e zoom por cena; só anda nas trocas */
+const CAM = {pergunta:[1500,1900,1.0], mapa:[1500,2100,1.0], marcar:[1300,2300,1.0], foto:[1300,2300,1.0], dias:[1700,1800,1.0], site:[1650,2400,1.0], neutro:[1450,2000,1.0], fim:[1500,2100,1.0]};
+function camera(t){
+  let a = CAM[T[0].nome];
+  for (let i=1;i<T.length;i++) { const b = CAM[T[i].nome], s = T[i].inicio; if (t < s-.6) break; const k = eio((t-(s-.6))/1.2); a = a.map((v,j) => v+(b[j]-v)*k); }
+  return a;
+}
+
+function render(t){
+  const g = $('mapa').getContext('2d'), [mx,my] = camera(t);
+  g.drawImage(GRANDE, mx-540, my-960, 1080, 1920, 0, 0, 1080, 1920);
+  /* cada cena entra e sai com fade curto */
+  for (const c of T) { const el = $('c-'+(c.nome==='foto'||c.nome==='marcar' ? 'tela' : c.nome)); if (!el) continue; }
+  const vis = {};
+  for (const c of T) { const id = c.nome==='foto'||c.nome==='marcar' ? 'tela' : c.nome; const o = cl(Math.min((t-c.inicio)/.35, (c.fim-t)/.35 + (c.nome==='fim'?9:0))); if (c.nome==='marcar') vis[id]=Math.max(vis[id]||0, cl(Math.min((t-c.inicio)/.35, 1)) * (t<cena('foto').fim ? 1 : 0)); else if (c.nome==='foto') vis[id] = Math.max(vis[id]||0, t>=c.inicio ? cl((c.fim-t)/.35) : 0); else vis[id] = Math.max(vis[id]||0, o); }
+  for (const id in vis) $('c-'+id).style.opacity = vis[id];
+  $('topo').style.opacity = 1 - cl((t-cena('fim').inicio)/.4) ;
+
+  /* pergunta */
+  [['p1','buraco'],['p2','poste'],['p3','lixo']].forEach(([id,w],i) => { const k = pr(t, kw('pergunta',w)-.25, .5); sty(id,{opacity:k, transform:'translateX('+(-80*(1-k))+'px)'}); });
+
+  /* mapa: pinos caem um a um, depois a marca */
+  const cm = cena('mapa'), [gx,gy] = [mx-540, my-960];
+  const apaga = 1-.8*pr(t, kw('mapa','mapa')-.1, .6);
+  PINOS.forEach((p,i) => { const a = cm.inicio+.2+i*.09, k = pr(t,a,.35); sty('pm'+i,{left:(p.X-gx-48)+'px', top:(p.Y-gy-48-60*(1-k))+'px', opacity:k*apaga}); });
+  const km = pr(t, kw('mapa','mapa')-.1, .6); sty('m-logo',{opacity:km, transform:'scale('+(.85+.15*km)+')'}); sty('m-marca',{opacity:pr(t,kw('mapa','feito')-.2,.6), transform:'translateY('+(30*(1-pr(t,kw('mapa','feito')-.2,.6)))+'px)'});
+
+  /* celular: arrastar, Marcar aqui, escolher o tipo, foto e frase */
+  const ck = cena('marcar'), cf = cena('foto');
+  const kCel = pr(t, ck.inicio, .6); sty('cel',{transform:'translateY('+(120*(1-kCel))+'px)'});
+  const tArr = kw('marcar','arrasta'), tToca = kw('marcar','toca'), tEsc = kw('marcar','escolhe');
+  const arr = eio((t-tArr+.1)/1.3);
+  const ox = 1150 - 220*arr, oy = 1300 - 160*arr;
+  const mg = $('mini').getContext('2d'); mg.drawImage(MINI, ox, oy, 514, 1024, 0, 0, 514, 1024);
+  /* dedo: arrasta o mapa, depois toca no botão, depois no Buraco */
+  let dx=300, dy=560, dop=0;
+  if (t < tToca-.3) { dop = cl((t-tArr+.3)/.2) * cl((tArr+1.4-t)/.2); dx = 190+220*arr; dy = 420+160*arr; }
+  else if (t < tEsc-.2) { const k=eo((t-(tToca-.3))/.35); dop = cl((t-(tToca-.3))/.15)*cl((tToca+.35-t)/.15); dx=257; dy=930; }
+  else if (t < cf.inicio) { dop = cl((t-(tEsc-.2))/.15)*cl((tEsc+.45-t)/.15); dx=96; dy=830; }
+  else { const tf = kw('foto','foto')-.3; dop = cl((t-tf)/.15)*cl((tf+.5-t)/.15); dx=250; dy=640; }
+  const toque = (a) => cl(1 - Math.abs(t-a)/.18);
+  sty('dedo',{left:dx+'px', top:dy+'px', opacity:dop, transform:'scale('+(1-.18*Math.max(toque(tToca), toque(tEsc), toque(kw('foto','foto'))))+')'});
+  $('btAqui').style.transform = 'scale('+(1-.05*toque(tToca))+')';
+  const kF1 = pr(t, tToca+.15, .45), saiF1 = pr(t, cf.inicio-.1, .45);
+  sty('f1',{transform:'translateY('+(100*(1-kF1)+100*saiF1)+'%)'}); sty('mira',{opacity:1-kF1});
+  document.querySelector('.tipo[data-t=buraco]').classList.toggle('on', t >= tEsc);
+  sty('f2',{transform:'translateY('+(100*(1-pr(t, cf.inicio-.1, .45)))+'%)'});
+  sty('pinoNovo',{opacity: 0});
+  const tFoto = kw('foto','foto'); sty('previa',{display: t>=tFoto+.1 ? 'block' : 'none'});
+  const txt = 'buraco fundo na frente do 120', tFr = kw('foto','frase'), nTxt = Math.floor(cl((t-tFr)/1.2)*txt.length);
+  $('campo').textContent = nTxt ? txt.slice(0,nTxt) : 'Conte em uma frase (se quiser)'; $('campo').classList.toggle('cheio', nTxt>0);
+  const ks = pr(t, kw('foto','nome')-.2, .5); sty('selo',{opacity:ks*(t<cf.fim?1:0), transform:'translateY('+(40*(1-ks))+'px)'});
+  $('miraRua').textContent = arr < .5 ? 'Rua Bahia' : 'Rua Sete de Setembro';
+
+  /* dias: vizinhos confirmam, contador sobe, vira consertado */
+  const cd = cena('dias'), tVir = kw('dias','confirmam'), tDias = kw('dias','dias'), tCons = kw('dias','conserto');
+  sty('viram',{opacity:pr(t,tVir-.3,.4)}); $('nViram').textContent = Math.max(1, Math.round(1+11*eo((t-tVir)/1.6)));
+  const feito = t >= tCons; const nd = Math.max(1, Math.round(1+46*eio((t-tDias+.3)/(tCons-tDias+.2))));
+  $('nDias').textContent = nd; $('nDias').style.color = feito ? '#43b27e' : nd>30 ? '#ef5a3c' : '#f6c21a';
+  $('txtDias').textContent = feito ? 'dias até o conserto' : 'dias esperando';
+  $('pinoDias').className = 'pino grande ' + (feito ? 'feito' : nd>30 ? 'velho' : '');
+  const kp = pr(t, cd.inicio, .5); $('pinoDias').style.transform = 'scale('+(.8+.2*kp)+')';
+
+  /* site */
+  [['k1','quem'],['k2','contas'],['k3','pedido']].forEach(([id,w]) => { const k = pr(t, kw('site',w)-.25, .5); sty(id,{opacity:k, transform:'translateX('+(60*(1-k))+'px)'}); });
+  /* neutro */
+  [['n1','partido'],['n2','cadastro'],['n3','cidade']].forEach(([id,w]) => { const k = pr(t, kw('neutro',w)-.35, .45); sty(id,{opacity:k, transform:'translateY('+(30*(1-k))+'px)'}); });
+  /* fim */
+  const cfim = cena('fim'), kl = pr(t, cfim.inicio, .6);
+  sty('f-logo',{opacity:kl, transform:'scale('+(.85+.15*kl)+')', top:'300px'});
+  sty('end',{opacity:pr(t, kw('fim','link')-.3, .5)}); sty('chips',{opacity:pr(t, kw('fim','marque')-.2, .5)});
+
+  /* legenda: a frase que está sendo falada */
+  let fr = null; for (const c of T) for (const f of c.frases) if (t >= f.inicio-.1 && t <= f.fim+.35) fr = f;
+  $('capTxt').textContent = fr ? fr.texto : ''; $('cap').style.opacity = fr ? 1 : 0;
+  $('progI').style.width = (100*t/DUR)+'%';
+}
+window.render = render; window.DURACAO = DUR;
+render(0);
+</script>
+</body></html>

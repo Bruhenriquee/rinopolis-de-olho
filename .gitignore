@@ -2,3 +2,5 @@ insta/_paginas/
 video/_ferramentas/
 video/_quadros/
 video/_audio/
+video/*.mp4
+video/_quadros_render.log
