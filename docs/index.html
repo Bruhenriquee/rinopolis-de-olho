@@ -468,7 +468,9 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
 .barra-passos i{height:4px;border-radius:2px;background:var(--linha)}
 .barra-passos i.feito{background:var(--placa)}
 .passo{display:flex;flex-direction:column;gap:14px}
-.passo-pe{display:flex;gap:10px;align-items:stretch}
+.passo-pe{display:flex;gap:10px;align-items:stretch;position:sticky;bottom:0;z-index:2;background:var(--asfalto-2);padding-top:10px;margin-top:-10px;box-shadow:0 -14px 14px -4px var(--asfalto-2)}
+#formNovo .onde{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#formNovo header>div{min-width:0}
 .passo-pe .btn{flex:1}
 .passo-pe .btn-leve{padding:10px 16px}
 .resumo-novo{display:flex;align-items:center;gap:10px;background:var(--asfalto-3);border-radius:10px;padding:10px 12px;font-size:14px;color:var(--tinta-2)}
@@ -915,7 +917,6 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
           <label>Foto (ajuda muito)</label>
           <div class="foto-campo" id="novoFoto">
             <img id="novoPrevia" alt="Prévia da foto" hidden>
-          </div>
           </div>
         </div>
         <div>
@@ -1978,6 +1979,7 @@ function escolherPonto(latlng){
     vizinhas.map(({r,d}) => '<button class="item" type="button" data-perto="'+esc(r.id)+'">'+pinoHtml(r,situacao(r),false)+'<span class="info"><b>'+esc(TIPOS[r.tipo].nome)+'</b><span class="onde">'+esc(r.rua||'')+' · a '+Math.max(5,Math.round(d/5)*5)+' m daqui</span></span><span class="quanto"><b>É este</b></span></button>').join('')+'</div>' : '';
   tipoNovo=null; fotoNovo=''; formNovo.reset(); document.getElementById('novoPrevia').hidden=true;
   aceite.checked = !!guardado('rdo-aceite', false);
+  aceite.closest('label').hidden = aceite.checked;
   desenharTipos(); irPasso(1); fundoNovo.hidden=false;
 }
 /* o formulário anda em 3 passos: tipo, foto e frase, confirmar */
