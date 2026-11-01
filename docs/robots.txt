@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bruhenriquee.github.io/rinopolis-de-olho/sitemap.xml

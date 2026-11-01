@@ -356,6 +356,15 @@ textarea{width:100%;min-height:240px;resize:vertical;background:var(--placa-escu
 .bolinha2{position:absolute;top:6px;right:2px;width:8px;height:8px;border-radius:4px;background:var(--alerta)}
 #painelDono [data-secao]{display:flex;flex-direction:column;gap:12px;margin-top:12px}
 #painelDono [data-secao][hidden]{display:none}
+#loginPainel{max-width:360px;margin:8px auto 0;width:100%}
+#loginPainel .login-topo{display:flex;align-items:center;gap:10px}
+#loginPainel .login-topo svg{width:34px;height:34px;flex:none}
+#loginPainel .acoes .btn{width:100%}
+.tarefas{display:flex;flex-direction:column;gap:10px}
+.tarefa{background:var(--asfalto-3);border:1px solid var(--linha);border-left:4px solid var(--linha);border-radius:8px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.tarefa.atencao{border-left-color:var(--placa)}
+.tarefa b{font-size:15px}
+.tarefa .acoes{margin:0}
 .linhas{display:flex;flex-direction:column;gap:6px}
 .linha-placa{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;background:var(--asfalto-3);border:1px solid var(--linha);border-left:4px solid var(--placa);border-radius:8px;padding:9px 12px}
 .linha-placa.velho{border-left-color:var(--alerta)}
@@ -771,8 +780,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
       <section id="aba-painel" hidden>
         <h2>Painel de quem cuida</h2>
         <form class="bloco" id="loginPainel" hidden>
-          <b>Entrar como quem cuida do mapa</b>
-          <p class="leve">Só pra quem aprova as fotos e responde pela prefeitura. Moradores não precisam entrar pra marcar.</p>
+          <div class="login-topo"><svg viewBox="0 0 48 48" aria-hidden="true"><use href="#logo"/></svg><div><b>Entrar na equipe</b><span class="miudo" style="display:block">Moradores não precisam entrar.</span></div></div>
           <div><label for="loginEmail">E-mail</label><input type="email" id="loginEmail" autocomplete="username" required></div>
           <div><label for="loginSenha">Senha</label><input type="password" id="loginSenha" autocomplete="current-password" required></div>
           <div class="acoes"><button class="btn" type="submit" id="btnEntrar">Entrar</button></div>
@@ -794,6 +802,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
           </nav>
 
           <div data-secao="fotos">
+            <div class="tarefas" id="tarefas"></div>
             <div id="denunciasBox" hidden>
               <h3 style="margin-top:0">Denúncias dos moradores</h3>
               <div class="cartas" id="denunciasPainel"></div>
@@ -2369,7 +2378,32 @@ let pendentesCache = [], subAtual = 'fotos', filtroPainel = 'abertos', armadoPai
 const dataHora = t => new Date(t).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
 const dataCurta = t => t ? new Date(t).toLocaleDateString('pt-BR') : '';
 
+/* o que mudou desde a última vez que este aparelho abriu o painel, e o lembrete do pedido semanal à prefeitura */
+const visitaAnterior = guardado('rdo-painel-visto', 0);
+let marcouVisita = false;
+function desenharTarefas(n){
+  const el = document.getElementById('tarefas'); if (!el) return;
+  const desde = t => n.reais.filter(r => r[t] && r[t] > visitaAnterior).length;
+  const novas = n.reais.filter(r => r.criado > visitaAnterior).length, consertos = desde('resolvido');
+  const novidades = !visitaAnterior ? '' :
+    '<div class="tarefa"><b>Desde '+dataCurta(visitaAnterior)+'</b><span class="leve">'+
+    (novas || consertos ? [novas && (novas===1 ? '1 placa nova' : novas+' placas novas'), consertos && (consertos===1 ? '1 conserto' : consertos+' consertos')].filter(Boolean).join(' · ') : 'Nada novo no mapa.')+'</span></div>';
+  const envio = guardado('rdo-envio', 0), dEnvio = envio ? Math.floor((Date.now()-envio)/DIA) : null;
+  const novasEnvio = n.abertos.filter(r => r.criado > envio).length;
+  const atrasado = dEnvio===null || dEnvio >= 7;
+  el.innerHTML = novidades +
+    '<div class="tarefa'+(atrasado && n.abertos.length ? ' atencao' : '')+'"><b>Pedido da semana à prefeitura</b><span class="leve">'+
+    (dEnvio===null ? 'Ainda não marcado como enviado.' : 'Último envio: '+dataCurta(envio)+(dEnvio ? ' (há '+diasTxt(dEnvio)+')' : ' (hoje)')+'.')+
+    ' '+(n.abertos.length ? n.abertos.length+(n.abertos.length===1?' placa aberta':' placas abertas')+(envio ? ', '+novasEnvio+' nova'+(novasEnvio===1?'':'s')+' desde então' : '')+'.' : 'Nenhuma placa aberta.')+'</span>'+
+    '<div class="acoes"><button class="btn" type="button" id="tCopiar">Copiar pedido</button><a class="btn cinza" href="https://www.rinopolis.sp.gov.br/ouvidoria/" target="_blank" rel="noopener">Abrir Ouvidoria</a><button class="btn-leve" type="button" id="tEnviado">Enviei hoje</button></div></div>';
+}
+document.getElementById('tarefas').addEventListener('click', e => {
+  if (e.target.closest('#tCopiar')) copiar(document.getElementById('oficio').value, 'Pedido copiado. Cole na Ouvidoria ou no e-mail.');
+  else if (e.target.closest('#tEnviado')) { guardar('rdo-envio', Date.now()); desenharTarefas(numeros()); avisar('Anotado: pedido enviado hoje.'); }
+});
+
 function atualizarPainelResumo(n){
+  desenharTarefas(n);
   document.getElementById('pSem').textContent = n.sem.length;
   document.getElementById('pAbertos').textContent = n.abertos.length;
   const comData = n.feitos.filter(r => r.resolvido);
@@ -2400,6 +2434,8 @@ async function carregarPainel(){
     ? 'Você entrou como '+Loja.email+(Loja.papel==='dono' ? ' (dono do mapa).' : ' (moderador).')
     : 'Só a equipe vê esta aba. As placas aparecem na hora; as fotos só depois de aprovadas.';
   if (!nuvem && (subAtual==='equipe' || subAtual==='historico')) subAtual = 'fotos';
+  desenharTarefas(numeros());
+  if (!marcouVisita) { marcouVisita = true; guardar('rdo-painel-visto', Date.now()); }
   irSub(subAtual);
   if (subAtual!=='fotos') carregarFotosPainel(true);
 }
@@ -2648,7 +2684,7 @@ const boas = document.getElementById('boas');
 document.getElementById('boasPlacas').innerHTML = [['buraco','velho'],['luz',''],['lixo',''],['agua',''],['mato','feito'],['outro','']]
   .map(([k,c]) => '<div class="bp"><div class="pino '+c+'">'+svg(k,2.4)+'</div><span>'+TIPOS[k].nome+'</span></div>').join('');
 /* aparece em toda visita, até a pessoa pedir pra não mostrar mais */
-if (!guardado('rdo-sem-intro', false)) boas.hidden = false;
+if (!guardado('rdo-sem-intro', false) && location.hash!=='#painel') boas.hidden = false;
 function fecharIntro(){ boas.hidden = true; }
 document.getElementById('btnComecar').addEventListener('click', fecharIntro);
 document.getElementById('btnNaoMostrar').addEventListener('click', () => { guardar('rdo-sem-intro', true); fecharIntro(); avisar('Combinado. Esta tela não aparece mais neste aparelho.'); });
