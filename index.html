@@ -313,9 +313,6 @@ button.campea:hover{border-color:var(--placa)}
 .quem svg{width:24px;height:24px;color:var(--placa)}
 
 /* contas */
-.contador{background:var(--placa-escuro);border:1px solid var(--linha);border-top:5px solid var(--placa);border-radius:10px;padding:16px;display:flex;flex-direction:column;gap:6px}
-.contador .eti{font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--placa)}
-.contador b{font-family:var(--f-placa);font-weight:800;font-size:44px;line-height:1;font-variant-numeric:tabular-nums;color:var(--tinta);overflow-wrap:anywhere}
 .barras{display:flex;flex-direction:column;gap:12px}
 .barra{display:flex;flex-direction:column;gap:5px;border-radius:6px;padding:4px 6px;margin:-4px 0;outline-offset:2px}
 .recolhida > .extra{display:none}
@@ -536,7 +533,6 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
   .mira{bottom:14px}
   .pergunta-card{right:8px;left:8px;width:auto;bottom:74px}
   .abas button{font-size:13.5px;padding:9px 1px 9px;letter-spacing:.02em}
-  .contador b{font-size:36px}
   .conteudo{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
   .grana-lista{grid-template-columns:minmax(0,1fr)}
   .vereadores{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -732,17 +728,13 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
 
       <section id="aba-contas" hidden>
         <h2>As contas da cidade</h2>
-        <div class="contador" aria-live="off">
-          <span class="eti">Arrecadômetro de Rinópolis · 2026</span>
-          <b id="arrecadado">R$ 0</b>
-          <span class="miudo">Estimativa do que a prefeitura já recebeu este ano, no ritmo oficial de janeiro a agosto: R$ 42,7 milhões em 8 meses, cerca de R$ 2 por segundo.</span>
-        </div>
+        <p class="miudo">Números oficiais que a própria prefeitura entrega ao Tesouro Nacional. Atualizado até agosto de 2026.</p>
         <div class="resumo">
           <div><b>R$ 42,7 mi</b><span>recebidos de janeiro a agosto de 2026</span></div>
           <div><b>R$ 40,5 mi</b><span>gastos no mesmo período</span></div>
         </div>
         <h3>De onde vem o dinheiro</h3>
-        <p class="leve">Em 2025 a prefeitura recebeu R$ 58,4 milhões, já descontada a parte que vai para o Fundeb. De cada R$ 100, R$ 14 vieram dos impostos e taxas dela própria. A maior parte veio do governo federal e do estado, e também sai do bolso de quem mora aqui: do ICMS das compras, do IPVA do carro e do imposto de renda.</p>
+        <p class="leve">Em 2025 a prefeitura recebeu R$ 58,4 milhões, já descontada a parte que vai para o Fundeb. De cada R$ 100, R$ 14 vieram dos impostos e taxas dela própria. A maior parte veio do governo federal e do estado, como a parte da cidade no ICMS, no IPVA e no imposto de renda.</p>
         <div class="barras" id="origem"></div>
         <details>
           <summary>Os impostos cobrados aqui, em 2025</summary>
@@ -2207,7 +2199,6 @@ const MORADORES = 9259;
 const DCA25 = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?an_exercicio=2025&no_anexo=DCA-Anexo%20I-C&id_ente=3543808';
 const DCA25F = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?an_exercicio=2025&no_anexo=DCA-Anexo%20I-E&id_ente=3543808';
 const RREO26 = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2026&nr_periodo=4&co_tipo_demonstrativo=RREO%20Simplificado&no_anexo=RREO-Anexo%2001&id_ente=3543808';
-const RECEBIDO26 = 42699924, FIM_AGO26 = Date.UTC(2026,8,1,3), INICIO26 = Date.UTC(2026,0,1,3);
 const ORIGEM25 = [
   /* receita líquida (já sem a parte que vai para o Fundeb), total R$ 58.412.682 */
   ['Impostos e taxas da prefeitura', 8094559, 'IPTU, ISS, ITBI, taxas, contribuição de iluminação e imposto de renda retido'],
@@ -2254,8 +2245,7 @@ document.getElementById('linksContas').innerHTML = [
   ['Portal da Transparência de Rinópolis','O site oficial da prefeitura com as contas em detalhe','https://transparencia.rinopolis.sp.gov.br'],
   ['Dinheiro federal em Rinópolis','Portal da Transparência do governo federal: tudo o que foi mandado pra cidade','https://portaldatransparencia.gov.br/localidades/3543808-rinopolis'],
   ['Receitas e gastos de 2025','De onde vêm e pra onde vão os números desta página','#contas25'],
-  ['Relatório de 2026 até agosto','O que a prefeitura recebeu e gastou este ano','#contas26'],
-  ['Impostômetro','Quanto o Brasil inteiro paga de imposto (Associação Comercial de SP)','https://impostometro.com.br/']
+  ['Relatório de 2026 até agosto','O que a prefeitura recebeu e gastou este ano','#contas26']
 ].map(([t,d,u]) => '<div class="contato"><span><b>'+t+'</b><span class="miudo" style="display:block">'+d+'</span></span>'+
   (u.startsWith('#') ? '<button class="btn cinza" type="button" data-fonte="'+u.slice(1)+'">Ver</button>' : '<a class="btn cinza" href="'+u+'" target="_blank" rel="noopener">Abrir</a>')+'</div>').join('');
 /* ---------- De onde vem esse número ----------
@@ -2271,7 +2261,7 @@ const FONTES = {
     passos:['Abra a consulta de contas anuais do Siconfi (botão abaixo).','Em "Exercício", escolha 2025. Em "Escopo", escolha "Municípios do Estado" e depois São Paulo.','Em "Tabela", escolha a do Anexo I-C (receitas) ou a do Anexo I-E (despesas por função) e toque em Consultar.','O site baixa uma planilha com todas as cidades de SP: procure a linha de Rinópolis.'],
     link:'https://siconfi.tesouro.gov.br/siconfi/pages/public/consulta_finbra/finbra_list.jsf', tecnico:[DCA25, DCA25F]},
   contas26: {titulo:'Contas da prefeitura em 2026', orgao:'Tesouro Nacional (Siconfi)',
-    texto:'A cada dois meses a prefeitura entrega um relatório do orçamento. O mais novo vai até agosto de 2026: R$ 42,7 milhões recebidos, R$ 40,5 milhões gastos e orçamento atualizado de R$ 61,6 milhões. O Arrecadômetro é uma estimativa feita a partir desse ritmo.',
+    texto:'A cada dois meses a prefeitura entrega um relatório do orçamento. O mais novo vai até agosto de 2026: R$ 42,7 milhões recebidos, R$ 40,5 milhões gastos e orçamento atualizado de R$ 61,6 milhões.',
     passos:['Abra a consulta de relatórios bimestrais do Siconfi (botão abaixo).','Escolha o exercício 2026, periodicidade "Bimestral" e o 4º período.','Em "Escopo", escolha "Municípios do Estado" e depois São Paulo.','Em "Anexo", o 01 mostra o que entrou e o 02, os gastos por área. Toque em Consultar e procure Rinópolis na planilha.'],
     link:'https://siconfi.tesouro.gov.br/siconfi/pages/public/consulta_finbra_rreo/finbra_rreo_list.jsf', tecnico:[RREO26]},
   emendas: {titulo:'Emendas de deputados federais', orgao:'Governo federal (Transferegov e Portal da Transparência)',
@@ -2292,10 +2282,6 @@ function abrirFonte(k){
 document.addEventListener('click', e => { const b = e.target.closest('[data-fonte]'); if (b) { e.preventDefault(); abrirFonte(b.dataset.fonte); } });
 fundoFonte.addEventListener('click', e => { if (e.target===fundoFonte || e.target.closest('[data-fecha]')) fundoFonte.hidden = true; });
 
-const ritmo = RECEBIDO26/(FIM_AGO26-INICIO26);
-const arrecadado = document.getElementById('arrecadado');
-function tique(){ arrecadado.textContent = (RECEBIDO26 + ritmo*Math.max(0, Math.min(Date.now(), Date.UTC(2027,0,1,3))-FIM_AGO26)).toLocaleString('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}); }
-tique(); setInterval(tique, 1000);
 const dica = document.createElement('div'); dica.className='dica'; dica.hidden=true; document.body.appendChild(dica);
 document.getElementById('aba-contas').addEventListener('pointermove', e => {
   const b = e.target.closest('[data-dica]'); if (!b) { dica.hidden=true; return; }
