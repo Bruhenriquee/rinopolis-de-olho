@@ -754,10 +754,10 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
 
       <section id="aba-contas" hidden>
         <h2>As contas da cidade</h2>
-        <p class="miudo">Números oficiais que a própria prefeitura entrega ao Tesouro Nacional. Atualizado até agosto de 2026.</p>
+        <p class="miudo" id="contasData"></p>
         <div class="resumo">
-          <div><b>R$ 42,7 mi</b><span>recebidos de janeiro a agosto de 2026</span></div>
-          <div><b>R$ 40,5 mi</b><span>gastos no mesmo período</span></div>
+          <div><b id="rRecebido"></b><span id="rRecebidoTxt"></span></div>
+          <div><b id="rGasto"></b><span>gastos no mesmo período</span></div>
         </div>
         <h3>De onde vem o dinheiro</h3>
         <p class="leve">Em 2025 a prefeitura recebeu R$ 58,4 milhões, já descontada a parte que vai para o Fundeb. De cada R$ 100, R$ 14 vieram dos impostos e taxas dela própria. A maior parte veio do governo federal e do estado, como a parte da cidade no ICMS, no IPVA e no imposto de renda.</p>
@@ -769,14 +769,14 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <h3>Pra onde vai</h3>
         <p class="leve">O que a prefeitura gastou em 2025, por área: R$ 55,1 milhões ao todo.</p>
         <div class="barras" id="destino"></div>
-        <p class="miudo">"Serviços urbanos" é a área onde costumam entrar limpeza, iluminação e conservação das ruas. Em 2026, só de janeiro a agosto, já foram R$ 6,3 milhões nela.</p>
+        <p class="miudo">"Serviços urbanos" é a área onde costumam entrar limpeza, iluminação e conservação das ruas. <span id="urbanosTxt"></span></p>
         <h3>Verbas e emendas</h3>
         <div class="grana-lista" id="verbas"></div>
         <details>
           <summary>Confira você mesmo: os sites oficiais</summary>
           <div class="links" id="linksContas" style="margin-top:10px"></div>
         </details>
-        <p class="miudo">Fonte dos números: relatórios que a própria prefeitura entrega ao Tesouro Nacional (Siconfi): balanço anual de 2025 e relatório do 4º bimestre de 2026. Valores de gasto são despesas liquidadas. Os valores por morador usam a população do Censo 2022 (9.259 pessoas).</p>
+        <p class="miudo">Fonte dos números: relatórios que a própria prefeitura entrega ao Tesouro Nacional (Siconfi): balanço anual de 2025 e <span id="fonteRreo"></span>. Valores de gasto são despesas liquidadas. Os valores por morador usam a população do Censo 2022 (9.259 pessoas).</p>
       </section>
 
       <section id="aba-cobrar" hidden>
@@ -1099,15 +1099,22 @@ const CONTATOS = [
   {rotulo:'Ouvidoria da Prefeitura', link:'https://www.rinopolis.sp.gov.br/ouvidoria/', det:'Reclamação oficial, com número de protocolo'},
   {rotulo:'e-SIC (Lei de Acesso)', link:'https://www.rinopolis.sp.gov.br/esic/', det:'Pergunte onde o dinheiro foi gasto. Resposta em até 20 dias, prorrogáveis por mais 10'}
 ];
-const SICONFI25 = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2025&nr_periodo=6&co_tipo_demonstrativo=RREO%20Simplificado&no_anexo=RREO-Anexo%2001&id_ente=3543808';
-const SICONFI26 = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2026&nr_periodo=4&co_tipo_demonstrativo=RREO%20Simplificado&no_anexo=RREO-Anexo%2001&id_ente=3543808';
+/* DADOS-AUTOMATICOS: gravado por atualizar_dados.py toda semana (contas do Siconfi e emendas do Transferegov). Não edite à mão. */
+const DADOS = {"conferido": "2026-11-02", "contas": {"ano": 2026, "periodo": 4, "mesFim": "agosto", "recebido": 42699924, "gasto": 40481270, "orcInicial": 56966520, "orcAtual": 61607180, "urbanos": 6302540}, "emendas": [{"id": 81138, "ano": 2025, "parlamentar": "Marcos Pereira", "valor": 495000, "titulo": "Quadras de padel no Jardim Boa Vista", "pergunta": "A obra começou?", "resumo": "construir duas quadras de padel no Jardim Boa Vista", "relatorio": false}, {"id": 65651, "ano": 2024, "parlamentar": "Marcos Pereira", "valor": 500000, "titulo": "LED nos postes", "pergunta": "Quais ruas receberam?", "resumo": "trocar 622 lâmpadas dos postes por LED", "relatorio": false}]};
+/* FIM-DADOS-AUTOMATICOS */
+const CT = DADOS.contas, MES_INI = 'janeiro';
+const milhoes = v => 'R$ '+(v/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})+(v>=1e6 ? ' mi' : '');
+const valorCurto = v => v>=1e6 ? milhoes(v) : 'R$ '+Math.round(v/1e3).toLocaleString('pt-BR')+' mil';
+const RREO_URL = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio='+CT.ano+'&nr_periodo='+CT.periodo+'&co_tipo_demonstrativo=RREO%20Simplificado&no_anexo=RREO-Anexo%2001&id_ente=3543808';
+const dataBr = iso => iso.split('-').reverse().join('/');
 const EMENDAS = 'https://api.transferegov.gestao.gov.br/transferenciasespeciais/plano_acao_especial?cnpj_beneficiario_plano_acao=eq.46478053000113';
 const PEDIDO_ESIC = 'Pedido de informação (Lei 12.527/2011, Lei de Acesso à Informação)\n\nSolicito, sobre as emendas impositivas dos vereadores de Rinópolis (art. 309-A da Lei Orgânica):\n1. O valor total das emendas individuais e das emendas de bancada, e o valor por vereador e por bancada, na LOA de 2025 e na LOA de 2026.\n2. A lista de cada emenda: autor, o que vai ser feito, quem recebe, valor e se é da saúde.\n3. Quanto de cada emenda já foi empenhado, liquidado e pago, e se alguma teve impedimento.\n4. O endereço da página de emendas no portal da transparência (Resolução TCE-SP nº 17/2025).\n\nPeço resposta em formato digital.';
 const VERBAS = [
-  {valor:'R$ 61,6 mi', titulo:'Orçamento da prefeitura em 2026', txt:'Começou o ano em R$ 57 milhões e, com os ajustes, chegou a R$ 61,6 milhões até agosto.', pergunta:'Quanto vai pra conserto de rua?', fonte:'contas26'},
+  {valor:milhoes(CT.orcAtual), titulo:'Orçamento da prefeitura em '+CT.ano, txt:'Começou o ano em '+milhoes(CT.orcInicial).replace(' mi',' milhões')+(CT.orcAtual!==CT.orcInicial ? ' e, com os ajustes, chegou a '+milhoes(CT.orcAtual).replace(' mi',' milhões')+' até '+CT.mesFim+'.' : '.'), pergunta:'Quanto vai pra conserto de rua?', fonte:'contas26'},
   {valor:'R$ 808,5 mil', titulo:'Contribuição de iluminação (CIP), 2025', txt:'Pela Constituição (art. 149-A), só pode ir pra iluminação pública e câmeras de monitoramento das ruas.', pergunta:'Por que esse poste está apagado?', fonte:'contas25'},
-  {valor:'R$ 500 mil', titulo:'LED nos postes (2024)', txt:'Emenda federal do deputado Marcos Pereira. Consta como concluída.', pergunta:'Quais ruas receberam?', fonte:'emendas'},
-  {valor:'R$ 495 mil', titulo:'Quadras de padel (2025)', txt:'Emenda federal para o Jardim Boa Vista, prazo até 2028.', pergunta:'A obra começou?', fonte:'emendas'},
+  ...DADOS.emendas.map(e => ({valor:valorCurto(e.valor), titulo:e.titulo+' ('+e.ano+')',
+    txt:'Emenda federal de '+e.parlamentar+', mandada direto pra prefeitura. '+(e.relatorio ? 'A prefeitura já mandou o relatório de execução.' : 'O relatório de execução ainda não aparece no sistema do governo federal.'),
+    pergunta:e.pergunta, fonte:'emendas'})),
   {largo:true, valor:'Impositivas', titulo:'A verba que cada vereador indica', txt:'Estão na Lei Orgânica de Rinópolis (art. 309-A): as emendas individuais podem chegar a 2% da receita corrente líquida do ano anterior, com pelo menos metade pra saúde, e há mais 1% para as bancadas, dividido conforme o número de vereadores de cada uma. O portal da transparência da prefeitura tem uma seção de emendas impositivas: vale conferir se está preenchida.', pergunta:'Quanto cada um tem e pra onde mandou?', fonte:'https://www.camararinopolis.sp.gov.br/?pag=T0dRPU9EZz1PR009T1RnPQ==&idtipolei=24&ano=2023', copiar:PEDIDO_ESIC},
   {largo:true, valor:'Associação', titulo:'Como o bairro pode receber verba', txt:'Pessoa sozinha não recebe. Uma associação de moradores pode receber emenda por termo de fomento (Lei 13.019/2014), se tiver experiência, estrutura e CNPJ com tempo mínimo: 1 ano pra parceria com a prefeitura, 3 anos com o Estado ou a União.', pergunta:'O bairro tem associação?', fonte:'https://www.planalto.gov.br/ccivil_03/_ato2011-2014/2014/lei/l13019.htm'}
 ];
@@ -2211,11 +2218,10 @@ document.getElementById('contatos').innerHTML = CONTATOS.map(c =>
   (c.link ? '<a class="btn cinza" href="'+c.link+'" target="_blank" rel="noopener">Abrir</a>' : '<button class="btn cinza" type="button" data-copia="'+esc(c.valor)+'">Copiar</button>')+'</div>').join('');
 ['aba-quem','aba-contas'].forEach(id => document.getElementById(id).addEventListener('click', e => { const b=e.target.closest('[data-copia]'); if (b) copiar(b.dataset.copia, b.textContent.includes('e-SIC') ? 'Pedido copiado. Cole no e-SIC.' : 'Copiado'); }));
 
-/* ---------- Contas da cidade (Siconfi: DCA 2025 e RREO 4º bimestre 2026) ---------- */
+/* ---------- Contas da cidade (Siconfi: DCA 2025 fixo; o relatório bimestral vem de DADOS) ---------- */
 const MORADORES = 9259;
 const DCA25 = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?an_exercicio=2025&no_anexo=DCA-Anexo%20I-C&id_ente=3543808';
 const DCA25F = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/dca?an_exercicio=2025&no_anexo=DCA-Anexo%20I-E&id_ente=3543808';
-const RREO26 = 'https://apidatalake.tesouro.gov.br/ords/siconfi/tt/rreo?an_exercicio=2026&nr_periodo=4&co_tipo_demonstrativo=RREO%20Simplificado&no_anexo=RREO-Anexo%2001&id_ente=3543808';
 const ORIGEM25 = [
   /* receita líquida (já sem a parte que vai para o Fundeb), total R$ 58.412.682 */
   ['Impostos e taxas da prefeitura', 8094559, 'IPTU, ISS, ITBI, taxas, contribuição de iluminação e imposto de renda retido'],
@@ -2257,12 +2263,18 @@ function recolher(el, n, rotulo){
 }
 recolher(document.getElementById('destino'), 5, 'Ver todas as áreas');
 recolher(document.getElementById('verbas'), 4, 'Ver mais verbas');
+document.getElementById('contasData').textContent = 'Números oficiais que a própria prefeitura entrega ao Tesouro Nacional. Atualizado até '+CT.mesFim+' de '+CT.ano+', conferido em '+dataBr(DADOS.conferido)+'.';
+document.getElementById('rRecebido').textContent = milhoes(CT.recebido);
+document.getElementById('rRecebidoTxt').textContent = 'recebidos de '+MES_INI+' a '+CT.mesFim+' de '+CT.ano;
+document.getElementById('rGasto').textContent = milhoes(CT.gasto);
+document.getElementById('urbanosTxt').textContent = 'Em '+CT.ano+', de '+MES_INI+' a '+CT.mesFim+', já foram '+milhoes(CT.urbanos).replace(' mi',' milhões')+' nela.';
+document.getElementById('fonteRreo').textContent = 'relatório do '+CT.periodo+'º bimestre de '+CT.ano;
 document.getElementById('impostosCidade').innerHTML = IMPOSTOS25.map(([n,v]) => '<li>'+n+': <b>'+reais(v)+'</b></li>').join('');
 document.getElementById('linksContas').innerHTML = [
   ['Portal da Transparência de Rinópolis','O site oficial da prefeitura com as contas em detalhe','https://transparencia.rinopolis.sp.gov.br'],
   ['Dinheiro federal em Rinópolis','Portal da Transparência do governo federal: tudo o que foi mandado pra cidade','https://portaldatransparencia.gov.br/localidades/3543808-rinopolis'],
   ['Receitas e gastos de 2025','De onde vêm e pra onde vão os números desta página','#contas25'],
-  ['Relatório de 2026 até agosto','O que a prefeitura recebeu e gastou este ano','#contas26']
+  ['Relatório de '+CT.ano+' até '+CT.mesFim,'O que a prefeitura recebeu e gastou este ano','#contas26']
 ].map(([t,d,u]) => '<div class="contato"><span><b>'+t+'</b><span class="miudo" style="display:block">'+d+'</span></span>'+
   (u.startsWith('#') ? '<button class="btn cinza" type="button" data-fonte="'+u.slice(1)+'">Ver</button>' : '<a class="btn cinza" href="'+u+'" target="_blank" rel="noopener">Abrir</a>')+'</div>').join('');
 /* ---------- De onde vem esse número ----------
@@ -2277,12 +2289,12 @@ const FONTES = {
     texto:'Todo ano a prefeitura entrega ao Tesouro Nacional o balanço do ano, chamado Declaração de Contas Anuais. Dali vêm as receitas (R$ 58,4 milhões, já sem a parte do Fundeb), os impostos, a contribuição de iluminação (R$ 808.503,57) e os gastos por área (R$ 55,1 milhões).',
     passos:['Abra a consulta de contas anuais do Siconfi (botão abaixo).','Em "Exercício", escolha 2025. Em "Escopo", escolha "Municípios do Estado" e depois São Paulo.','Em "Tabela", escolha a do Anexo I-C (receitas) ou a do Anexo I-E (despesas por função) e toque em Consultar.','O site baixa uma planilha com todas as cidades de SP: procure a linha de Rinópolis.'],
     link:'https://siconfi.tesouro.gov.br/siconfi/pages/public/consulta_finbra/finbra_list.jsf', tecnico:[DCA25, DCA25F]},
-  contas26: {titulo:'Contas da prefeitura em 2026', orgao:'Tesouro Nacional (Siconfi)',
-    texto:'A cada dois meses a prefeitura entrega um relatório do orçamento. O mais novo vai até agosto de 2026: R$ 42,7 milhões recebidos, R$ 40,5 milhões gastos e orçamento atualizado de R$ 61,6 milhões.',
-    passos:['Abra a consulta de relatórios bimestrais do Siconfi (botão abaixo).','Escolha o exercício 2026, periodicidade "Bimestral" e o 4º período.','Em "Escopo", escolha "Municípios do Estado" e depois São Paulo.','Em "Anexo", o 01 mostra o que entrou e o 02, os gastos por área. Toque em Consultar e procure Rinópolis na planilha.'],
-    link:'https://siconfi.tesouro.gov.br/siconfi/pages/public/consulta_finbra_rreo/finbra_rreo_list.jsf', tecnico:[RREO26]},
+  contas26: {titulo:'Contas da prefeitura em '+CT.ano, orgao:'Tesouro Nacional (Siconfi)',
+    texto:'A cada dois meses a prefeitura entrega um relatório do orçamento. O mais novo vai até '+CT.mesFim+' de '+CT.ano+': '+milhoes(CT.recebido).replace(' mi',' milhões')+' recebidos, '+milhoes(CT.gasto).replace(' mi',' milhões')+' gastos e orçamento atualizado de '+milhoes(CT.orcAtual).replace(' mi',' milhões')+'. O site confere toda semana se saiu um relatório novo.',
+    passos:['Abra a consulta de relatórios bimestrais do Siconfi (botão abaixo).','Escolha o exercício '+CT.ano+', periodicidade "Bimestral" e o '+CT.periodo+'º período.','Em "Escopo", escolha "Municípios do Estado" e depois São Paulo.','Em "Anexo", o 01 mostra o que entrou e o 02, os gastos por área. Toque em Consultar e procure Rinópolis na planilha.'],
+    link:'https://siconfi.tesouro.gov.br/siconfi/pages/public/consulta_finbra_rreo/finbra_rreo_list.jsf', tecnico:[RREO_URL]},
   emendas: {titulo:'Emendas de deputados federais', orgao:'Governo federal (Transferegov e Portal da Transparência)',
-    texto:'Duas emendas do deputado federal Marcos Pereira foram mandadas direto pra prefeitura: R$ 500 mil em 2024, pra trocar as lâmpadas dos postes por LED (concluída), e R$ 495 mil em 2025, pra duas quadras de padel no Jardim Boa Vista (prazo até setembro de 2028).',
+    texto:'Emendas de deputados federais mandadas direto pra prefeitura (as chamadas transferências especiais), conferidas toda semana no Transferegov: '+DADOS.emendas.map(e => valorCurto(e.valor)+' em '+e.ano+' ('+e.parlamentar+'), pra '+e.resumo.replace(/\.$/,'')+(e.relatorio ? '; relatório de execução enviado' : '; relatório de execução ainda não enviado')).join('. ')+'. Emendas com destino já definido (por exemplo, pra saúde) e as de deputados estaduais não entram nesta lista.',
     passos:['Abra a página de Rinópolis no Portal da Transparência (botão abaixo).','Toque em "Detalhar recursos" pra ver o que o governo federal mandou.','Pra ver só emendas, use a busca de emendas do portal e filtre por Rinópolis.'],
     link:'https://portaldatransparencia.gov.br/localidades/3543808-rinopolis', tecnico:[EMENDAS]}
 };

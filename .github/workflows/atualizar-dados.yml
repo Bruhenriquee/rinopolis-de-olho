@@ -1,0 +1,28 @@
+# Toda segunda de manhã confere as contas (Siconfi) e as emendas (Transferegov),
+# regera o site e publica sozinho. Também dá pra rodar na mão: aba Actions → Atualizar dados → Run workflow.
+name: Atualizar dados
+
+on:
+  schedule:
+    - cron: '0 11 * * 1'   # segunda, 8h em Brasília
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  atualizar:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python atualizar_dados.py
+      - run: python gerar_site.py
+      - name: Publicar se mudou
+        run: |
+          git config user.name "Rinópolis de Olho (robô)"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html docs
+          git diff --cached --quiet || (git commit -m "chore(dados): contas e emendas conferidas nas fontes oficiais" && git push)
