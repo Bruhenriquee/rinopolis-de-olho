@@ -3,7 +3,7 @@
 `fala` é o que a voz lê; `legenda` é o que aparece escrito (pode ser igual).
 """
 
-ENDERECO = 'bruhenriquee.github.io/rinopolis-de-olho'
+ENDERECO = 'rinopolisdeolho.com.br'
 
 CENAS = [
     ('pergunta', 'Viu um buraco na sua rua? Um poste apagado? Lixo acumulado?'),

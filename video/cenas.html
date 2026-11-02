@@ -85,7 +85,7 @@ h1 em{font-style:normal;color:#f6c21a}
 #wipe{position:absolute;left:-700px;right:-700px;top:-800px;bottom:-800px;transform:rotate(-24deg);pointer-events:none;z-index:40}
 #wipe i{position:absolute;left:0;right:0;top:0;height:1150px;transform:translateY(99999px)}
 #vinheta{position:absolute;inset:0;background:radial-gradient(ellipse 85% 70% at 50% 42%,transparent 55%,rgba(0,0,0,.6) 100%);pointer-events:none}
-.cw{color:rgba(236,233,223,.42)}.cw.dita{color:#ece9df}.cw.agora{color:#f6c21a}
+.cw{color:rgba(236,233,223,.6)}.cw.dita{color:#ece9df}.cw.agora{color:#f6c21a}
 .chip-passo{position:absolute;left:540px;top:196px;display:flex;align-items:center;gap:16px;background:#17150e;border:3px solid #f6c21a;border-radius:999px;padding:10px 30px 10px 10px;font-size:34px;font-weight:700;white-space:nowrap}
 .chip-passo b{width:58px;height:58px;border-radius:50%;background:#f6c21a;color:#17150e;display:grid;place-items:center;font-family:"Barlow Condensed";font-weight:800;font-size:38px}
 .toque{position:absolute;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;border:5px solid #ece9df;opacity:0;pointer-events:none}
@@ -380,7 +380,7 @@ function render(t){
   $('odU').style.transform = 'translateY('+(-un*.9)+'em)'; $('odT').style.transform = 'translateY('+(-dz*.9)+'em)';
   $('odTc').style.width = (.5*cl(vd-9))+'em';
   $('nDias').style.color = feito ? '#43b27e' : nd>30 ? '#ef5a3c' : '#f6c21a';
-  $('txtDias').textContent = feito ? 'dias até o conserto' : 'dias esperando';
+  $('txtDias').textContent = (Math.floor(vd) === 1 ? 'dia' : 'dias') + (feito ? ' até o conserto' : ' esperando');
   const giro = 180*eio((t-tCons+.3)/.5), virou = giro > 90;
   $('pinoDias').className = 'pino grande ' + (virou ? 'feito' : nd>30 ? 'velho' : '');
   const kp = eb((t-cd.inicio-.05)/.7);
@@ -421,6 +421,28 @@ function render(t){
   sty('cap',{opacity:fr ? 1 : 0, transform:'translateY('+(20*(1-kc))+'px)'});
   $('progI').style.width = (100*t/DUR)+'%';
 }
+/* momentos dos efeitos sonoros, tirados das mesmas contas da animação (lidos por gerar_audio.py) */
+function eventos(){
+  const ev = [], add = (t, tipo, vol=1) => ev.push({t:+t.toFixed(3), tipo, vol});
+  ['buraco','poste','lixo'].forEach(w => add(kw('pergunta',w)-.12, 'pop'));
+  const cm = cena('mapa'); PINOS.forEach((p,i) => add(cm.inicio+.15+i*.07+.2, 'tick', .45));
+  const tl = kw('mapa','mapa')-.15; add(tl+.25, 'pop', .8); add(tl+.8, 'ding', .5);
+  const ck = cena('marcar'); add(ck.inicio+.1, 'whoosh', .7);
+  const tArr = kw('marcar','arrasta'), tToca = kw('marcar','toca'), tEsc = kw('marcar','escolhe'), tFoto = kw('foto','foto');
+  add(tArr+1.2, 'pop', .5); [tToca, tEsc, tFoto].forEach(x => add(x, 'clique'));
+  add(kw('foto','nome')-.1, 'pop', .8);
+  const cd = cena('dias'), tVir = kw('dias','confirmam'), tDias = kw('dias','dias'), tCons = kw('dias','conserto');
+  add(cd.inicio+.35, 'pop'); add(tVir-.2, 'pop', .6);
+  let ant = 1; for (let x = tDias-.3; x < tCons; x += 1/120) { const vd = Math.floor(Math.max(1, 1+46*eio((x-tDias+.3)/(tCons-tDias+.2)))); if (vd !== ant) { add(x, 'tick', .35); ant = vd; } }
+  add(tCons-.05, 'whoosh', .6); add(tCons+.22, 'carimbo');
+  ['quem','contas','pedido'].forEach(w => add(kw('site',w)-.3, 'whoosh', .45));
+  ['partido','cadastro','cidade'].forEach(w => add(kw('neutro',w)-.3, 'tick', .7));
+  const cfim = cena('fim'); add(cfim.inicio+.35, 'pop'); add(cfim.inicio+.95, 'ding', .8);
+  add(kw('fim','link')-.4, 'whoosh', .5);
+  [0,1,2].forEach(i => add(kw('fim','marque')-.2+i*.12, 'pop', .5));
+  return ev;
+}
+window.eventos = eventos;
 window.render = render; window.DURACAO = DUR;
 render(0);
 </script>

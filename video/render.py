@@ -2,7 +2,7 @@
 
     python render.py
 
-Divide o vídeo em 4 partes que rodam ao mesmo tempo; uma parte já pronta não é refeita.
+O tamanho vem de tempos.js. Divide o vídeo em 4 partes que rodam ao mesmo tempo; uma parte já pronta não é refeita.
 Sai em rinopolis-de-olho.mp4.
 """
 import pathlib
@@ -16,7 +16,8 @@ PASTA = pathlib.Path(__file__).parent
 QUADROS = PASTA / '_quadros'
 FFMPEG = imageio_ffmpeg.get_ffmpeg_exe()
 FPS = 60
-DURACAO = 60.0
+from montar_voz import duracao
+DURACAO = duracao()   # o tamanho da narração (tempos.js)
 PARTES = 4
 
 

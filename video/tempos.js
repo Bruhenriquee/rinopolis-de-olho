@@ -11,124 +11,124 @@ window.TEMPOS = [
    {
     "texto": "Um poste apagado?",
     "inicio": 2.566,
-    "fim": 3.924
+    "fim": 3.923
    },
    {
     "texto": "Lixo acumulado?",
-    "inicio": 4.304,
-    "fim": 5.514
+    "inicio": 4.303,
+    "fim": 5.513
    }
   ],
-  "fim": 7.106
+  "fim": 6.443
  },
  {
   "nome": "mapa",
-  "inicio": 7.106,
+  "inicio": 6.443,
   "frases": [
    {
     "texto": "Agora Rinópolis tem um mapa feito pelos próprios moradores.",
-    "inicio": 8.317,
-    "fim": 11.73
+    "inicio": 6.993,
+    "fim": 10.405
    }
   ],
-  "fim": 13.241
+  "fim": 11.255
  },
  {
   "nome": "marcar",
-  "inicio": 13.241,
+  "inicio": 11.255,
   "frases": [
    {
     "texto": "Você arrasta o mapa até o lugar, toca em Marcar aqui, e escolhe o problema.",
-    "inicio": 14.453,
-    "fim": 18.389
+    "inicio": 11.806,
+    "fim": 15.742
    }
   ],
-  "fim": 19.901
+  "fim": 16.592
  },
  {
   "nome": "foto",
-  "inicio": 19.901,
+  "inicio": 16.592,
   "frases": [
    {
     "texto": "Se quiser, coloca uma foto e uma frase.",
-    "inicio": 21.112,
-    "fim": 23.4
+    "inicio": 17.142,
+    "fim": 19.429
    },
    {
     "texto": "O seu nome não aparece.",
-    "inicio": 23.7,
-    "fim": 25.333
+    "inicio": 19.729,
+    "fim": 21.363
    }
   ],
-  "fim": 26.845
+  "fim": 22.213
  },
  {
   "nome": "dias",
-  "inicio": 26.845,
+  "inicio": 22.213,
   "frases": [
    {
     "texto": "Os vizinhos confirmam que também viram.",
-    "inicio": 28.056,
-    "fim": 30.324
+    "inicio": 22.763,
+    "fim": 25.031
    },
    {
     "texto": "E cada placa conta os dias de espera, até o conserto.",
-    "inicio": 30.624,
-    "fim": 33.715
+    "inicio": 25.331,
+    "fim": 28.422
    }
   ],
-  "fim": 35.227
+  "fim": 29.272
  },
  {
   "nome": "site",
-  "inicio": 35.227,
+  "inicio": 29.272,
   "frases": [
    {
     "texto": "No site você também vê quem decide na cidade, as contas da prefeitura, e um pedido pronto para cobrar.",
-    "inicio": 36.438,
-    "fim": 42.349
+    "inicio": 29.822,
+    "fim": 35.732
    }
   ],
-  "fim": 43.86
+  "fim": 36.582
  },
  {
   "nome": "neutro",
-  "inicio": 43.86,
+  "inicio": 36.582,
   "frases": [
    {
     "texto": "Sem partido.",
-    "inicio": 45.072,
-    "fim": 46.049
+    "inicio": 37.132,
+    "fim": 38.108
    },
    {
     "texto": "Sem cadastro.",
-    "inicio": 46.349,
-    "fim": 47.373
+    "inicio": 38.408,
+    "fim": 39.433
    },
    {
     "texto": "Só a cidade, de olho.",
-    "inicio": 47.673,
-    "fim": 49.124
+    "inicio": 39.733,
+    "fim": 41.184
    }
   ],
-  "fim": 50.636
+  "fim": 42.034
  },
  {
   "nome": "fim",
-  "inicio": 50.636,
+  "inicio": 42.034,
   "frases": [
    {
     "texto": "Rinópolis de Olho.",
-    "inicio": 51.847,
-    "fim": 53.069
+    "inicio": 42.584,
+    "fim": 43.805
    },
    {
     "texto": "Abra o link, marque o que você vê, e instale no seu celular.",
-    "inicio": 53.369,
-    "fim": 56.5
+    "inicio": 44.105,
+    "fim": 47.236
    }
   ],
-  "fim": 60.0
+  "fim": 50.74
  }
 ];
-window.ENDERECO = "bruhenriquee.github.io/rinopolis-de-olho";
+window.ENDERECO = "rinopolisdeolho.com.br";

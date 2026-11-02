@@ -158,6 +158,7 @@ itens = [
     'Os números das contas vêm de <b>fontes oficiais</b>.',
     '<b>Não apoiamos nem atacamos</b> nenhum político.',
 ]
+tipos6 = ''.join(f'<div class="tp">{pino(k, "", "", 84)}<span>{NOMES[k]}</span></div>' for k in ICONE)
 lista = ''.join(f'<li><span class="num">{i}</span><p>{t}</p></li>' for i, t in enumerate(passos, 1))
 cuidados = ''.join(f'<li><span class="ok"></span><p>{t}</p></li>' for t in itens)
 
@@ -168,9 +169,9 @@ const M = window.MAPA, g = document.getElementById('c').getContext('2d'), KX = M
 let minx=1e9,maxx=-1e9,miny=1e9,maxy=-1e9; const ruas=[];
 for (const [ni,k,f] of M.ruas) {{ const l=[]; for (let j=0;j<f.length;j+=2) {{ const x=f[j+1]*KX, y=-f[j]; l.push([x,y]);
   if (k===2) {{ minx=Math.min(minx,x);maxx=Math.max(maxx,x);miny=Math.min(miny,y);maxy=Math.max(maxy,y); }} }} ruas.push([k,l]); }}
-const cx=(minx+maxx)/2, cy=(miny+maxy)/2, esc=2600/(maxx-minx);
+const cx=(minx+maxx)/2, cy=(miny+maxy)/2, esc=4200/(maxx-minx);
 g.lineCap='round'; g.lineJoin='round';
-for (const [k,l] of ruas) {{ g.beginPath(); l.forEach(([x,y],i) => {{ const X={3 * L // 2}+(x-cx)*esc, Y=420+(y-cy)*esc; i?g.lineTo(X,Y):g.moveTo(X,Y); }});
+for (const [k,l] of ruas) {{ g.beginPath(); l.forEach(([x,y],i) => {{ const X={3 * L // 2}+(x-cx)*esc, Y=380+(y-cy)*esc; i?g.lineTo(X,Y):g.moveTo(X,Y); }});
   g.strokeStyle = k<=1 ? '#4a4e55' : '#33373d'; g.lineWidth = k<=1 ? 8 : 5; g.stroke(); }}
 </script>
 <div class="veu" style="background:linear-gradient(180deg,rgba(23,25,28,.35) 0%,rgba(23,25,28,.15) 25%,rgba(23,25,28,.9) 50%,#17191c 58%)"></div>
@@ -181,7 +182,8 @@ pagina('_painel', MAPA_LARGO
        + placa(1640, 'buraco', '', 'HOJE', 190)
        + placa(2700, 'buraco', 'feito', 'CONSERTADO', 190) + placa(2380, 'luz', 'feito', 'OK', 120)
        + painel(1, 'O mapa dos moradores de Rinópolis', 'Se ninguém marca,<br><em>ninguém conserta.</em>', 112,
-                '<p class="sub">Buraco, poste apagado, lixo, esgoto. Marque pelo celular e acompanhe os dias até o conserto.</p>')
+                '<p class="sub">Buraco, poste apagado, lixo, esgoto. Marque pelo celular e acompanhe os dias até o conserto.</p>'
+                f'<div class="tipos6">{tipos6}</div>')
        + painel(2, 'Como funciona', 'Marque em<br><em>3 passos.</em>', 112, f'<ol class="passos">{lista}</ol>')
        + painel(3, 'Como cuidamos', 'Sem partido.<br><em>Sem patrão.</em>', 112,
                 f'<ul class="cuid">{cuidados}</ul>'),
@@ -193,6 +195,8 @@ pagina('_painel', MAPA_LARGO
        '.poste{position:absolute;width:14px;background:linear-gradient(90deg,#8f949b,#5d6168);border-radius:3px}'
        '.dias{font-size:34px}'
        '.sub{font-size:34px}'
+       '.tipos6{display:grid;grid-template-columns:repeat(6,1fr);margin-top:44px}'
+       '.tp{display:flex;flex-direction:column;align-items:center;gap:4px}.tp span{font-size:20px;color:#b9b6ab;text-align:center;white-space:nowrap}'
        '.seq{display:flex;gap:14px}.seq i{width:22px;height:22px;transform:rotate(45deg);border:3px solid #f6c21a;border-radius:3px}.seq i.on{background:#f6c21a}'
        '.passos{list-style:none;padding:0;margin-top:32px;display:flex;flex-direction:column;gap:18px}'
        '.passos li{display:grid;grid-template-columns:72px 1fr;gap:26px;align-items:center}'
