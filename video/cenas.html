@@ -229,9 +229,12 @@ const eo = x => 1-Math.pow(1-cl(x),3);
 const eio = x => { x=cl(x); return x<.5 ? 4*x*x*x : 1-Math.pow(-2*x+2,3)/2; };
 const pr = (t,a,d=.45) => eo((t-a)/d);
 const cena = n => T.find(c => c.nome===n);
-/* momento em que a narração chega numa palavra (proporcional dentro da frase) */
+/* momento em que a narração chega numa palavra: o tempo exato dela, quando tempos.js tem as palavras
+   (voz reconhecida pelo Whisper); senão, proporcional dentro da frase */
 function kw(n, palavra){
-  for (const f of cena(n).frases) { const i = f.texto.toLowerCase().indexOf(palavra.toLowerCase()); if (i>=0) return f.inicio + (f.fim-f.inicio)*(i/f.texto.length); }
+  for (const f of cena(n).frases) { const i = f.texto.toLowerCase().indexOf(palavra.toLowerCase()); if (i<0) continue;
+    if (f.palavras) return f.palavras[Math.min(f.palavras.length-1, f.texto.slice(0,i).split(' ').filter(Boolean).length)][0];
+    return f.inicio + (f.fim-f.inicio)*(i/f.texto.length); }
   return cena(n).inicio;
 }
 const $ = id => document.getElementById(id);
@@ -415,7 +418,8 @@ function render(t){
   /* legenda: a frase que está sendo falada */
   let fr = null; for (const c of T) for (const f of c.frases) if (t >= f.inicio-.1 && t <= f.fim+.35) fr = f;
   if (fr) { const ps = fr.texto.split(' '), tot = fr.texto.length; let acc = 0;
-    $('capTxt').innerHTML = ps.map(w => { const a = fr.inicio + (fr.fim-fr.inicio)*acc/tot; acc += w.length+1; const b = fr.inicio + (fr.fim-fr.inicio)*acc/tot;
+    $('capTxt').innerHTML = ps.map((w,j) => { let a = fr.inicio + (fr.fim-fr.inicio)*acc/tot; acc += w.length+1; let b = fr.inicio + (fr.fim-fr.inicio)*acc/tot;
+      if (fr.palavras && fr.palavras[j]) [a, b] = fr.palavras[j];
       return '<span class="cw'+(t>=b ? ' dita' : t>=a ? ' agora' : '')+'">'+w.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</span>'; }).join(' '); }
   const kc = fr ? eo((t-fr.inicio+.1)/.25) : 0;
   sty('cap',{opacity:fr ? 1 : 0, transform:'translateY('+(20*(1-kc))+'px)'});

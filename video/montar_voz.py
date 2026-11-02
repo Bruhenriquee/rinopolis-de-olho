@@ -24,24 +24,33 @@ def frases():
 
 
 def aparar(som):
-    """Corta o silêncio das pontas."""
+    """Corta o silêncio das pontas. Devolve o som e quantas amostras saíram do começo."""
     vivo = np.nonzero(np.abs(som) > 0.01)[0]
-    return som[max(0, vivo[0] - 200):vivo[-1] + 800] if len(vivo) else som
+    if not len(vivo):
+        return som, 0
+    a = max(0, vivo[0] - 200)
+    return som[a:vivo[-1] + 800], a
 
 
-def montar(sons, taxa):
-    """sons: um áudio (numpy, mono) por frase, na ordem de frases(). Grava _audio/voz.wav e tempos.js."""
+def montar(sons, taxa, palavras=None):
+    """sons: um áudio (numpy, mono) por frase, na ordem de frases(). Grava _audio/voz.wav e tempos.js.
+    palavras (opcional): para cada frase, [(início, fim), ...] de cada palavra em segundos dentro do áudio
+    dela; vai para tempos.js e a legenda e as animações usam o tempo exato de cada palavra."""
     blocos, k = [], 0
     for nome, lista in frases():
         partes = []
         for f in lista:
-            partes.append((f, aparar(sons[k]), 0.38 if f[-1] in '?:' else 0.30)); k += 1
+            som, corte = aparar(sons[k])
+            pal = [(a - corte / taxa, b - corte / taxa) for a, b in palavras[k]] if palavras else None
+            partes.append((f, som, 0.38 if f[-1] in '?:' else 0.30, pal)); k += 1
         blocos.append((nome, partes))
     pedacos, tempos, t = [np.zeros(int(INICIO * taxa), np.float32)], [], INICIO
     for i, (nome, partes) in enumerate(blocos):
         cena = {'nome': nome, 'inicio': round(t - (INICIO if i == 0 else FOLGA * 0.5), 3), 'frases': []}
-        for f, som, pausa in partes:
+        for f, som, pausa, pal in partes:
             cena['frases'].append({'texto': f, 'inicio': round(t, 3), 'fim': round(t + len(som) / taxa, 3)})
+            if pal:
+                cena['frases'][-1]['palavras'] = [[round(t + max(0, a), 3), round(t + max(0, b), 3)] for a, b in pal]
             pedacos += [som.astype(np.float32), np.zeros(int(pausa * taxa), np.float32)]
             t += len(som) / taxa + pausa
         if i < len(blocos) - 1:
