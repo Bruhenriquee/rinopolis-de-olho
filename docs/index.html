@@ -370,6 +370,10 @@ textarea{width:100%;min-height:240px;resize:vertical;background:var(--placa-escu
 .acoes.compartilha .zap{grid-column:1/-1}
 .carta .corpo{padding:12px;display:flex;flex-direction:column;gap:10px}
 .carta .acoes .btn{flex:1 1 0;padding:14px;font-size:17px}
+.item-conf{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--linha);padding-top:12px}
+.item-conf img{display:block;width:100%;max-height:300px;object-fit:cover;border-radius:8px}
+.item-conf .rot{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-2)}
+.item-conf p{margin:0}
 .resumo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 /* painel completo */
 .resumo4{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -839,13 +843,8 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
               <h3 style="margin-top:0">Denúncias dos moradores</h3>
               <div class="cartas" id="denunciasPainel"></div>
             </div>
-            <div id="frasesBox" hidden>
-              <h3 style="margin-top:0">Frases</h3>
-              <p class="miudo">Recuse se tiver nome de pessoa, telefone, ofensa, acusação ou propaganda.</p>
-              <div class="cartas" id="frasesPainel"></div>
-            </div>
-            <h3 style="margin-top:0">Fotos</h3>
-            <p class="miudo">Recuse se tiver rosto de pessoa, placa de carro, ofensa ou propaganda.</p>
+            <h3 style="margin-top:0">Fotos e frases</h3>
+            <p class="miudo">Recuse foto com rosto de pessoa ou placa de carro, e frase com nome de pessoa, telefone ou acusação. Ofensa e propaganda, nas duas.</p>
             <div class="cartas" id="pendentes"></div>
             <h3>Sem notícia há mais de 90 dias</h3>
             <div id="semNoticia"></div>
@@ -2542,20 +2541,7 @@ async function carregarFrases(){
   try { frasesCache = (await Frases.pendentes()).filter(f => Loja.recs.has(f.reclamacao)); } catch(e) { console.error(e); return; }
   desenharFrases();
 }
-function desenharFrases(){
-  document.getElementById('frasesBox').hidden = !frasesCache.length;
-  atualizarContagemConferir();
-  document.getElementById('frasesPainel').innerHTML = frasesCache.map((f,i) => { const r = Loja.recs.get(f.reclamacao);
-    return '<div class="carta"><div class="corpo"><span><b>'+esc(r ? TIPOS[r.tipo].nome : 'Placa')+'</b> · '+esc(r ? r.rua||'' : '')+'</span><p>"'+esc(f.texto)+'"</p>'+
-      '<div class="acoes"><button class="btn zap" type="button" data-frase="'+i+'" data-v="1">Aprovar</button><button class="btn perigo" type="button" data-frase="'+i+'" data-v="0">Recusar</button></div></div></div>'; }).join('');
-}
-document.getElementById('frasesPainel').addEventListener('click', async e => {
-  const b = e.target.closest('[data-frase]'); if (!b) return;
-  const item = frasesCache[+b.dataset.frase]; if (!item) return;
-  b.disabled = true;
-  try { await Frases.decidir(item, b.dataset.v==='1'); frasesCache = frasesCache.filter(x => x!==item); desenharFrases(); avisar(b.dataset.v==='1' ? 'Frase publicada' : 'Frase recusada e apagada'); }
-  catch(err) { console.error(err); b.disabled = false; avisar('Não deu pra salvar. Rode o arquivo supabase-frases.sql no Supabase.'); }
-});
+function desenharFrases(){ desenharConferir(); }
 async function carregarDenuncias(){
   if (!Denuncias.pode()) return;
   try { denunciasCache = await Denuncias.ler(); } catch(e) { console.error(e); return; }
@@ -2625,21 +2611,38 @@ async function carregarFotosPainel(silencioso){
   try { pendentesCache = await Fotos.pendentes(); } catch(e) { console.error(e); box.innerHTML = '<p class="vazio">Não deu pra carregar as fotos agora.</p>'; return; }
   desenharPendentes();
 }
-function desenharPendentes(){
+function desenharPendentes(){ desenharConferir(); }
+/* fotos e frase da mesma placa num cartão só, cada uma com seu botão; com mais de uma, "Aprovar tudo" */
+function desenharConferir(){
   const box = document.getElementById('pendentes');
   atualizarContagemConferir();
-  if (!pendentesCache.length) { box.innerHTML = '<p class="vazio">Nenhuma foto esperando. Tudo em dia.</p>'; return; }
-  box.innerHTML = pendentesCache.map((p,i) => { const r = Loja.recs.get(p.reclamacao);
-    const ok = typeof p.foto==='string' && p.foto.startsWith('data:image/jpeg;base64,');
-    return '<div class="carta">'+(ok?'<img src="'+p.foto+'" alt="Foto enviada">':'')+'<div class="corpo"><span><b>'+(p.tipo==='depois'?'Foto do conserto':'Foto do problema')+'</b> · '+esc(r ? TIPOS[r.tipo].nome+' na '+r.rua : 'placa apagada')+'</span>'+
-      '<div class="acoes"><button class="btn zap" type="button" data-decide="'+i+'" data-v="1">Aprovar</button><button class="btn perigo" type="button" data-decide="'+i+'" data-v="0">Recusar</button></div></div></div>'; }).join('');
+  const grupos = new Map(), g = id => { if (!grupos.has(id)) grupos.set(id, {fotos:[], frase:-1}); return grupos.get(id); };
+  pendentesCache.forEach((p,i) => g(p.reclamacao).fotos.push(i));
+  frasesCache.forEach((f,i) => g(f.reclamacao).frase = i);
+  if (!grupos.size) { box.innerHTML = '<p class="vazio">Nenhuma foto ou frase esperando. Tudo em dia.</p>'; return; }
+  const botoes = (dado, i, nome) => '<div class="acoes"><button class="btn zap" type="button" '+dado+'="'+i+'" data-v="1">Aprovar '+nome+'</button><button class="btn perigo" type="button" '+dado+'="'+i+'" data-v="0">Recusar '+nome+'</button></div>';
+  box.innerHTML = [...grupos].map(([id, x]) => { const r = Loja.recs.get(id), partes = [];
+    x.fotos.forEach(i => { const p = pendentesCache[i], ok = typeof p.foto==='string' && p.foto.startsWith('data:image/jpeg;base64,');
+      partes.push('<div class="item-conf"><span class="rot">'+(p.tipo==='depois' ? 'Foto do conserto' : 'Foto do problema')+'</span>'+(ok ? '<img src="'+p.foto+'" alt="Foto enviada">' : '')+botoes('data-decide', i, 'foto')+'</div>'); });
+    if (x.frase>=0) partes.push('<div class="item-conf"><span class="rot">Frase</span><p>"'+esc(frasesCache[x.frase].texto)+'"</p>'+botoes('data-frase', x.frase, 'frase')+'</div>');
+    return '<div class="carta"><div class="corpo"><span><b>'+esc(r ? TIPOS[r.tipo].nome : 'Placa apagada')+'</b>'+(r ? ' · '+esc(r.rua||'') : '')+'</span>'+partes.join('')+
+      (partes.length>1 ? '<button class="btn-leve" type="button" data-tudo="'+esc(id)+'">Aprovar tudo desta placa</button>' : '')+'</div></div>'; }).join('');
 }
+async function decidirFoto(item, aprovar){ await Fotos.decidir(item, aprovar); pendentesCache = pendentesCache.filter(x => x!==item); }
+async function decidirFrase(item, aprovar){ await Frases.decidir(item, aprovar); frasesCache = frasesCache.filter(x => x!==item); }
 document.getElementById('pendentes').addEventListener('click', async e => {
-  const b = e.target.closest('[data-decide]'); if (!b) return;
-  const item = pendentesCache[+b.dataset.decide]; if (!item) return;
+  const b = e.target.closest('[data-decide],[data-frase],[data-tudo]'); if (!b) return;
+  const sim = b.dataset.v==='1';
   b.disabled = true;
-  try { await Fotos.decidir(item, b.dataset.v==='1'); pendentesCache = pendentesCache.filter(x => x!==item); desenharPendentes(); avisar(b.dataset.v==='1' ? 'Foto publicada' : 'Foto recusada e apagada'); }
-  catch(err) { console.error(err); b.disabled=false; avisar('Não deu pra salvar. Tente de novo.'); }
+  try {
+    if (b.dataset.tudo) {
+      for (const item of pendentesCache.filter(x => x.reclamacao===b.dataset.tudo)) await decidirFoto(item, true);
+      for (const item of frasesCache.filter(x => x.reclamacao===b.dataset.tudo)) await decidirFrase(item, true);
+      avisar('Tudo publicado');
+    } else if (b.dataset.frase!==undefined) { await decidirFrase(frasesCache[+b.dataset.frase], sim); avisar(sim ? 'Frase publicada' : 'Frase recusada e apagada'); }
+    else { await decidirFoto(pendentesCache[+b.dataset.decide], sim); avisar(sim ? 'Foto publicada' : 'Foto recusada e apagada'); }
+    desenharConferir();
+  } catch(err) { console.error(err); b.disabled = false; desenharConferir(); avisar('Não deu pra salvar. Tente de novo.'); }
 });
 
 /* todas as placas */
