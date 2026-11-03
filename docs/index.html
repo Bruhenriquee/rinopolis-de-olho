@@ -897,7 +897,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
       <footer class="rodape">
         <div class="rodape-selo"><svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><use href="#logo"/></svg><span><b>Sem partido. Sem patrão.</b><small>Projeto independente de moradores</small></span></div>
         <p>O Rinópolis de Olho não tem ligação com a prefeitura, a Câmara, partidos ou candidatos, e não apoia nem ataca ninguém. Mostramos o que os moradores marcam e o que as fontes oficiais dizem, com o link de cada uma.</p>
-        <p class="miudo">Achou um erro? Fale com quem cuida do mapa que a gente corrige. · Ruas © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button> · <button class="link" type="button" data-termos>Termos de uso</button><span data-instalar hidden> · <button class="link" type="button">Instalar no celular</button></span></p>
+        <p class="miudo">Achou um erro? Fale com quem cuida do mapa que a gente corrige. · Ruas © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button> · <button class="link" type="button" data-termos>Termos de uso</button> · <button class="link" type="button" data-equipe>Equipe</button><span data-instalar hidden> · <button class="link" type="button">Instalar no celular</button></span></p>
       </footer>
     </div>
   </aside>
@@ -2865,6 +2865,8 @@ const fundoTermos = document.getElementById('fundoTermos');
 document.addEventListener('click', e => { if (e.target.closest('[data-termos]')) { e.preventDefault(); fundoTermos.hidden = false; } });
 fundoTermos.addEventListener('click', e => { if (e.target===fundoTermos || e.target.closest('[data-fecha]')) fundoTermos.hidden = true; });
 document.addEventListener('click', e => { if (e.target.closest('[data-privacidade]')) { e.preventDefault(); fundoPriv.hidden = false; } });
+/* entrada discreta da equipe, no rodapé: abre o login do painel (moradores não precisam) */
+document.addEventListener('click', e => { if (e.target.closest('[data-equipe]')) { e.preventDefault(); if (location.hash==='#painel') irAba('painel'); else location.hash = '#painel'; } });
 fundoPriv.addEventListener('click', e => { if (e.target===fundoPriv || e.target.closest('[data-fecha]')) fundoPriv.hidden = true; });
 
 /* ---------- Utilidades ---------- */
