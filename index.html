@@ -972,6 +972,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p><b>Ao marcar um problema:</b> tipo do problema, localização no mapa, rua e ponto de referência, data e hora e, se você quiser, uma descrição curta e uma foto.</p>
         <p><b>Ao confirmar um problema:</b> o registro de que um aparelho confirmou ("eu também vi" ou "já consertaram") e a data.</p>
         <p><b>Ao denunciar uma placa:</b> o motivo escolhido, a frase que você escrever (se escrever) e a data. Só a equipe vê as denúncias, e elas são apagadas quando a equipe decide manter ou apagar a placa. Se 3 pessoas apontarem a frase de uma placa como ofensiva, ela sai do ar na hora até a equipe conferir.</p>
+        <p><b>Ao pedir aviso no celular:</b> o endereço de aviso que o seu navegador cria e as placas que você acompanha. Ele não tem nome, telefone nem e-mail, e serve só para avisar quando uma dessas placas for consertada ou receber resposta da prefeitura. O aviso passa pelo serviço de notificações do próprio navegador (Google, Apple, Mozilla ou Microsoft). Para parar, desligue as notificações do site nas configurações do navegador ou deixe de acompanhar a placa.</p>
         <p><b>Código do aparelho:</b> um código aleatório gerado no seu navegador. O banco de dados guarda apenas uma versão cifrada (hash) desse código, que não permite identificar a pessoa. Ele serve para limitar cada confirmação a uma por aparelho, permitir que você acompanhe o que marcou e evitar abusos.</p>
         <p><b>Não coletamos</b> nome, CPF, telefone, e-mail, endereço residencial nem localização do aparelho em segundo plano. A localização só é usada quando você toca em "Estou aqui", e apenas para posicionar a marcação.</p>
         <p><b>Equipe:</b> as pessoas que moderam o mapa entram com e-mail e senha. Suas ações (aprovar ou recusar fotos, responder, apagar, bloquear) ficam registradas com e-mail, data e hora.</p>
@@ -989,7 +990,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p>Não vendemos nem cedemos dados a terceiros. O site depende dos serviços abaixo, alguns com servidores fora do Brasil (LGPD, art. 33):</p>
         <ul>
           <li><b>Hospedagem do site:</b> um serviço de hospedagem de páginas, com servidores fora do Brasil. Guarda só as páginas e o mapa das ruas; registra o endereço IP de quem acessa, como qualquer hospedagem.</li>
-          <li><b>Marcações, confirmações, fotos, equipe e histórico: Supabase</b> (Supabase, Inc.), banco de dados PostgreSQL. Ali ficam as marcações e confirmações (com o código cifrado do aparelho), as fotos e frases em conferência e as publicadas, as denúncias de placas, a lista da equipe, os aparelhos bloqueados e o registro das ações da equipe.</li>
+          <li><b>Marcações, confirmações, fotos, equipe e histórico: Supabase</b> (Supabase, Inc.), banco de dados PostgreSQL. Ali ficam as marcações e confirmações (com o código cifrado do aparelho), as fotos e frases em conferência e as publicadas, as denúncias de placas, a lista da equipe, os aparelhos bloqueados, os pedidos de aviso no celular e o registro das ações da equipe.</li>
           <li><b>Login da equipe: Supabase Auth</b>, o mesmo serviço. Guarda o e-mail e a senha cifrada de quem modera. Moradores não têm login.</li>
           <li><b>Letras do site: Google Fonts</b> (Google LLC). <b>Programa do mapa: cdnjs</b> (Cloudflare, Inc.). <b>Ligação com o banco: jsDelivr.</b> Esses três só entregam arquivos ao abrir a página e recebem o endereço IP; não recebem marcações nem fotos.</li>
           <li><b>Mapa das ruas: OpenStreetMap.</b> Os dados das ruas já vêm dentro do site; usar o mapa não envia nada ao OpenStreetMap.</li>
@@ -1377,6 +1378,7 @@ const Nuvem = {
     /* site aberto com #painel no fim: agora que o banco respondeu, mostra o login (ou o painel, se já entrou) */
     if (location.hash==='#painel') irAba('painel');
     await this.carregar();
+    Avisos.conferir().catch(e => console.error(e));
     setInterval(() => this.carregar().catch(e => console.error(e)), 60000);
     document.addEventListener('visibilitychange', () => { if (!document.hidden) this.carregar().catch(e => console.error(e)); });
   },
@@ -1699,6 +1701,8 @@ function seguir(id, liga){
   if (liga) { const r = Loja.recs.get(id); t[id] = {feito: r ? situacao(r).feito : false, resp: (r && r.resposta && r.resposta.status) || ''}; }
   else delete t[id];
   guardar('rdo-sigo', t);
+  Avisos.placas(liga ? [id] : [], liga ? null : id);
+  if (liga) oferecerAviso();
 }
 /* ao abrir o site, avisa o que mudou nas placas acompanhadas */
 let novidadeId = null;
@@ -1868,6 +1872,50 @@ folhaVer.addEventListener('click', async e => {
 });
 
 /* ---------- Pergunta pra quem marcou ---------- */
+/* ---------- Aviso no celular: quando consertarem ou a prefeitura responder uma placa que a pessoa acompanha ----------
+   Só com o banco público e a chave dos avisos (CFG.vapid). No iPhone, só com o site instalado na tela inicial. */
+const chaveVapid = b => { const s = atob((b+'='.repeat((4-b.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/')); return Uint8Array.from(s, c => c.charCodeAt(0)); };
+const Avisos = {
+  pode(){ return Loja.modo==='nuvem' && !!CFG.vapid && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window; },
+  ligado(){ return this.pode() && Notification.permission==='granted'; },
+  async inscricao(){
+    const reg = await navigator.serviceWorker.ready;
+    return (await reg.pushManager.getSubscription()) || reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:chaveVapid(CFG.vapid)});
+  },
+  /* passa a avisar destas placas; ou, com "tira", para de avisar dela */
+  async placas(ids, tira){
+    if (!this.ligado() || (!ids.length && !tira)) return;
+    try {
+      const s = (await this.inscricao()).toJSON();
+      const {error} = tira ? await Nuvem.sb.rpc('nao_quero_aviso', {p_endpoint:s.endpoint, p_id:tira})
+        : await Nuvem.sb.rpc('quero_aviso', {p_endpoint:s.endpoint, p_p256dh:s.keys.p256dh, p_auth:s.keys.auth, p_ids:ids, p_segredo:Nuvem.segredo});
+      if (error) throw error;
+      guardar('rdo-aviso-end', s.endpoint);
+    } catch(e) { console.error(e); }
+  },
+  async ligar(){
+    if (await Notification.requestPermission() !== 'granted') return false;
+    await this.placas(Object.keys(seguidas()));
+    return true;
+  },
+  /* ao abrir o site: se o celular trocou o endereço dos avisos, cadastra as placas de novo */
+  async conferir(){
+    if (!this.ligado()) return;
+    const s = await this.inscricao();
+    if (guardado('rdo-aviso-end', '') !== s.endpoint) await this.placas(Object.keys(seguidas()));
+  }
+};
+/* pergunta uma vez (e de novo só depois de 30 dias), logo depois que a pessoa passa a acompanhar uma placa */
+function oferecerAviso(){
+  if (!Avisos.pode() || Notification.permission!=='default') return;
+  if (Date.now() - guardado('rdo-aviso-perguntei', 0) < 30*DIA) return;
+  guardar('rdo-aviso-perguntei', Date.now());
+  perguntaId = null; novidadeId = null;
+  perguntaCard.innerHTML = '<b>Quer saber quando consertarem?</b><p>A gente avisa no seu celular quando consertarem ou quando a prefeitura responder. Só isso, nada de propaganda.</p>'+
+    '<div class="acoes"><button class="btn" type="button" data-a="sim">Quero o aviso</button><button class="btn-leve" type="button" data-a="nao">Agora não</button></div>';
+  perguntaCard.hidden = false;
+}
+
 const perguntaCard = document.getElementById('perguntaCard');
 let perguntaId = null;
 function perguntarAutor(){
@@ -1884,6 +1932,10 @@ function perguntarAutor(){
   perguntaCard.hidden = false;
 }
 perguntaCard.addEventListener('click', e => {
+  const av = e.target.closest('[data-a]');
+  if (av) { perguntaCard.hidden = true;
+    if (av.dataset.a==='sim') Avisos.ligar().then(ok => avisar(ok ? 'Pronto. O aviso chega no seu celular.' : 'Sem permissão, o aviso não chega. Dá pra liberar depois nas configurações do navegador.', 4000));
+    return; }
   const n = e.target.closest('[data-n]');
   if (n) { perguntaCard.hidden = true; if (n.dataset.n==='ver' && novidadeId) irPlaca(novidadeId); return; }
   const b = e.target.closest('[data-p]'); if (!b || !perguntaId) return;

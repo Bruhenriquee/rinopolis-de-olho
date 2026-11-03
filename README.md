@@ -17,8 +17,9 @@ No ar em **https://bruhenriquee.github.io/rinopolis-de-olho/**
 
 - `index.html`: o site.
 - `ruas.js`: as ruas da cidade, tiradas do OpenStreetMap.
-- `config.js`: endereço e chave pública do Supabase, e-mail de contato e endereço do site.
-- `supabase.sql`, `supabase-painel.sql`, `supabase-denuncias.sql` e `supabase-frases.sql`: o banco. Rodar uma vez, nessa ordem, no SQL Editor do Supabase.
+- `config.js`: endereço e chave pública do Supabase, e-mail de contato, endereço do site e chave pública dos avisos (`vapid`).
+- `supabase.sql`, `supabase-painel.sql`, `supabase-denuncias.sql`, `supabase-frases.sql` e `supabase-avisos.sql`: o banco. Rodar uma vez, nessa ordem, no SQL Editor do Supabase.
+- `supabase/functions/avisar`: manda o aviso no celular de quem acompanha uma placa (veja **Avisos no celular**).
 - `gerar_site.py`: monta a pasta `docs/`, que é o que o GitHub Pages publica.
 - `gerar_previa.py`: gera `previa.png`, a imagem que aparece quando o link é mandado no WhatsApp.
 - `manifest.webmanifest` e `sw.js`: deixam instalar o site na tela do celular, como um aplicativo.
@@ -35,6 +36,20 @@ git add -A && git commit -m "o que mudou" && git push
 
 1. No Painel, aba **Equipe**, adicione o e-mail da pessoa (só o dono faz isso).
 2. No Supabase, em **Authentication → Users → Add user**, crie o login com o mesmo e-mail e marque **Auto Confirm User**.
+
+## Avisos no celular
+
+Quem acompanha uma placa pode receber aviso no celular quando ela for consertada ou a prefeitura responder. Só esses dois avisos.
+No iPhone, só funciona com o site instalado na tela inicial.
+
+Para ligar (uma vez só):
+
+1. No Supabase, **SQL Editor**: cole `supabase-avisos.sql` e clique em Run.
+2. **Edge Functions → Deploy a new function → Via Editor**: nome `avisar`, cole `supabase/functions/avisar/index.ts` e publique.
+   Depois, nos detalhes da função, desligue **Verify JWT** (quem chama é o próprio banco; a função relê a placa e não confia no pedido).
+3. **Edge Functions → Secrets**: crie `VAPID_PUBLICA` e `VAPID_PRIVADA` com as duas chaves dos avisos.
+   A pública também fica em `config.js`. A privada **não vai para o GitHub**: guarde num lugar seguro, fora desta pasta.
+   Se perder a privada, gere um par novo; quem já tinha pedido aviso precisa pedir de novo.
 
 ## Fontes
 
