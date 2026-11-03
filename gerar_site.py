@@ -70,7 +70,7 @@ DOCS.mkdir(exist_ok=True)
 (DOCS / 'index.html').write_text(cabeca + corpo + '\n</body>\n</html>\n', encoding='utf-8')
 # manifest, sw.js e ícones: o que deixa instalar o site no celular (ícones: python gerar_icones.py)
 for arquivo in ('ruas.js', 'config.js', 'previa.png', 'manifest.webmanifest', 'sw.js',
-                'icone-192.png', 'icone-512.png', 'icone-maskable.png', 'apple-touch-icon.png'):
+                'icone-192.png', 'icone-512.png', 'icone-maskable.png', 'apple-touch-icon.png', 'icone-aviso.png'):
     shutil.copy2(PASTA / arquivo, DOCS / arquivo)
 (DOCS / '.nojekyll').write_text('', encoding='utf-8')
 # robots.txt e sitemap.xml: só valem na raiz de um domínio próprio, mas não atrapalham no GitHub Pages

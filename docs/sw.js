@@ -1,7 +1,7 @@
 /* Rinópolis de Olho: permite instalar o site no celular.
    Sempre busca a versão nova na internet; o que fica guardado só aparece quando está sem sinal.
    Não guarda nada do banco de dados (outro endereço), só os arquivos do próprio site. */
-const CACHE = 'rdo-v3';
+const CACHE = 'rdo-v4';
 const BASE = ['./', './ruas.js', './config.js', './icone-192.png'];
 
 self.addEventListener('install', e => {
@@ -24,7 +24,7 @@ self.addEventListener('fetch', e => {
 self.addEventListener('push', e => {
   let d = {}; try { d = e.data ? e.data.json() : {}; } catch (err) {}
   e.waitUntil(self.registration.showNotification(d.titulo || 'Rinópolis de Olho', {
-    body: d.texto || 'Tem novidade numa placa que você acompanha.', icon: './icone-192.png', badge: './icone-192.png',
+    body: d.texto || 'Tem novidade numa placa que você acompanha.', icon: './icone-192.png', badge: './icone-aviso.png',   /* badge: ícone pequeno da barra do Android, só branco sobre transparente */
     tag: d.tag, renotify: !!d.tag, data: {url: d.url || './'}   /* renotify: o aviso novo da mesma placa toca de novo, em vez de trocar o antigo em silêncio */
   }));
 });
