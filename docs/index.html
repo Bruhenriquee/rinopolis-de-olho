@@ -156,6 +156,7 @@ body{display:flex;flex-direction:column}
 .legenda i.c{background:var(--cinza-placa)}
 
 /* pergunta para quem marcou */
+.pergunta-card.por-cima{position:fixed;z-index:1100}
 .pergunta-card{position:absolute;z-index:620;right:12px;bottom:calc(22px + env(safe-area-inset-bottom,0px));width:330px;max-width:calc(100% - 24px);background:var(--asfalto-2);border:1px solid var(--linha);border-left:5px solid var(--placa);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:0 14px 34px rgba(0,0,0,.55)}
 .pergunta-card b{font-family:var(--f-placa);font-size:20px;text-transform:uppercase;line-height:1.05}
 
@@ -1759,7 +1760,7 @@ function novidades(){
   if (!achados.length) return false;
   achados.sort((x,y) => (y.titulo==='Consertaram!') - (x.titulo==='Consertaram!'));
   const a = achados[0]; novidadeId = a.id;
-  perguntaCard.innerHTML = '<b>'+esc(a.titulo)+'</b><p>'+esc(a.txt)+(achados.length>1 ? ' E mais '+(achados.length-1)+(achados.length===2?' novidade':' novidades')+' no filtro Acompanho.' : '')+'</p>'+
+  perguntaCard.classList.remove('por-cima'); perguntaCard.innerHTML = '<b>'+esc(a.titulo)+'</b><p>'+esc(a.txt)+(achados.length>1 ? ' E mais '+(achados.length-1)+(achados.length===2?' novidade':' novidades')+' no filtro Acompanho.' : '')+'</p>'+
     '<div class="acoes"><button class="btn" type="button" data-n="ver">Ver a placa</button><button class="btn-leve" type="button" data-n="fecha">Fechar</button></div>';
   perguntaCard.hidden = false;
   return true;
@@ -1947,9 +1948,9 @@ const Avisos = {
 /* pergunta uma vez (e de novo só depois de 30 dias), logo depois que a pessoa passa a acompanhar uma placa */
 function oferecerAviso(){
   if (!Avisos.pode() || Notification.permission!=='default') return;
-  if (Date.now() - guardado('rdo-aviso-perguntei', 0) < 30*DIA) return;
-  guardar('rdo-aviso-perguntei', Date.now());
+  if (Date.now() - guardado('rdo-aviso-respondeu', 0) < 30*DIA) return;
   perguntaId = null; novidadeId = null;
+  perguntaCard.classList.add('por-cima');
   perguntaCard.innerHTML = '<b>Quer saber quando consertarem?</b><p>A gente avisa no seu celular quando consertarem ou quando a prefeitura responder. Só isso, nada de propaganda.</p>'+
     '<div class="acoes"><button class="btn" type="button" data-a="sim">Quero o aviso</button><button class="btn-leve" type="button" data-a="nao">Agora não</button></div>';
   perguntaCard.hidden = false;
@@ -1966,13 +1967,13 @@ function perguntarAutor(){
   if (!alvo) return;
   perguntaId = alvo.id;
   const dias = situacao(alvo).dias;
-  perguntaCard.innerHTML = '<b>Lembra disso?</b><p>Você marcou <b style="font-family:inherit;font-size:inherit;text-transform:none">'+esc(TIPOS[alvo.tipo].nome.toLowerCase())+'</b> na '+esc(alvo.rua)+' há '+diasTxt(dias)+'. Já consertaram?</p>'+
+  perguntaCard.classList.remove('por-cima'); perguntaCard.innerHTML = '<b>Lembra disso?</b><p>Você marcou <b style="font-family:inherit;font-size:inherit;text-transform:none">'+esc(TIPOS[alvo.tipo].nome.toLowerCase())+'</b> na '+esc(alvo.rua)+' há '+diasTxt(dias)+'. Já consertaram?</p>'+
     '<div class="acoes"><button class="btn zap" type="button" data-p="sim">Já consertaram</button><button class="btn cinza" type="button" data-p="nao">Ainda não</button><button class="btn-leve" type="button" data-p="fecha">Depois</button></div>';
   perguntaCard.hidden = false;
 }
 perguntaCard.addEventListener('click', e => {
   const av = e.target.closest('[data-a]');
-  if (av) { perguntaCard.hidden = true;
+  if (av) { perguntaCard.hidden = true; perguntaCard.classList.remove('por-cima'); guardar('rdo-aviso-respondeu', Date.now());
     if (av.dataset.a==='sim') Avisos.ligar().then(ok => avisar(ok ? 'Pronto. O aviso chega no seu celular.' : 'Sem permissão, o aviso não chega. Dá pra liberar depois nas configurações do navegador.', 4000));
     return; }
   const n = e.target.closest('[data-n]');
