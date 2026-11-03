@@ -2,7 +2,7 @@
 -- Rode depois dos outros arquivos .sql, no SQL Editor do Supabase. Pode rodar de novo sem problema.
 -- O aviso sai pela função "avisar" (supabase/functions/avisar), que o próprio banco chama.
 
-create extension if not exists pg_net;
+create extension if not exists pg_net with schema extensions;
 
 -- quem pediu aviso de cada placa. "endpoint" é o endereço de aviso que o navegador cria; não identifica a pessoa.
 -- "avisado" é o último estado da placa que esse celular já recebeu ('feito' ou a resposta da prefeitura)
@@ -20,7 +20,7 @@ create table if not exists public.avisos (
 alter table public.avisos enable row level security;
 
 create or replace function public.estado_aviso(r public.reclamacoes) returns text
-language sql stable as $$
+language sql stable set search_path = public as $$
   select case when r.resolvido is not null then 'feito' else coalesce(r.resposta ->> 'status', '') end;
 $$;
 

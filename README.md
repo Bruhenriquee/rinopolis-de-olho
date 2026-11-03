@@ -18,7 +18,7 @@ No ar em **https://bruhenriquee.github.io/rinopolis-de-olho/**
 - `index.html`: o site.
 - `ruas.js`: as ruas da cidade, tiradas do OpenStreetMap.
 - `config.js`: endereço e chave pública do Supabase, e-mail de contato, endereço do site e chave pública dos avisos (`vapid`).
-- `supabase.sql`, `supabase-painel.sql`, `supabase-denuncias.sql`, `supabase-frases.sql` e `supabase-avisos.sql`: o banco. Rodar uma vez, nessa ordem, no SQL Editor do Supabase.
+- `supabase.sql`, `supabase-painel.sql`, `supabase-denuncias.sql`, `supabase-frases.sql`, `supabase-avisos.sql` e `supabase-seguranca.sql`: o banco. Rodar uma vez, nessa ordem, no SQL Editor do Supabase.
 - `supabase/functions/avisar`: manda o aviso no celular de quem acompanha uma placa (veja **Avisos no celular**).
 - `gerar_site.py`: monta a pasta `docs/`, que é o que o GitHub Pages publica.
 - `gerar_previa.py`: gera `previa.png`, a imagem que aparece quando o link é mandado no WhatsApp.
