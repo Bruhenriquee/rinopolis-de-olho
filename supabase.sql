@@ -82,12 +82,14 @@ create policy "quem cuida" on public.fotos_pendentes for all to authenticated us
 drop policy if exists "quem cuida" on public.fotos_publicas;
 create policy "quem cuida" on public.fotos_publicas for all to authenticated using (public.is_admin()) with check (public.is_admin());
 
--- quantas confirmações cada placa tem (sem mostrar quem confirmou)
-create or replace view public.contagem as
-  select reclamacao,
-         count(*) filter (where tipo = 've') as ve,
-         count(*) filter (where tipo = 'ok') as ok
+-- quantas confirmações cada placa tem (sem mostrar quem confirmou). A função conta; a visão só repassa
+create or replace function public.contagem_apoios() returns table (reclamacao uuid, ve bigint, ok bigint)
+language sql stable security definer set search_path = public as $$
+  select reclamacao, count(*) filter (where tipo = 've'), count(*) filter (where tipo = 'ok')
   from public.apoios group by reclamacao;
+$$;
+create or replace view public.contagem with (security_invoker = true) as select * from public.contagem_apoios();
+grant execute on function public.contagem_apoios to anon, authenticated;
 grant select on public.contagem to anon, authenticated;
 
 -- ---------- O que os moradores podem fazer (sempre por estas funções) ----------
