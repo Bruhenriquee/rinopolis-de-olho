@@ -1073,9 +1073,10 @@ const CHEFES = [
   {cargo:'Prefeita', nome:'Graziela Tomé', det:'Graziela de Lima Tomé Trevisan · NOVO (eleita em 2024)'},
   {cargo:'Vice-prefeito', nome:'Tonho Perbeline', det:'Antônio Sérgio Perbeline · Republicanos'}
 ];
+/* nome de urna, partido, votos em 2024 e, se tiver, um cargo com o último ano dele (some sozinho depois, pra não ficar errado) */
 const VEREADORES = [
   ['Patrícia','PODE',405],['Rafael T. Picolo','PSD',397],['Nenê','NOVO',384],
-  ['Magal','REPUBLICANOS',278],['Daniel','UNIÃO',255,'Presidente da Câmara (2025–2026)'],['Evandro Dias','PSD',228],
+  ['Magal','REPUBLICANOS',278],['Daniel','UNIÃO',255,'Presidente da Câmara (2025–2026)',2026],['Evandro Dias','PSD',228],
   ['Leninha da Saúde','PSD',214],['Fubá','NOVO',212],['Lucas Santiago','UNIÃO',208]
 ];
 const QUEM = [
@@ -2248,8 +2249,8 @@ document.getElementById('promessas').innerHTML = PROMESSAS.map(([area,l]) =>
 
 /* ---------- Quem decide ---------- */
 document.getElementById('chefes').innerHTML = CHEFES.map(c => '<div class="cartao"><div class="cargo">'+c.cargo+'</div><div class="nome">'+c.nome+'</div><div class="det">'+c.det+'</div></div>').join('');
-document.getElementById('vereadores').innerHTML = VEREADORES.map(([u,p,v,tag]) =>
-  '<div class="ver"><b>'+u+'</b><span>'+p+' · '+v+' votos</span>'+(tag?'<span class="tag">'+tag+'</span>':'')+'</div>').join('');
+document.getElementById('vereadores').innerHTML = VEREADORES.map(([u,p,v,tag,ate]) =>
+  '<div class="ver"><b>'+u+'</b><span>'+p+' · '+v+' votos</span>'+(tag && new Date().getFullYear()<=ate ?'<span class="tag">'+tag+'</span>':'')+'</div>').join('');
 document.getElementById('verbas').innerHTML = VERBAS.map(v =>
   '<div class="grana'+(v.largo?' largo':'')+'"><span class="valor">'+v.valor+'</span><span class="titulo">'+v.titulo+'</span><p class="txt">'+v.txt+'</p><p class="pergunta"><b>Pergunte:</b> '+v.pergunta+'</p>'+
   (v.copiar ? '<div class="acoes"><button class="btn" type="button" data-copia="'+esc(v.copiar)+'">Copiar pedido pro e-SIC</button><a class="btn cinza" href="https://www.rinopolis.sp.gov.br/esic/" target="_blank" rel="noopener">Abrir o e-SIC</a></div>' : '')+
