@@ -403,7 +403,15 @@ textarea{width:100%;min-height:240px;resize:vertical;background:var(--placa-escu
 #filtroPainel .chip{flex:none;white-space:nowrap;border:1px solid var(--linha);background:var(--asfalto-3)}
 #filtroPainel .chip[aria-pressed="true"]{background:var(--placa);border-color:var(--placa);color:var(--placa-escuro)}
 .btn-leve.perigo-leve{color:var(--alerta);border-color:rgba(239,90,60,.45)}
-.linha-hist{display:grid;grid-template-columns:110px minmax(0,1fr) auto;gap:10px;align-items:baseline;background:var(--asfalto-3);border-radius:6px;padding:8px 10px;font-size:13.5px}
+.hist-dia{margin:16px 0 2px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-2)}
+.hist-dia:first-child{margin-top:4px}
+.hist{display:flex;gap:10px;align-items:baseline;padding:7px 2px;border-bottom:1px solid var(--asfalto-3);font-size:13.5px}
+.hist .hora{flex:none;width:40px;color:var(--apagado);font-variant-numeric:tabular-nums}
+.hist .oque{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hist .det,.hist .quem{color:var(--apagado)}
+.hist .quem{flex:none;font-size:12px;max-width:30%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hist{cursor:pointer}.hist.aberta .oque{white-space:normal}
+.hist-mais{margin-top:12px}
 .semanas{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:6px;height:150px;align-items:end;background:var(--asfalto-3);border-radius:8px;padding:10px 10px 6px}
 .semana{display:flex;flex-direction:column;align-items:center;gap:4px;height:100%;min-width:0}
 .semana .colunas{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;gap:3px}
@@ -418,7 +426,7 @@ i.leg{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-ali
 .ntrilho i{display:block;height:100%;background:var(--tinta-2);border-radius:5px}
 .ntrilho i.leg-novo{background:var(--placa)}
 .nbarra b{text-align:right;font-variant-numeric:tabular-nums}
-@media (max-width:600px){.resumo4{gap:6px}.resumo4 div{padding:8px 4px;text-align:center}.resumo4 b{font-size:22px}.resumo4 span{display:block;font-size:10.5px;line-height:1.15}.subabas{overflow:visible;gap:0}.subabas button{flex:1 1 0;padding:10px 2px;font-size:14px;letter-spacing:.01em}.carta img{max-height:210px}.linha-placa .lp-info{flex-basis:100%}.linha-hist{grid-template-columns:minmax(0,1fr)}.nbarra{grid-template-columns:minmax(0,110px) minmax(0,1fr) 30px}}
+@media (max-width:600px){.resumo4{gap:6px}.resumo4 div{padding:8px 4px;text-align:center}.resumo4 b{font-size:22px}.resumo4 span{display:block;font-size:10.5px;line-height:1.15}.subabas{overflow:visible;gap:0}.subabas button{flex:1 1 0;padding:10px 2px;font-size:14px;letter-spacing:.01em}.carta img{max-height:210px}.linha-placa .lp-info{flex-basis:100%}.nbarra{grid-template-columns:minmax(0,110px) minmax(0,1fr) 30px}}
 .resumo div{background:var(--asfalto-3);border-radius:8px;padding:10px 12px}
 .resumo b{display:block;font-family:var(--f-placa);font-weight:800;font-size:30px;line-height:1}
 .resumo span{font-size:12.5px;color:var(--tinta-2)}
@@ -1514,7 +1522,7 @@ const Nuvem = {
   },
   async manter(id){ const {error} = await this.sb.rpc('manter_placa', {p_id:id}); if (error) throw error; await this.carregar(); },
   async bloqueados(){ const {data,error} = await this.sb.from('bloqueios').select('autor,motivo,criado').order('criado',{ascending:false}); if (error) throw error; return data||[]; },
-  async historico(){ const {data,error} = await this.sb.from('historico').select('quando,quem,acao,detalhe').order('quando',{ascending:false}).limit(150); if (error) throw error; return data||[]; },
+  async historico(){ const {data,error} = await this.sb.from('historico').select('quando,quem,acao,detalhe').order('quando',{ascending:false}).limit(400); if (error) throw error; return data||[]; },
   async entrar(email, senha){
     const {error} = await this.sb.auth.signInWithPassword({email, password:senha});
     if (error) { avisar('E-mail ou senha errados.'); return false; }
@@ -2756,14 +2764,45 @@ document.getElementById('bloqueados').addEventListener('click', async e => {
   carregarEquipe();
 });
 
-/* histórico */
+/* histórico: uma linha curta por ação, separado por dia; a mesma ação seguida, da mesma pessoa no mesmo dia, vira uma linha só */
+let histLinhas = [], histMostra = 40;
+const diaDe = t => new Date(t).toLocaleDateString('pt-BR');
+function agruparHist(h){
+  const out = [];
+  for (const x of h) { const a = out[out.length-1], dia = diaDe(x.quando);
+    if (a && a.acao===x.acao && a.quem===x.quem && a.dia===dia) a.n++;
+    else out.push(Object.assign({dia, n:1}, x)); }
+  return out;
+}
+function rotuloDia(t){
+  const d = new Date(t), hoje = new Date(); hoje.setHours(0,0,0,0);
+  const dias = Math.round((hoje - new Date(d.getFullYear(), d.getMonth(), d.getDate())) / DIA);
+  return dias===0 ? 'Hoje' : dias===1 ? 'Ontem' : d.toLocaleDateString('pt-BR',{weekday:'short', day:'2-digit', month:'2-digit'});
+}
+function desenharHistorico(){
+  const box = document.getElementById('historico');
+  if (!histLinhas.length) { box.innerHTML = '<p class="vazio">Nada anotado ainda.</p>'; return; }
+  const varios = new Set(histLinhas.map(x => x.quem)).size > 1;
+  let h = '', dia = '';
+  for (const x of histLinhas.slice(0, histMostra)) {
+    if (x.dia!==dia) { dia = x.dia; h += '<h4 class="hist-dia">'+rotuloDia(x.quando)+'</h4>'; }
+    const det = x.detalhe ? ' · <span class="det">'+esc(x.detalhe)+(x.n>1 ? ' e mais '+(x.n-1) : '')+'</span>' : (x.n>1 ? ' <span class="det">('+x.n+' vezes)</span>' : '');
+    h += '<div class="hist"><span class="hora">'+new Date(x.quando).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'</span>'+
+      '<span class="oque" title="'+esc(x.acao+(x.detalhe ? ' · '+x.detalhe : ''))+'"><b>'+esc(x.acao)+'</b>'+det+'</span>'+
+      (varios ? '<span class="quem">'+esc(String(x.quem).split('@')[0])+'</span>' : '')+'</div>';
+  }
+  if (histLinhas.length > histMostra) h += '<button type="button" class="btn-leve hist-mais" data-hist-mais>Mostrar mais antigos</button>';
+  box.innerHTML = h;
+}
+/* tocar numa linha mostra o texto inteiro */
+document.getElementById('historico').addEventListener('click', e => { if (e.target.closest('[data-hist-mais]')) { histMostra += 40; desenharHistorico(); return; }
+  const l = e.target.closest('.hist'); if (l) l.classList.toggle('aberta'); });
 async function carregarHistorico(){
   const box = document.getElementById('historico');
   box.innerHTML = '<p class="miudo">Carregando…</p>';
   try {
-    const h = await Nuvem.historico();
-    box.innerHTML = h.length ? '<div class="linhas">'+h.map(x => '<div class="linha-hist"><span class="miudo">'+dataHora(x.quando)+'</span><span><b>'+esc(x.acao)+'</b>'+(x.detalhe ? ' · '+esc(x.detalhe) : '')+'</span><span class="miudo">'+esc(x.quem)+'</span></div>').join('')+'</div>'
-      : '<p class="vazio">Nada anotado ainda.</p>';
+    histLinhas = agruparHist(await Nuvem.historico()); histMostra = 40;
+    desenharHistorico();
   } catch(e) { console.error(e); box.innerHTML = '<p class="vazio">Não deu pra carregar o histórico. Rode o arquivo supabase-painel.sql no Supabase.</p>'; }
 }
 
