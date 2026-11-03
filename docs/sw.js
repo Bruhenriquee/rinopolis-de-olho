@@ -1,7 +1,7 @@
 /* Rinópolis de Olho: permite instalar o site no celular.
    Sempre busca a versão nova na internet; o que fica guardado só aparece quando está sem sinal.
    Não guarda nada do banco de dados (outro endereço), só os arquivos do próprio site. */
-const CACHE = 'rdo-v4';
+const CACHE = 'rdo-v5';
 const BASE = ['./', './ruas.js', './config.js', './icone-192.png'];
 
 self.addEventListener('install', e => {
