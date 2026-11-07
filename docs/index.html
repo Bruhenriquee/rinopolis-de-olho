@@ -847,6 +847,11 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
 
           <div data-secao="fotos">
             <div class="tarefas" id="tarefas"></div>
+            <div id="pedidosBox" hidden>
+              <h3 style="margin-top:0">Pedidos dos moradores</h3>
+              <p class="miudo">Responda em até 15 dias (LGPD, art. 19). A resposta aparece no aparelho de quem pediu. Antes de apagar uma placa a pedido, confira se ela é do mesmo aparelho.</p>
+              <div class="cartas" id="pedidosPainel"></div>
+            </div>
             <div id="denunciasBox" hidden>
               <h3 style="margin-top:0">Denúncias dos moradores</h3>
               <div class="cartas" id="denunciasPainel"></div>
@@ -905,7 +910,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
       <footer class="rodape">
         <div class="rodape-selo"><svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><use href="#logo"/></svg><span><b>Sem partido. Sem patrão.</b><small>Projeto independente de moradores</small></span></div>
         <p>O Rinópolis de Olho não tem ligação com a prefeitura, a Câmara, partidos ou candidatos, e não apoia nem ataca ninguém. Mostramos o que os moradores marcam e o que as fontes oficiais dizem, com o link de cada uma.</p>
-        <p class="miudo">Achou um erro? Fale com quem cuida do mapa que a gente corrige. · Ruas © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button> · <button class="link" type="button" data-termos>Termos de uso</button> · <button class="link" type="button" data-equipe>Equipe</button><span data-instalar hidden> · <button class="link" type="button">Instalar no celular</button></span></p>
+        <p class="miudo">Achou um erro? <button class="link" type="button" data-falar>Fale com a equipe</button> que a gente corrige. · Ruas © colaboradores do <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> · <button class="link" type="button" data-privacidade>Privacidade (LGPD)</button> · <button class="link" type="button" data-termos>Termos de uso</button> · <button class="link" type="button" data-equipe>Equipe</button><span data-instalar hidden> · <button class="link" type="button">Instalar no celular</button></span></p>
       </footer>
     </div>
   </aside>
@@ -957,10 +962,25 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
   </div>
 </div>
 
+<div class="fundo" id="fundoFalar" hidden>
+  <div class="folha" role="dialog" aria-modal="true" aria-labelledby="tFalar">
+    <div class="dentro">
+      <header><div><h2 id="tFalar">Falar com a equipe</h2><div class="onde">Sem nome e sem e-mail. A resposta aparece aqui, neste aparelho, em até 15 dias.</div></div><button class="btn-leve" type="button" data-fecha>Fechar</button></header>
+      <form id="formFalar" style="display:flex;flex-direction:column;gap:10px">
+        <div class="opcoes" id="tiposFalar"></div>
+        <textarea id="falarMsg" maxlength="1000" rows="4" style="min-height:110px" required placeholder="Conte o que você precisa. Se for sobre uma placa, diga a rua, o tipo de problema e a data aproximada."></textarea>
+        <input type="text" id="falarContato" maxlength="120" placeholder="Se quiser resposta também por e-mail ou WhatsApp, deixe aqui (opcional)">
+        <p class="miudo">A mensagem e o contato (se você deixar) servem só para responder este pedido e ficam guardados até 1 ano depois da resposta.</p>
+        <button class="btn" type="submit" id="btnFalar">Enviar</button>
+      </form>
+      <div id="meusPedidos" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+  </div>
+</div>
 <div class="fundo" id="fundoTermos" hidden>
   <div class="folha" role="dialog" aria-modal="true" aria-labelledby="tTermos">
     <div class="dentro">
-      <header><div><h2 id="tTermos">Termos de Uso</h2><div class="onde">Última atualização: 31 de outubro de 2026</div></div><button class="btn-leve" type="button" data-fecha>Fechar</button></header>
+      <header><div><h2 id="tTermos">Termos de Uso</h2><div class="onde">Última atualização: 7 de novembro de 2026</div></div><button class="btn-leve" type="button" data-fecha>Fechar</button></header>
       <div class="priv">
         <p>Ao marcar, confirmar ou denunciar uma placa, você concorda com estes termos. Eles valem junto com a <button class="link" type="button" data-privacidade>Política de Privacidade</button>.</p>
 
@@ -985,7 +1005,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p>As placas aparecem no mapa assim que são marcadas. Frases e fotos só aparecem depois de conferidas pela equipe. A equipe pode recusar frases e fotos, apagar placas e bloquear aparelhos que descumpram estas regras, sem aviso prévio. Todas as ações da equipe ficam registradas internamente.</p>
 
         <h3>5. Contestação</h3>
-        <p>Se você acha que uma placa é falsa, ofensiva, repetida ou prejudica alguém, use o botão <b>Denunciar</b> na própria placa, ou escreva para a equipe informando a rua, o tipo de problema e o motivo: <b class="contato-projeto"></b> A equipe analisa e responde em até 15 dias. Quando decide manter a placa, explica o motivo. Pedidos sobre seus dados pessoais seguem a Política de Privacidade.</p>
+        <p>Se você acha que uma placa é falsa, ofensiva, repetida ou prejudica alguém, use o botão <b>Denunciar</b> na própria placa, ou use o botão <button class="link" type="button" data-falar data-tipo="contestacao">Falar com a equipe</button> informando a rua, o tipo de problema e o motivo. A equipe analisa e responde em até 15 dias. Quando decide manter a placa, explica o motivo. Pedidos sobre seus dados pessoais seguem a Política de Privacidade.</p>
 
         <h3>6. Neutralidade</h3>
         <p>O Rinópolis de Olho não tem partido e não apoia nem ataca nenhum agente político. Mostra o que os moradores marcam e o que as fontes oficiais dizem.</p>
@@ -1000,17 +1020,18 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
 <div class="fundo" id="fundoPriv" hidden>
   <div class="folha" role="dialog" aria-modal="true" aria-labelledby="tPriv">
     <div class="dentro">
-      <header><div><h2 id="tPriv">Política de Privacidade</h2><div class="onde">Última atualização: 31 de outubro de 2026</div></div><button class="btn-leve" type="button" data-fecha>Fechar</button></header>
+      <header><div><h2 id="tPriv">Política de Privacidade</h2><div class="onde">Última atualização: 7 de novembro de 2026</div></div><button class="btn-leve" type="button" data-fecha>Fechar</button></header>
       <div class="priv">
         <p>Esta política explica como o Rinópolis de Olho trata dados pessoais, nos termos da Lei Geral de Proteção de Dados Pessoais (Lei nº 13.709/2018, LGPD).</p>
 
         <h3>1. Quem é o responsável</h3>
-        <p>O Rinópolis de Olho é um projeto independente de moradores de Rinópolis-SP, sem fins lucrativos e sem vínculo com a Prefeitura, a Câmara Municipal, partidos políticos ou candidatos. A equipe que mantém o mapa é a controladora dos dados aqui descritos. Contato para assuntos de privacidade: <b id="privContato"></b></p>
+        <p>O Rinópolis de Olho é um projeto independente de moradores de Rinópolis-SP, sem fins lucrativos e sem vínculo com a Prefeitura, a Câmara Municipal, partidos políticos ou candidatos. A equipe que mantém o mapa é a controladora dos dados aqui descritos. Para qualquer assunto de privacidade, use o botão <button class="link" type="button" data-falar>Falar com a equipe</button>, que fica no fim de todas as páginas.</p>
 
         <h3>2. Dados que tratamos</h3>
         <p><b>Ao marcar um problema:</b> tipo do problema, localização no mapa, rua e ponto de referência, data e hora e, se você quiser, uma descrição curta e uma foto.</p>
         <p><b>Ao confirmar um problema:</b> o registro de que um aparelho confirmou ("eu também vi" ou "já consertaram") e a data.</p>
         <p><b>Ao denunciar uma placa:</b> o motivo escolhido, a frase que você escrever (se escrever) e a data. Só a equipe vê as denúncias, e elas são apagadas quando a equipe decide manter ou apagar a placa. Se 3 pessoas apontarem a frase de uma placa como ofensiva, ela sai do ar na hora até a equipe conferir.</p>
+        <p><b>Ao falar com a equipe:</b> o assunto, a mensagem, um contato se você quiser deixar, o código cifrado do aparelho e a data. Servem só para responder ao pedido.</p>
         <p><b>Ao pedir aviso no celular:</b> o endereço de aviso que o seu navegador cria e as placas que você acompanha. Ele não tem nome, telefone nem e-mail, e serve só para avisar quando uma dessas placas for consertada ou receber resposta da prefeitura. O aviso passa pelo serviço de notificações do próprio navegador (Google, Apple, Mozilla ou Microsoft). Para parar, desligue as notificações do site nas configurações do navegador ou deixe de acompanhar a placa.</p>
         <p><b>Código do aparelho:</b> um código aleatório gerado no seu navegador. O banco de dados guarda apenas uma versão cifrada (hash) desse código, que não permite identificar a pessoa. Ele serve para limitar cada confirmação a uma por aparelho, permitir que você acompanhe o que marcou e evitar abusos.</p>
         <p><b>Não coletamos</b> nome, CPF, telefone, e-mail, endereço residencial nem localização do aparelho em segundo plano. A localização só é usada quando você toca em "Estou aqui", e apenas para posicionar a marcação.</p>
@@ -1041,10 +1062,10 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p>O navegador guarda localmente o código do aparelho, as marcações que você fez e preferências como "não mostrar mais a tela inicial". Se você instalar o site no celular, ele também guarda uma cópia das páginas (sem marcações nem fotos de outras pessoas) pra abrir mais rápido. Você pode apagar esses dados a qualquer momento limpando os dados do site no navegador.</p>
 
         <h3>8. Por quanto tempo guardamos</h3>
-        <p>As marcações permanecem enquanto forem úteis ao acompanhamento dos problemas da cidade ou até que seja pedida a sua exclusão. Fotos e frases recusadas são excluídas no momento da recusa. Os registros de ações da equipe são mantidos para fins de transparência e segurança.</p>
+        <p>As marcações permanecem enquanto forem úteis ao acompanhamento dos problemas da cidade ou até que seja pedida a sua exclusão. Fotos e frases recusadas são excluídas no momento da recusa. Os pedidos feitos pelo botão Falar com a equipe são guardados até 1 ano depois da resposta. Os registros de ações da equipe são mantidos para fins de transparência e segurança.</p>
 
         <h3>9. Seus direitos</h3>
-        <p>Você pode, a qualquer momento, pedir confirmação da existência de tratamento, acesso, correção ou exclusão das suas marcações e fotos, além de revogar o consentimento (LGPD, art. 18). Como não guardamos seu nome, informe a rua, o tipo de problema e a data aproximada para localizarmos o registro. Os pedidos são atendidos em até 15 dias. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</p>
+        <p>Você pode, a qualquer momento, pedir confirmação da existência de tratamento, acesso, correção ou exclusão das suas marcações e fotos, além de revogar o consentimento (LGPD, art. 18). Faça o pedido pelo botão <button class="link" type="button" data-falar>Falar com a equipe</button>. Como não guardamos seu nome, o pedido fica ligado ao aparelho de onde foi enviado: use o mesmo aparelho em que marcou, e a resposta aparece nele. Se for sobre uma placa, informe a rua, o tipo de problema e a data aproximada. Os pedidos são atendidos em até 15 dias. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</p>
 
         <h3>10. Segurança</h3>
         <p>O banco de dados só aceita gravações por funções que validam cada pedido, com limite de marcações por hora e bloqueio de aparelhos que enviem conteúdo abusivo. Apenas a equipe autenticada tem acesso às fotos ainda não conferidas.</p>
@@ -1522,6 +1543,10 @@ const Nuvem = {
   async desbloquear(autor){ const {error} = await this.sb.from('bloqueios').delete().eq('autor', autor); if (error) throw error; },
   async frasesPendentes(){ const {data,error} = await this.sb.from('textos_pendentes').select('reclamacao,texto').order('criado'); if (error) throw error; return data||[]; },
   async decidirFrase(id, aprovar){ const {error} = await this.sb.rpc(aprovar ? 'aprovar_frase' : 'recusar_frase', {p_id:id}); if (error) throw error; await this.carregar(); },
+  async enviarPedido(tipo, mensagem, contato){ const {error} = await this.sb.rpc('enviar_pedido', {p_tipo:tipo, p_mensagem:mensagem, p_contato:contato||'', p_segredo:this.segredo}); if (error) throw error; },
+  async meusPedidos(){ const {data,error} = await this.sb.rpc('meus_pedidos', {p_segredo:this.segredo}); if (error) throw error; return data||[]; },
+  async pedidos(){ const {data,error} = await this.sb.from('pedidos').select('id,criado,tipo,mensagem,contato,autor,resposta,respondido').order('criado',{ascending:false}).limit(100); if (error) throw error; return data||[]; },
+  async responderPedido(id, resposta){ const {error} = await this.sb.from('pedidos').update({resposta, respondido:new Date().toISOString()}).eq('id', id); if (error) throw error; },
   async denunciar(id, motivo, detalhe){ const {error} = await this.sb.rpc('denunciar', {p_id:id, p_motivo:motivo, p_detalhe:detalhe||'', p_segredo:this.segredo}); if (error) throw error; },
   async denuncias(){
     const [d,t] = await Promise.all([this.sb.from('denuncias').select('reclamacao,motivo,detalhe,criado').order('criado',{ascending:false}), this.sb.from('textos_escondidos').select('reclamacao,texto')]);
@@ -2545,7 +2570,7 @@ async function carregarPainel(){
 }
 
 /* fotos */
-let denunciasCache = {lista:[], escondidos:{}}, frasesCache = [];
+let denunciasCache = {lista:[], escondidos:{}}, frasesCache = [], pedidosCache = [];
 async function carregarFrases(){
   try { frasesCache = (await Frases.pendentes()).filter(f => Loja.recs.has(f.reclamacao)); } catch(e) { console.error(e); return; }
   desenharFrases();
@@ -2559,7 +2584,7 @@ async function carregarDenuncias(){
 /* fotos esperando + placas denunciadas: o número do painel e a bolinha vermelha do menu */
 function atualizarContagemConferir(){
   const placas = new Set(denunciasCache.lista.filter(d => Loja.recs.has(d.reclamacao)).map(d => d.reclamacao)).size;
-  const total = pendentesCache.length + placas + frasesCache.length;
+  const total = pendentesCache.length + placas + frasesCache.length + pedidosCache.filter(p => !p.respondido).length;
   document.getElementById('pFotos').textContent = total;
   document.getElementById('bolinha').hidden = !total;
   document.getElementById('bolinhaFotos').hidden = !total;
@@ -2613,8 +2638,39 @@ document.getElementById('denunciasPainel').addEventListener('click', async e => 
   }
 });
 
+/* pedidos dos moradores (Falar com a equipe): abertos, com prazo e as placas do mesmo aparelho */
+async function carregarPedidos(){
+  if (Loja.modo!=='nuvem') return;
+  try { pedidosCache = await Nuvem.pedidos(); } catch(e) { console.error(e); return; }
+  desenharPedidos();
+}
+function desenharPedidos(){
+  const abertos = pedidosCache.filter(p => !p.respondido);
+  document.getElementById('pedidosBox').hidden = !abertos.length;
+  atualizarContagemConferir();
+  document.getElementById('pedidosPainel').innerHTML = abertos.map(p => {
+    const prazo = new Date(Date.parse(p.criado) + 15*DIA), falta = Math.ceil((prazo - Date.now())/DIA);
+    const placas = [...Loja.recs.values()].filter(r => r.autor && r.autor===p.autor);
+    return '<div class="carta"><div class="corpo"><span><b>'+esc(TIPOS_PEDIDO[p.tipo]||p.tipo)+'</b> · nº '+p.id+' · '+new Date(p.criado).toLocaleDateString('pt-BR')+'</span>'+
+      '<span class="miudo"'+(falta<=3 ? ' style="color:var(--alerta)"' : '')+'>Responder até '+prazo.toLocaleDateString('pt-BR')+(falta<0 ? ' (atrasado)' : '')+'</span>'+
+      '<p>'+esc(p.mensagem)+'</p>'+(p.contato ? '<p class="miudo">Contato deixado: '+esc(p.contato)+'</p>' : '')+
+      '<p class="miudo">'+(placas.length ? 'Placas marcadas por este aparelho: '+placas.map(r => '<button class="link" type="button" data-pp="'+esc(r.id)+'">'+esc(TIPOS[r.tipo].nome+' · '+(r.rua||''))+'</button>').join(', ') : 'Este aparelho não marcou nenhuma placa.')+'</p>'+
+      '<textarea data-resp="'+p.id+'" rows="3" style="min-height:80px" maxlength="1000" placeholder="Resposta (aparece no aparelho de quem pediu)"></textarea>'+
+      '<div class="acoes"><button class="btn" type="button" data-responder="'+p.id+'">Enviar resposta</button></div></div></div>';
+  }).join('');
+}
+document.getElementById('pedidosPainel').addEventListener('click', async e => {
+  const pp = e.target.closest('[data-pp]'); if (pp) { abrir(pp.dataset.pp); return; }
+  const b = e.target.closest('[data-responder]'); if (!b) return;
+  const id = +b.dataset.responder, txt = (document.querySelector('[data-resp="'+id+'"]').value || '').trim();
+  if (!txt) { avisar('Escreva a resposta primeiro.'); return; }
+  b.disabled = true;
+  try { await Nuvem.responderPedido(id, txt); const p = pedidosCache.find(x => x.id===id); if (p) { p.resposta = txt; p.respondido = new Date().toISOString(); } desenharPedidos(); avisar('Resposta enviada'); }
+  catch(err) { console.error(err); b.disabled = false; avisar('Não deu pra salvar. Rode o arquivo supabase-pedidos.sql no Supabase.'); }
+});
+
 async function carregarFotosPainel(silencioso){
-  carregarDenuncias(); carregarFrases();
+  carregarDenuncias(); carregarFrases(); carregarPedidos();
   const box = document.getElementById('pendentes');
   if (!silencioso) box.innerHTML = '<p class="miudo">Procurando fotos novas…</p>';
   try { pendentesCache = await Fotos.pendentes(); } catch(e) { console.error(e); box.innerHTML = '<p class="vazio">Não deu pra carregar as fotos agora.</p>'; return; }
@@ -2868,8 +2924,36 @@ function abrirDoLink(){
   fecharIntro(); map.setView([r.lat,r.lon], 18); abrir(r.id); return true;
 }
 addEventListener('hashchange', abrirDoLink);
+/* ---------- Falar com a equipe: canal dos direitos do titular (LGPD, art. 18) e de contestação de placas ---------- */
+const TIPOS_PEDIDO = {acesso:'Ver meus dados', correcao:'Corrigir algo', exclusao:'Apagar minha marcação', revogacao:'Retirar meu consentimento', contestacao:'Contestar uma placa', outro:'Outro assunto'};
+const fundoFalar = document.getElementById('fundoFalar');
+let tipoPedido = 'outro';
+function desenharTiposPedido(){
+  document.getElementById('tiposFalar').innerHTML = Object.entries(TIPOS_PEDIDO).map(([k,t]) => '<button class="chip" type="button" data-tp="'+k+'" aria-pressed="'+(tipoPedido===k)+'">'+t+'</button>').join('');
+}
+async function desenharMeusPedidos(){
+  const box = document.getElementById('meusPedidos');
+  if (Loja.modo!=='nuvem') { box.innerHTML = ''; return; }
+  let l = []; try { l = await Nuvem.meusPedidos(); } catch(e) { console.error(e); }
+  box.innerHTML = l.length ? '<h3 style="margin:6px 0 0">Seus pedidos</h3>'+l.map(p => '<div class="cartao"><b>'+esc(TIPOS_PEDIDO[p.tipo]||p.tipo)+'</b> <span class="miudo">· nº '+p.id+' · '+new Date(p.criado).toLocaleDateString('pt-BR')+'</span>'+
+    '<p class="miudo" style="margin:6px 0">'+esc(p.mensagem)+'</p>'+
+    (p.resposta ? '<p style="margin:0"><b>Resposta da equipe:</b> '+esc(p.resposta)+'</p>' : '<p class="miudo" style="margin:0">Aguardando resposta, até '+new Date(Date.parse(p.criado)+15*DIA).toLocaleDateString('pt-BR')+'.</p>')+'</div>').join('') : '';
+}
+function abrirFalar(tipo){ tipoPedido = TIPOS_PEDIDO[tipo] ? tipo : 'outro'; desenharTiposPedido(); fundoPriv.hidden = true; fundoTermos.hidden = true; fundoFalar.hidden = false; desenharMeusPedidos(); }
+document.addEventListener('click', e => { const b = e.target.closest('[data-falar]'); if (b) { e.preventDefault(); abrirFalar(b.dataset.tipo); } });
+document.getElementById('tiposFalar').addEventListener('click', e => { const b = e.target.closest('[data-tp]'); if (b) { tipoPedido = b.dataset.tp; desenharTiposPedido(); } });
+fundoFalar.addEventListener('click', e => { if (e.target===fundoFalar || e.target.closest('[data-fecha]')) fundoFalar.hidden = true; });
+document.getElementById('formFalar').addEventListener('submit', async e => {
+  e.preventDefault();
+  const msg = document.getElementById('falarMsg').value.trim(), contato = document.getElementById('falarContato').value.trim();
+  if (msg.length < 3) { avisar('Escreva o que você precisa.'); return; }
+  if (Loja.modo!=='nuvem') { avisar('Os pedidos só funcionam no site público do mapa.'); return; }
+  const b = document.getElementById('btnFalar'); b.disabled = true;
+  try { await Nuvem.enviarPedido(tipoPedido, msg, contato); document.getElementById('falarMsg').value = ''; document.getElementById('falarContato').value = ''; avisar('Pedido enviado. A resposta aparece aqui em até 15 dias.', 4500); desenharMeusPedidos(); }
+  catch(err) { console.error(err); avisar(/limite/.test(err.message||'') ? 'Você já mandou 5 pedidos hoje. Tente amanhã.' : 'Não deu pra enviar. Tente de novo.'); }
+  b.disabled = false;
+});
 const fundoPriv = document.getElementById('fundoPriv');
-document.querySelectorAll('#privContato, .contato-projeto').forEach(e => e.textContent = CFG.contato || 'pelos canais de divulgação do projeto.');
 const fundoTermos = document.getElementById('fundoTermos');
 document.addEventListener('click', e => { if (e.target.closest('[data-termos]')) { e.preventDefault(); fundoTermos.hidden = false; } });
 fundoTermos.addEventListener('click', e => { if (e.target===fundoTermos || e.target.closest('[data-fecha]')) fundoTermos.hidden = true; });
@@ -2896,7 +2980,7 @@ function copiar(txt, ok){
 document.getElementById('btnCopiaOficio').addEventListener('click', () => copiar(document.getElementById('oficio').value, 'Pedido copiado'));
 document.addEventListener('keydown', e => {
   if (e.key!=='Escape') return;
-  if (!fundoPriv.hidden) fundoPriv.hidden=true; else if (!fundoTermos.hidden) fundoTermos.hidden=true; else if (!boas.hidden) fecharIntro(); else if (!fundoVitrine.hidden) fundoVitrine.hidden=true; else if (!fundoVer.hidden) fecharVer(); else if (!fundoNovo.hidden) fecharNovo(); else if (marcando) sairMira();
+  if (!fundoFalar.hidden) fundoFalar.hidden=true; else if (!fundoPriv.hidden) fundoPriv.hidden=true; else if (!fundoTermos.hidden) fundoTermos.hidden=true; else if (!boas.hidden) fecharIntro(); else if (!fundoVitrine.hidden) fundoVitrine.hidden=true; else if (!fundoVer.hidden) fecharVer(); else if (!fundoNovo.hidden) fecharNovo(); else if (marcando) sairMira();
 });
 
 lerLocal();

@@ -4,7 +4,6 @@
 window.CONFIG = {
   supabaseUrl: 'https://ajrxqmnctrmdfvtrkejz.supabase.co',
   supabaseChave: 'sb_publishable_rDXNmvhgeIw8NK_CkiiQsw_MH__eGof', // chave pública: pode ficar no site
-  contato: 'contato@rinopolisdeolho.com.br', // e-mail de contato (privacidade, contestação)
   link: 'https://bruhenriquee.github.io/rinopolis-de-olho/',
   vapid: 'BBNgZN5eMNyqI68o2-PigmktoMFJlmTZ4hl7-k7YAUVL5UpG7jeKkbMSAl7s20BB-8W57oTCtLdeWXzNvVCbCiU' // chave pública dos avisos no celular
 };
