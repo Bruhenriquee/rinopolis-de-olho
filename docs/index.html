@@ -1041,7 +1041,13 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p>Antes do envio, o site reduz a foto e remove os metadados do arquivo, como a localização GPS e o modelo do aparelho. Toda foto e toda frase passam por conferência antes de serem publicadas. Fotos que mostrem rostos, placas de veículos ou outros dados pessoais, e frases com nomes, telefones, ofensas ou acusações, são recusadas e excluídas.</p>
 
         <h3>4. Finalidade e base legal</h3>
-        <p>Os dados são usados exclusivamente para exibir os problemas urbanos da cidade, permitir que outros moradores os confirmem, acompanhar o tempo até o conserto e encaminhar pedidos ao poder público. A base legal é o consentimento (LGPD, art. 7º, I), dado ao marcar a caixa de concordância antes do envio. As marcações publicadas ficam visíveis a qualquer pessoa, sem identificação de quem as fez.</p>
+        <p>Os dados são usados exclusivamente para exibir os problemas urbanos da cidade, permitir que outros moradores os confirmem, acompanhar o tempo até o conserto e encaminhar pedidos ao poder público. As marcações publicadas ficam visíveis a qualquer pessoa, sem identificação de quem as fez. As bases legais (LGPD, art. 7º) são:</p>
+        <ul>
+          <li><b>Consentimento</b> (inciso I): marcar um problema, com frase e foto se você quiser (dado ao marcar a caixa de concordância); usar "Estou aqui"; e pedir aviso no celular.</li>
+          <li><b>Legítimo interesse</b> (inciso IX e art. 10): o código do aparelho, as confirmações e as denúncias, que impedem votos repetidos e conteúdo abusivo sem exigir cadastro; o registro das ações da equipe e o bloqueio de aparelhos; e os registros de acesso dos serviços que mantêm o site. Você pode se opor desfazendo a confirmação (tocando de novo) ou limpando os dados do site no navegador.</li>
+          <li><b>Obrigação legal</b> (inciso II): responder aos pedidos sobre os seus dados feitos pelo botão Falar com a equipe.</li>
+        </ul>
+        <p></p>
 
         <h3>5. Agentes públicos</h3>
         <p>Nomes, partidos e votações da prefeita, do vice-prefeito e dos vereadores, bem como o plano de governo, são informações tornadas públicas pelos próprios titulares no registro de candidatura e divulgadas pela Justiça Eleitoral. São usadas apenas para informação e controle social, sem juízo de valor (LGPD, art. 7º, §§ 3º e 4º).</p>
@@ -1065,7 +1071,7 @@ input[type=text],input[type=email],input[type=password]{width:100%;background:va
         <p>As marcações permanecem enquanto forem úteis ao acompanhamento dos problemas da cidade ou até que seja pedida a sua exclusão. Fotos e frases recusadas são excluídas no momento da recusa. Os pedidos feitos pelo botão Falar com a equipe são guardados até 1 ano depois da resposta. Os registros de ações da equipe são mantidos para fins de transparência e segurança.</p>
 
         <h3>9. Seus direitos</h3>
-        <p>Você pode, a qualquer momento, pedir confirmação da existência de tratamento, acesso, correção ou exclusão das suas marcações e fotos, além de revogar o consentimento (LGPD, art. 18). Faça o pedido pelo botão <button class="link" type="button" data-falar>Falar com a equipe</button>. Como não guardamos seu nome, o pedido fica ligado ao aparelho de onde foi enviado: use o mesmo aparelho em que marcou, e a resposta aparece nele. Se for sobre uma placa, informe a rua, o tipo de problema e a data aproximada. Os pedidos são atendidos em até 15 dias. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</p>
+        <p>Você pode, a qualquer momento, pedir confirmação da existência de tratamento, acesso, correção ou exclusão das suas marcações e fotos, além de revogar o consentimento (LGPD, art. 18). Para apagar uma marcação sua, abra a placa no mesmo aparelho em que marcou e toque em <b>Apagar minha marcação</b>: ela sai do mapa na hora, com as fotos e confirmações. Para os outros pedidos, use o botão <button class="link" type="button" data-falar>Falar com a equipe</button>. Como não guardamos seu nome, o pedido fica ligado ao aparelho de onde foi enviado: use o mesmo aparelho em que marcou, e a resposta aparece nele. Se for sobre uma placa, informe a rua, o tipo de problema e a data aproximada. Os pedidos são atendidos em até 15 dias. Você também pode reclamar à Autoridade Nacional de Proteção de Dados (ANPD).</p>
 
         <h3>10. Segurança</h3>
         <p>O banco de dados só aceita gravações por funções que validam cada pedido, com limite de marcações por hora e bloqueio de aparelhos que enviem conteúdo abusivo. Apenas a equipe autenticada tem acesso às fotos ainda não conferidas.</p>
@@ -1492,6 +1498,8 @@ const Nuvem = {
     if (res.error) return this.erro(res.error);
     await this.carregar().catch(e => console.error(e));
   },
+  /* quem marcou apaga a própria placa; o banco confere pelo código do aparelho */
+  async apagarMinha(id){ const {data,error} = await this.sb.rpc('apagar_minha_placa', {p_id:id, p_segredo:this.segredo}); if (error) throw error; await this.carregar().catch(e => console.error(e)); return !!data; },
   async apagar(id){
     const {error} = await this.sb.from('reclamacoes').delete().eq('id', id);
     if (error) return this.erro(error);
@@ -1871,6 +1879,7 @@ function desenharDetalhe(id){
       '<input type="text" id="respostaTexto" maxlength="140" placeholder="Detalhe (opcional), ex.: equipe vai na quinta" value="'+esc(respostaRascunho ? respostaRascunho.texto : (r.resposta && r.resposta.texto) || '')+'">'+
       '<div class="acoes"><button class="btn azul" type="button" data-acao="salvaResposta">Salvar resposta</button>'+(r.resposta?'<button class="btn-leve" type="button" data-acao="limpaResposta">Tirar resposta</button>':'')+'</div>';
   }
+  if (souAutor && !Loja.dono && !r.exemplo && Loja.modo!=='db') h += '<div class="acoes"><button class="btn-leve perigo-leve" type="button" data-acao="apagarMinha">'+(armadoApagar ? 'Toque de novo para apagar de vez' : 'Apagar minha marcação')+'</button></div>';
   if (Loja.dono && !r.exemplo) h += '<h3>Só você vê isto</h3><div class="acoes"><button class="btn cinza" type="button" data-acao="feito">'+(r.resolvido?'Reabrir':'Marcar como consertado')+'</button><button class="btn perigo" type="button" data-acao="apagar">'+(armadoApagar?'Toque de novo pra apagar':'Apagar')+'</button></div>';
   folhaVer.innerHTML = h + '</div>';
 }
@@ -1934,6 +1943,12 @@ folhaVer.addEventListener('click', async e => {
   else if (a==='limpaResposta') { respostaRascunho=null; await atualizar(r.id, {resposta:null}); desenharDetalhe(r.id); }
   else if (a==='feito') atualizar(r.id, {resolvido: r.resolvido ? 0 : Date.now()});
   else if (a==='apagar') { if (!armadoApagar) { armadoApagar=true; desenharDetalhe(r.id); } else { apagar(r.id); fecharVer(); avisar('Apagado'); } }
+  else if (a==='apagarMinha') {
+    if (!armadoApagar) { armadoApagar=true; desenharDetalhe(r.id); return; }
+    let ok = true;
+    try { if (Loja.modo==='nuvem') ok = await Nuvem.apagarMinha(r.id); else await apagar(r.id); } catch(err) { console.error(err); ok = false; }
+    if (ok) { fecharVer(); avisar('Sua marcação foi apagada, com as fotos e confirmações dela.', 4000); } else avisar('Não deu pra apagar. Tente de novo ou use Falar com a equipe.');
+  }
 });
 
 /* ---------- Pergunta pra quem marcou ---------- */

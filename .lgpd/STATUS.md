@@ -10,11 +10,11 @@
 - [x] L0 — Setup `.lgpd/`
 - [x] L1 — Gap analysis (`discovery.md`, `gaps.md`) — ⏸ aguardando aprovação
 - [ ] L2 — Mapa de dados (lgpd-data-mapping)
-- [ ] L3 — Base legal (lgpd-legal-basis)
+- [x] L3 — Base legal: `legal-basis.md` (07/11/2026) — 4 por consentimento, 1 por obrigação legal, o resto por legítimo interesse com teste escrito
 - [ ] L4 — Operadores (lgpd-vendor-audit)
 - [ ] L5 — Retenção (lgpd-retention-erasure)
 - [ ] L6 — Anonimização (não se aplica: não há analytics)
-- [ ] L7 — Direitos do titular (lgpd-dsar)
+- [x] L7 — Direitos do titular: "Falar com a equipe" + "Apagar minha marcação" (07/11/2026)
 - [x] L8 — Incidentes: roteiro, registro e modelos em `incidents/` (07/11/2026)
 - [ ] L9 — Política de privacidade v2 (lgpd-privacy-policy) ⏸
 - [ ] L10 — ECA Digital (avaliação por escrito)
@@ -26,10 +26,12 @@
 - `.lgpd/discovery.md` — v1, 07/11/2026
 - `.lgpd/gaps.md` — v1, 07/11/2026
 - `.lgpd/incidents/` — runbook, log (INC-2026-001), modelos ANPD e titular — 07/11/2026
-- `supabase-pedidos.sql` + formulário "Falar com a equipe" (canal do titular, gap 1) — código pronto, falta rodar o SQL e publicar
+- `supabase-pedidos.sql` + formulário "Falar com a equipe" (canal do titular, gap 1) — publicado 07/11/2026
+- `.lgpd/legal-basis.md` — v1, 07/11/2026 (com os testes de legítimo interesse A e B)
+- `supabase-apagar-minha.sql` + botão "Apagar minha marcação" (gap 5) — código pronto, falta rodar o SQL e publicar
 
 ## Gaps abertos
-Críticos: gap 2 resolvido; gap 1 com código pronto, falta rodar o SQL e publicar. Mais 5 altos e 5 médios. Ver `.lgpd/gaps.md`.
+Críticos e altos de código resolvidos (1, 2, 4, 5). Abertos: 3 e 7 (pedem advogado), 6 (retenção) e os médios. Ver `.lgpd/gaps.md`.
 
 ## Próximo passo
-Rodar `supabase-pedidos.sql` no Supabase, publicar o site e confirmar a revogação da chave do INC-2026-001. Depois: base legal (gap 4) e "apagar minha marcação" (gap 5).
+Rodar `supabase-apagar-minha.sql` e publicar. Depois: prazos de guarda (gap 6) e Google Fonts no próprio site (gap 10).
