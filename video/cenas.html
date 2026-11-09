@@ -138,6 +138,7 @@ h1 em{font-style:normal;color:#f6c21a}
   </div></div>
   <div class="chip-passo" id="chipPasso"><b id="chipN">1</b><span id="chipT">Arraste o mapa</span></div>
   <div class="selo" id="selo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3l18 18"/><path d="M10.6 6.1A9.8 9.8 0 0 1 12 6c5 0 8.5 4 9.5 6-.5 1-1.6 2.6-3.2 3.9M6.6 7.6C4.6 8.9 3.1 10.8 2.5 12c1 2 4.5 6 9.5 6 1.6 0 3-.4 4.3-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg>Seu nome não aparece</div>
+  <div class="anel" id="aAlf"></div>
 </div>
 
 <div class="cena" id="c-dias">
@@ -248,6 +249,21 @@ function camera(t){
 }
 
 const eb = x => { x=cl(x); const c1=1.70158, c3=c1+1; return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2); };
+const ebs = (x, c1) => { x=cl(x); const c3=c1+1; return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2); };   /* eb com mais passada do ponto */
+/* peso: depois de uma batida a tela balança e morre rápido (tranco, em px) e dá um soco de zoom (escala) */
+const tranco = (t, t0, A=14) => t<t0 ? 0 : A*Math.exp(-(t-t0)*9)*Math.sin((t-t0)*38);
+const soco = (t, t0, A=.04) => t<t0 ? 0 : A*Math.exp(-(t-t0)*10)*Math.cos((t-t0)*12);
+/* "bate": cai acelerando e chega inteiro em t1 (0 → 1) */
+const bate = (t, t1, d=.22) => Math.pow(cl((t-(t1-d))/d), 2);
+/* tranco e soco de zoom na cena inteira, uma vez por batida: [[momento, tranco px, soco], ...] */
+function peso(id, t, lista){ let Y=0, S=0; for (const [t0,A,z] of lista) { Y += tranco(t,t0,A); S += soco(t,t0,z); }
+  sty(id,{transform:'translateY('+Y+'px) scale('+(1+S)+')'}); }
+/* batidas da cena do celular: o celular caindo, o alfinete fincando, os toques, a foto e o selo */
+function batidasCel(){
+  const ck = cena('marcar'), tf = kw('foto','foto');
+  return {pouso: ck.inicio+.32, finca: kw('marcar','arrasta')+.85, toca: kw('marcar','toca'), esc: kw('marcar','escolhe'),
+          foto: tf+.32, selo: kw('foto','nome')-.05};
+}
 /* quebra o título em palavras com máscara, para elas subirem uma a uma */
 function quebrar(el){
   const nos=[]; const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT); while (w.nextNode()) nos.push(w.currentNode);
@@ -257,8 +273,8 @@ function quebrar(el){
     n.replaceWith(f); }
   return [...el.querySelectorAll('.w>i')];
 }
-function subir(lista, t, t0, passo=.07, d=.55){
-  lista.forEach((i,k) => { const x = (t-t0-k*passo)/d; const v = eb(x); i.style.transform = 'translateY('+(118*(1-v))+'%)'; });
+function subir(lista, t, t0, passo=.06, d=.42){
+  lista.forEach((i,k) => { const x = (t-t0-k*passo)/d; const v = ebs(x, 2.6); i.style.transform = 'translateY('+(118*(1-v))+'%)'; });
 }
 const PAL = {}; ['p1','p2','p3'].forEach(id => PAL[id] = quebrar($(id).querySelector('h1')));
 PAL.marca = quebrar($('m-marca').querySelector('h1'));
@@ -305,23 +321,26 @@ function render(t){
   /* pergunta */
   const sai = eio((t-(cena('mapa').inicio-.6))/.45);
   [['p1','buraco',470],['p2','poste',720],['p3','lixo',970]].forEach(([id,w,y],i) => {
-    const t0 = kw('pergunta',w)-.3, kp = eb((t-t0)/.5), proximo = i<2 ? kw('pergunta',['poste','lixo'][i])-.3 : 1e9;
+    const t0 = kw('pergunta',w)-.3, proximo = i<2 ? kw('pergunta',['poste','lixo'][i])-.3 : 1e9;
     const foco = t>proximo ? .45+.55*(1-eo((t-proximo)/.4)) : 1;
     sty(id,{opacity:(t>=t0?1:0)*foco, transform:'translateY('+(-160*sai*(1+i*.2))+'px)'});
-    $(id).querySelector('.pino').style.transform = 'scale('+kp+') rotate('+(-90*(1-cl((t-t0)/.5)))+'deg)';
-    subir(PAL[id], t, t0+.12);
-    anel('a'+(i+1), 175, y+85, 170, t, t0+.18);
+    const kb = bate(t, t0+.2, .2);
+    $(id).querySelector('.pino').style.transform = 'scale('+(1.9-.9*kb)+') rotate('+(-25*(1-kb))+'deg)';
+    subir(PAL[id], t, t0+.16);
+    anel('a'+(i+1), 175, y+85, 170, t, t0+.2);
     sty('r'+(i+1),{width:(640*eo((t-t0-.3)/.6))+'px', opacity:foco*(1-sai)});
   });
 
+  peso('c-pergunta', t, ['buraco','poste','lixo'].map(w => [kw('pergunta',w)-.1, 12, .03]));
   /* mapa: pinos caem um a um, depois a marca */
   const cm = cena('mapa'), [gx,gy] = [mx-540, my-960];
   const apaga = 1-.8*pr(t, kw('mapa','mapa')-.1, .6);
-  PINOS.forEach((p,i) => { const a = cm.inicio+.15+i*.07, k = eb((t-a)/.45), X = p.X-gx-der, Y = p.Y-gy;
-    sty('pm'+i,{left:(X-48)+'px', top:(Y-48)+'px', opacity:(t>=a?1:0)*apaga, transform:'translateY('+(-90*(1-eo((t-a)/.3)))+'px) scale('+k+')'});
+  PINOS.forEach((p,i) => { const a = cm.inicio+.15+i*.07, k = bate(t, a+.2, .2), q = t>a+.2 ? Math.exp(-(t-a-.2)*12)*Math.cos((t-a-.2)*24) : 0, X = p.X-gx-der, Y = p.Y-gy;
+    sty('pm'+i,{left:(X-48)+'px', top:(Y-48)+'px', opacity:(t>=a?1:0)*apaga, transform:'translateY('+(-280*(1-k))+'px) scale('+(1+.25*q)+','+(1-.25*q)+')'});
     anel('am'+i, X, Y, 96, t, a+.2); if (apaga<.99) $('am'+i).style.opacity=0; });
-  const tl = kw('mapa','mapa')-.15, klg = eb((t-tl)/.7);
-  sty('m-logo',{opacity:cl((t-tl)/.2), transform:'scale('+klg+') rotate('+(-180*(1-eo((t-tl)/.7)))+'deg)'});
+  const tl = kw('mapa','mapa')-.15, klg = bate(t, tl+.25, .25);
+  sty('m-logo',{opacity:cl((t-tl)/.05), transform:'scale('+(2.6-1.6*klg)+') rotate('+(-30*(1-klg))+'deg)'});
+  peso('c-mapa', t, [[tl+.25, 20, .05]]);
   sty('brilhoM',{left:(-40+150*eio((t-tl-.8)/.7))+'%'});
   const te = kw('mapa','feito')-.35;
   sty('m-marca',{opacity:1});
@@ -330,10 +349,14 @@ function render(t){
 
   /* celular: arrastar, Marcar aqui, escolher o tipo, foto e frase */
   const ck = cena('marcar'), cf = cena('foto');
-  const kCel = eb((t-ck.inicio)/.9), kr = eo((t-ck.inicio)/1.1);
-  sty('cel',{transform:'perspective(2200px) translateY('+(260*(1-kCel))+'px) rotateY('+(-32*(1-kr))+'deg) rotateX('+(14*(1-kr))+'deg) scale('+(.86+.14*kCel)+')'});
+  /* o celular cai de cima com peso, achata no pouso e a tela dá um tranco */
+  const B = batidasCel(), kq = Math.pow(cl((t-ck.inicio)/.32), 2), am = t>B.pouso ? Math.exp(-(t-B.pouso)*12)*Math.cos((t-B.pouso)*26) : 0;
+  sty('cel',{transform:'translateY('+(-1500*(1-kq))+'px) rotate('+(-7*(1-kq))+'deg) scale('+(1+.045*am)+','+(1-.06*am)+')', transformOrigin:'50% 100%'});
+  const S = soco(t,B.pouso,.05)+soco(t,B.finca,.03)+soco(t,B.toca,.025)+soco(t,B.esc,.025)+soco(t,B.foto,.04)+soco(t,B.selo,.035);
+  const Y = tranco(t,B.pouso,22)+tranco(t,B.finca,10)+tranco(t,B.foto,12)+tranco(t,B.selo,9);
+  sty('c-tela',{transform:'translateY('+Y+'px) scale('+(1+S)+')'});
   const tArr = kw('marcar','arrasta'), tToca = kw('marcar','toca'), tEsc = kw('marcar','escolhe');
-  const arr = eio((t-tArr+.1)/1.3);
+  const arr = ebs((t-tArr+.1)/.9, 2.2);   /* o mapa corre, passa um pouco e volta */
   const ox = 1150 - 220*arr, oy = 1300 - 160*arr;
   const mg = $('mini').getContext('2d'); mg.drawImage(MINI, ox, oy, 514, 1024, 0, 0, 514, 1024);
   /* dedo: arrasta o mapa, depois toca no botão, depois no Buraco */
@@ -344,37 +367,40 @@ function render(t){
   else { const tf = kw('foto','foto')-.3; dop = cl((t-tf)/.15)*cl((tf+.5-t)/.15); dx=250; dy=640; }
   const toque = (a) => cl(1 - Math.abs(t-a)/.18);
   sty('dedo',{left:dx+'px', top:dy+'px', opacity:dop, transform:'scale('+(1-.18*Math.max(toque(tToca), toque(tEsc), toque(kw('foto','foto'))))+')'});
-  $('btAqui').style.transform = 'scale('+(1-.05*toque(tToca))+')';
+  $('btAqui').style.transform = 'scale('+(1-.14*toque(tToca))+')';
   /* anel do toque */
   let ta = null; for (const x of [tToca, tEsc, kw('foto','foto')]) if (t>=x && t<x+.55) ta = x;
   if (ta!==null) { const k=(t-ta)/.55; sty('toque',{left:dx+'px', top:dy+'px', opacity:(1-k)*.9, transform:'scale('+(.3+1.3*eo(k))+')'}); } else $('toque').style.opacity = 0;
   /* alfinete levanta enquanto o mapa anda e cai com quique */
-  const sobe = cl((t-tArr+.1)/.15) * (1-eb((t-tArr-1.15)/.45));
-  $('alf').style.transform = 'translateY('+(-26*sobe)+'px)';
+  const sobe = cl((t-tArr+.1)/.15) * (1-Math.pow(cl((t-B.finca+.12)/.12),2)), pula = t>B.finca ? Math.abs(Math.sin((t-B.finca)*16))*Math.exp(-(t-B.finca)*9) : 0;
+  $('alf').style.transform = 'translateY('+(-44*sobe-14*pula)+'px)';
+  anel('aAlf', 540, 768, 130, t, B.finca);
   /* selo de passo em cima do celular */
   const passos = [[tArr-.35,'1','Arraste o mapa'],[tToca-.25,'2','Toque em Marcar aqui'],[tEsc-.25,'3','Escolha o problema'],[kw('foto','foto')-.45,'+','Foto e frase, se quiser']];
   let pc = null; for (const q of passos) if (t >= q[0]) pc = q;
-  if (pc) { const kq = eb((t-pc[0])/.45); $('chipN').textContent = pc[1]; $('chipT').textContent = pc[2];
+  if (pc) { const kq = ebs((t-pc[0])/.35, 3); $('chipN').textContent = pc[1]; $('chipT').textContent = pc[2];
     sty('chipPasso',{opacity:cl((t-pc[0])/.15)*(1-cl((t-(kw('foto','nome')-.45))/.2)), transform:'translateX(-50%) translateY('+(36*(1-kq))+'px) scale('+(.9+.1*kq)+')'}); }
   else $('chipPasso').style.opacity = 0;
   /* os 6 tipos entram um a um quando a folha sobe */
-  document.querySelectorAll('#tiposCel .tipo').forEach((e,i) => { const a = tToca+.3+i*.06, k = eb((t-a)/.4);
-    e.style.opacity = cl((t-a)/.15); e.style.transform = 'scale('+((.7+.3*k) * (e.dataset.t==='buraco' ? 1+.08*cl(1-Math.abs(t-tEsc-.12)/.2) : 1))+')'; });
+  document.querySelectorAll('#tiposCel .tipo').forEach((e,i) => { const a = tToca+.25+i*.05, k = ebs((t-a)/.32, 3.2);
+    e.style.opacity = cl((t-a)/.1); e.style.transform = 'scale('+((.4+.6*k) * (e.dataset.t==='buraco' ? 1+.2*cl(1-Math.abs(t-tEsc-.1)/.18) : 1))+')'; });
   const kF1 = pr(t, tToca+.15, .45), saiF1 = pr(t, cf.inicio-.1, .45);
   const kF1b = eb((t-tToca-.15)/.55);
   sty('f1',{transform:'translateY('+(100*(1-kF1b)+100*saiF1)+'%)'}); sty('mira',{opacity:1-kF1});
   document.querySelector('.tipo[data-t=buraco]').classList.toggle('on', t >= tEsc);
   sty('f2',{transform:'translateY('+(100*(1-eb((t-cf.inicio+.1)/.55)))+'%)'});
   sty('pinoNovo',{opacity: 0});
-  const tFoto = kw('foto','foto'); sty('previa',{display: t>=tFoto+.1 ? 'block' : 'none', transform:'scale('+eb((t-tFoto-.1)/.4)+') rotate('+(-12*(1-eo((t-tFoto-.1)/.4)))+'deg)'});
+  /* a foto vem grande e bate no lugar */
+  const tFoto = kw('foto','foto'), kft = Math.pow(cl((t-B.foto+.22)/.22), 2); sty('previa',{display: t>=B.foto-.22 ? 'block' : 'none', transform:'scale('+(2.2-1.2*kft)+') rotate('+(-16*(1-kft))+'deg)'});
   const txt = 'buraco fundo na frente do 120', tFr = kw('foto','frase'), nTxt = Math.floor(cl((t-tFr)/1.2)*txt.length);
   $('campo').textContent = nTxt ? txt.slice(0,nTxt) : 'Conte em uma frase (se quiser)'; $('campo').classList.toggle('cheio', nTxt>0);
-  const ks = eb((t-kw('foto','nome')+.25)/.55); sty('selo',{opacity:cl((t-kw('foto','nome')+.25)/.15)*(t<cf.fim?1:0), transform:'translateY('+(-60*(1-ks))+'px) scale('+(.85+.15*ks)+')'});
+  /* o selo bate como carimbo */
+  const ks = Math.pow(cl((t-B.selo+.2)/.2), 2); sty('selo',{opacity:cl((t-B.selo+.2)/.08)*(t<cf.fim?1:0), transform:'rotate('+(-4*ks)+'deg) scale('+(1.4-.4*ks)+')'});
   $('miraRua').textContent = arr < .5 ? 'Rua Bahia' : 'Rua Sete de Setembro';
 
   /* dias: vizinhos confirmam, contador sobe, vira consertado */
   const cd = cena('dias'), tVir = kw('dias','confirmam'), tDias = kw('dias','dias'), tCons = kw('dias','conserto');
-  const kv = eb((t-tVir+.3)/.5), vv = 1+11*eo((t-tVir)/1.6);
+  const kv = ebs((t-tVir+.3)/.35, 3), vv = 1+11*eo((t-tVir)/1.6);
   sty('viram',{opacity:cl((t-tVir+.3)/.15), transform:'translateY('+(-80*(1-kv))+'px)'}); $('nViram').textContent = Math.max(1, Math.floor(vv));
   $('nViram').style.display='inline-block'; $('nViram').style.transform = 'scale('+(1+.35*(1-(vv%1)) * (vv<11.9 && t>tVir ? 1 : 0))+')';
   const feito = t >= tCons; const nd = Math.max(1, Math.round(1+46*eio((t-tDias+.3)/(tCons-tDias+.2))));
@@ -386,32 +412,37 @@ function render(t){
   $('txtDias').textContent = (Math.floor(vd) === 1 ? 'dia' : 'dias') + (feito ? ' até o conserto' : ' esperando');
   const giro = 180*eio((t-tCons+.3)/.5), virou = giro > 90;
   $('pinoDias').className = 'pino grande ' + (virou ? 'feito' : nd>30 ? 'velho' : '');
-  const kp = eb((t-cd.inicio-.05)/.7);
-  $('pinoDias').style.transform = 'perspective(1400px) scale('+kp+') rotate('+(-90*(1-eo((t-cd.inicio-.05)/.7)))+'deg) rotateY('+(virou ? giro-180 : giro)+'deg)';
+  const kp = bate(t, cd.inicio+.3, .25); $('pinoDias').style.opacity = cl((t-cd.inicio-.05)/.05);
+  $('pinoDias').style.transform = 'perspective(1400px) scale('+(2.4-1.4*kp)+') rotate('+(-20*(1-kp))+'deg) rotateY('+(virou ? giro-180 : giro)+'deg)';
   anel('ad1', 540, 620, 400, t, cd.inicio+.3); anel('ad2', 540, 620, 400, t, tCons+.05); anel('ad3', 540, 620, 400, t, tCons+.25);
-  const kcb = eo((t-tCons-.15)/.35);
+  const kcb = bate(t, tCons+.37, .22);
+  peso('c-dias', t, [[cd.inicio+.3, 18, .045], [tCons+.37, 24, .06]]);
   sty('carimbo',{opacity:cl((t-tCons-.15)/.1), transform:'translate(-50%,-50%) rotate(-8deg) scale('+(2.2-1.2*kcb)+')'});
   sty(document.querySelector('#c-dias .contador'),{transform:'translateY('+(t>tCons ? 130*eo((t-tCons)/.4) : 0)+'px)'});
 
   /* site */
   const tsi = cena('site').inicio;
   sty('eSite',{opacity:cl((t-tsi-.1)/.4), letterSpacing:(.22+.5*(1-eo((t-tsi-.1)/.9)))+'em'});
-  [['k1','quem'],['k2','contas'],['k3','pedido']].forEach(([id,w]) => { const a = kw('site',w)-.35, k = eb((t-a)/.6);
-    sty(id,{opacity:cl((t-a)/.2), transform:'translateX('+(220*(1-k))+'px)'});
+  [['k1','quem'],['k2','contas'],['k3','pedido']].forEach(([id,w]) => { const a = kw('site',w)-.35, k = ebs((t-a)/.38, 2.4);
+    sty(id,{opacity:cl((t-a)/.08), transform:'translateX('+(900*(1-k))+'px)'});
     $(id).querySelectorAll('svg *').forEach(e => e.style.strokeDashoffset = 1-eo((t-a-.2)/.8));
     subir(PAL[id], t, a+.15, .08, .5); });
+  peso('c-site', t, ['quem','contas','pedido'].map(w => [kw('site',w)-.08, 8, .025]));
   /* neutro */
-  [['n1','partido'],['n2','cadastro'],['n3','cidade']].forEach(([id,w]) => { const a = kw('neutro',w)-.4; sty(id,{opacity:t>=a?1:0}); subir(PAL[id], t, a, .09, .55); });
+  [['n1','partido'],['n2','cadastro'],['n3','cidade']].forEach(([id,w]) => { const a = kw('neutro',w)-.4, k = bate(t, a+.2, .2);
+    sty(id,{opacity:cl((t-a)/.05), transform:'scale('+(1.25-.25*k)+')', transformOrigin:'0 50%'}); subir(PAL[id], t, a-9); });
+  peso('c-neutro', t, ['partido','cadastro','cidade'].map(w => [kw('neutro',w)-.2, 14, .035]));
   sty('rN',{width:(560*eo((t-kw('neutro','olho')-.1)/.6))+'px'});
   /* fim */
   const cfim = cena('fim'), kl = pr(t, cfim.inicio, .6);
-  const kfl = eb((t-cfim.inicio)/.75);
-  sty('f-logo',{opacity:cl((t-cfim.inicio)/.15), transform:'scale('+kfl+') rotate('+(-180*(1-eo((t-cfim.inicio)/.75)))+'deg)', top:'300px'});
+  const kfl = bate(t, cfim.inicio+.3, .28);
+  sty('f-logo',{opacity:cl((t-cfim.inicio)/.05), transform:'scale('+(2.6-1.6*kfl)+') rotate('+(-30*(1-kfl))+'deg)', top:'300px'});
   sty('brilhoF',{left:(-40+150*eio((t-cfim.inicio-.85)/.7))+'%'});
   subir(PAL.fim, t, cfim.inicio+.3, .1, .6);
   const te2 = kw('fim','link')-.4, ke = eo((t-te2)/.6);
   sty('end',{opacity:t>=te2?1:0, clipPath:'inset(0 '+(100-100*ke)+'% 0 0 round 22px)'});
-  document.querySelectorAll('#chips span').forEach((e,i) => { const a = kw('fim','marque')-.3+i*.12, k = eb((t-a)/.45); e.style.opacity = cl((t-a)/.12); e.style.transform = 'scale('+k+')'; e.style.display='inline-block'; });
+  document.querySelectorAll('#chips span').forEach((e,i) => { const a = kw('fim','marque')-.3+i*.12, k = ebs((t-a)/.32, 3.2); e.style.opacity = cl((t-a)/.12); e.style.transform = 'scale('+k+')'; e.style.display='inline-block'; });
+  peso('c-fim', t, [[cfim.inicio+.3, 22, .05], [te2+.5, 0, .025]]);
   const tp = kw('fim','instale');
   ['af1','af2'].forEach((id,i) => { const k = t>tp ? ((t-tp+i*.7) % 1.4)/1.4 : -1; sty(id,{left:'390px', top:'300px', width:'300px', height:'300px', opacity:k>=0 ? (1-k)*.7 : 0, transform:'rotate(45deg) scale('+(.75+.6*eo(cl(k)))+')'}); });
 
@@ -428,20 +459,20 @@ function render(t){
 /* momentos dos efeitos sonoros, tirados das mesmas contas da animação (lidos por gerar_audio.py) */
 function eventos(){
   const ev = [], add = (t, tipo, vol=1) => ev.push({t:+t.toFixed(3), tipo, vol});
-  ['buraco','poste','lixo'].forEach(w => add(kw('pergunta',w)-.12, 'pop'));
+  ['buraco','poste','lixo'].forEach(w => { add(kw('pergunta',w)-.12, 'pop'); add(kw('pergunta',w)-.1, 'carimbo', .35); });
   const cm = cena('mapa'); PINOS.forEach((p,i) => add(cm.inicio+.15+i*.07+.2, 'tick', .45));
-  const tl = kw('mapa','mapa')-.15; add(tl+.25, 'pop', .8); add(tl+.8, 'ding', .5);
-  const ck = cena('marcar'); add(ck.inicio+.1, 'whoosh', .7);
+  const tl = kw('mapa','mapa')-.15; add(tl+.25, 'pop', .8); add(tl+.25, 'carimbo', .55); add(tl+.8, 'ding', .5);
+  const ck = cena('marcar'), B = batidasCel(); add(ck.inicio+.02, 'whoosh', .7); add(B.pouso, 'carimbo', .55);
   const tArr = kw('marcar','arrasta'), tToca = kw('marcar','toca'), tEsc = kw('marcar','escolhe'), tFoto = kw('foto','foto');
-  add(tArr+1.2, 'pop', .5); [tToca, tEsc, tFoto].forEach(x => add(x, 'clique'));
-  add(kw('foto','nome')-.1, 'pop', .8);
+  add(tArr-.05, 'whoosh', .35); add(B.finca, 'carimbo', .35); add(B.finca, 'pop', .5); [tToca, tEsc].forEach(x => add(x, 'clique'));
+  add(B.foto-.22, 'whoosh', .4); add(B.foto, 'carimbo', .4); add(B.selo, 'carimbo', .45);
   const cd = cena('dias'), tVir = kw('dias','confirmam'), tDias = kw('dias','dias'), tCons = kw('dias','conserto');
-  add(cd.inicio+.35, 'pop'); add(tVir-.2, 'pop', .6);
+  add(cd.inicio+.3, 'pop'); add(cd.inicio+.3, 'carimbo', .5); add(tVir-.2, 'pop', .6);
   let ant = 1; for (let x = tDias-.3; x < tCons; x += 1/120) { const vd = Math.floor(Math.max(1, 1+46*eio((x-tDias+.3)/(tCons-tDias+.2)))); if (vd !== ant) { add(x, 'tick', .35); ant = vd; } }
-  add(tCons-.05, 'whoosh', .6); add(tCons+.22, 'carimbo');
+  add(tCons-.05, 'whoosh', .6); add(tCons+.37, 'carimbo');
   ['quem','contas','pedido'].forEach(w => add(kw('site',w)-.3, 'whoosh', .45));
-  ['partido','cadastro','cidade'].forEach(w => add(kw('neutro',w)-.3, 'tick', .7));
-  const cfim = cena('fim'); add(cfim.inicio+.35, 'pop'); add(cfim.inicio+.95, 'ding', .8);
+  ['partido','cadastro','cidade'].forEach(w => add(kw('neutro',w)-.2, 'carimbo', .45));
+  const cfim = cena('fim'); add(cfim.inicio+.3, 'pop'); add(cfim.inicio+.3, 'carimbo', .55); add(cfim.inicio+.95, 'ding', .8);
   add(kw('fim','link')-.4, 'whoosh', .5);
   [0,1,2].forEach(i => add(kw('fim','marque')-.2+i*.12, 'pop', .5));
   return ev;
