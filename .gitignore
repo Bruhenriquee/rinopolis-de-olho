@@ -4,3 +4,7 @@ video/_quadros/
 video/_audio/
 video/*.mp4
 video/_quadros_render.log
+
+# locais (só da máquina): atalho e arquivos de trabalho
+INICIAR.bat
+_arquivos/
