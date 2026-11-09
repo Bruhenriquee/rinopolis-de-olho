@@ -18,7 +18,7 @@ Isto é análise técnica, não parecer jurídico: os itens marcados ⚖ pedem c
 | 3 | Identificação do controlador | 🟡 YELLOW ⚖ | Política diz só "a equipe que mantém o mapa"; sem nome de pessoa nem de associação | alta | Art. 9º, III; Art. 5º, VI |
 | 4 | Base legal das confirmações, denúncias, código do aparelho e push | 🟢 FEITO (07/11) — `legal-basis.md` com 10 atividades + 2 testes de legítimo interesse; política, seção 4, atualizada | Política cita só consentimento (Art. 7º, I) via caixa marcada ao **marcar**; confirmar e denunciar não têm caixa ("ao confirmar você concorda" não é consentimento livre e inequívoco) | alta | Art. 7º, I e IX; Art. 8º; Art. 10 (legítimo interesse exige teste documentado) |
 | 5 | Exclusão pelo próprio titular | 🟢 FEITO (07/11) — botão "Apagar minha marcação" na placa, só no aparelho que marcou (`supabase-apagar-minha.sql`) | Só a equipe apaga placas; o autor não consegue apagar a sua, e pedido por e-mail não tem como provar autoria (qualquer um pode pedir para apagar a placa dos outros) | alta | Art. 18, VI e IX; Art. 6º, V (qualidade) |
-| 6 | Retenção definida | 🟡 YELLOW | "Enquanto forem úteis"; histórico, bloqueios e pedidos de aviso sem prazo | alta | Art. 15 e 16; Art. 6º, III (necessidade) |
+| 6 | Retenção definida | 🟢 FEITO (09/11) — prazos por tabela em `retention.md`; limpeza automática semanal em `supabase-retencao.sql` (falta rodar no Supabase) | "Enquanto forem úteis"; histórico, bloqueios e pedidos de aviso sem prazo | alta | Art. 15 e 16; Art. 6º, III (necessidade) |
 | 7 | Transferência internacional | 🟡 YELLOW ⚖ | Política cita Art. 33 sem dizer qual hipótese; nenhum dos serviços (Supabase, GitHub, Google, Cloudflare) tem Cláusulas-Padrão brasileiras | alta | Arts. 33–36; Res. 19/2024 |
 | 8 | ROPA (registro de operações) | 🟡 YELLOW | Não existe. O `discovery.md` já serve de base | média | Art. 37; Res. 2/2022 Art. 9º (ATPP pode usar modelo simplificado) |
 | 9 | Transparência sobre operadores | 🟡 YELLOW | Hospedagem descrita como "um serviço de hospedagem", sem nome; não cita que o Supabase também registra IP | média | Art. 9º, V |
@@ -37,7 +37,7 @@ Isto é análise técnica, não parecer jurídico: os itens marcados ⚖ pedem c
 ## Próximas 2 semanas
 3. **Base legal revisada** (gap 4) — consentimento para marcar, foto, frase e push; legítimo interesse documentado para o código do aparelho, confirmações e denúncias (antifraude). Skill: lgpd-legal-basis.
 4. **"Apagar minha marcação" no próprio site** (gap 5) — o aparelho que marcou prova a autoria pelo código. Skill: lgpd-dsar.
-5. **Prazos de retenção** (gap 6) — por exemplo: denúncias até a decisão (já é assim), pedidos de aviso 1 ano sem uso, histórico 5 anos, bloqueios revisados a cada 2 anos. Skill: lgpd-retention-erasure.
+5. ~~**Prazos de retenção** (gap 6)~~ — FEITO 09/11: `retention.md` + `supabase-retencao.sql` (limpeza automática semanal). Falta rodar o SQL no Supabase.
 6. **Google Fonts dentro do site** (gap 10) — baixar as duas fontes e servir junto com as páginas. Tira um operador e uma transferência.
 
 ## Próximo mês
